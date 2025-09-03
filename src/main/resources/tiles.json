@@ -1,0 +1,80 @@
+[
+  {
+    "id": 3,
+    "layout": [
+      ["PATH", "PATH", "VORTEX", "OBSTACLE"],
+      ["DISCOVERY", "PATH", "PATH", "VORTEX"],
+      ["TIMER", "PATH", "PATH", "DISCOVERY"],
+      ["OBSTACLE", "START", "PATH", "OBSTACLE"]
+    ],
+    "color": [
+      ["NONE", "NONE", "ORANGE", "NONE"],
+      ["PURPLE", "NONE", "NONE", "GREEN"],
+      ["NONE", "NONE", "NONE", "YELLOW"],
+      ["NONE", "NONE", "NONE", "NONE"]
+    ],
+    "walls_up": [
+        [true, true, true, true],
+        [false, false, false, true],
+        [true, false, true, true],
+        [true, true, false, true]
+    ],
+    "walls_down": [
+        [false, false, false, true],
+        [true, false, true, true],
+        [true, true, false, true],
+        [true, false, true, true]
+    ],
+    "walls_left": [
+        [true, false, true, true],
+        [false, true, false, false],
+        [true, false, false, false],
+        [true, true, false, true]
+    ],
+    "walls_right": [
+        [false, true, true, true],
+        [true, false, false, true],
+        [false, false, false, false],
+        [true, false, true, true]
+    ]
+  },
+  {
+    "id": 4,
+    "layout": [
+        ["OBSTACLE", "OBSTACLE", "DISCOVERY", "VORTEX"],
+        ["OBSTACLE", "TIMER", "PATH", "OBSTACLE"],
+        ["VORTEX", "PATH", "PATH", "DISCOVERY"],
+        ["OBSTACLE", "START", "OBSTACLE", "OBSTACLE"]
+    ],
+    "color": [
+      ["NONE", "NONE", "PURPLE", "YELLOW"],
+      ["NONE", "NONE", "NONE", "NONE"],
+      ["ORANGE", "NONE", "NONE", "GREEN"],
+      ["NONE", "NONE", "NONE", "NONE"]
+    ],
+    "walls_up": [
+        [true, true, false, true],
+        [false, true, false, true],
+        [true, false, false, true],
+        [true, false, true, true]
+    ],
+    "walls_down": [
+        [false, true, false, true],
+        [true, false, false, true],
+        [true, false, true, true],
+        [true, false, true, true]
+    ],
+    "walls_left": [
+        [true, false, true, false],
+        [true, true, true, true],
+        [true, false, false, false],
+        [true, true, true, false]
+    ],
+    "walls_right": [
+        [false, true, false, true],
+        [true, true, true, true],
+        [false, false, false, false],
+        [true, true, false, true]
+    ]
+  }
+]

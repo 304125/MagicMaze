@@ -1,3 +1,5 @@
+package org.game;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -29,7 +31,12 @@ public class BoardUI extends JFrame {
                 Tile tile = board.get(i).get(j);
                 JPanel tilePanel = new JPanel();
                 tilePanel.setPreferredSize(new Dimension(TILE_SIZE, TILE_SIZE));
-                tilePanel.setBackground(getColorForTileType(tile.getType()));
+                if(tile.getColor() != Color.NONE){
+                    tilePanel.setBackground(getColorForTile(tile));
+                }
+                else{
+                    tilePanel.setBackground(getColorForTileType(tile.getType()));
+                }
                 tilePanel.setBorder(createTileBorder(tile));
                 tilePanels[i][j] = tilePanel;
                 add(tilePanel);
@@ -80,7 +87,7 @@ public class BoardUI extends JFrame {
         JLabel pawnIcon = new JLabel();
         pawnIcon.setPreferredSize(new Dimension(TILE_SIZE / 2, TILE_SIZE / 2));
         pawnIcon.setOpaque(true);
-        pawnIcon.setBackground(Color.YELLOW); // Pawn color
+        pawnIcon.setBackground(java.awt.Color.YELLOW); // Pawn color
         pawnTile.setLayout(new GridBagLayout());
         pawnTile.add(pawnIcon);
 
@@ -88,18 +95,33 @@ public class BoardUI extends JFrame {
         repaint();
     }
 
-    private Color getColorForTileType(TileType type) {
+    private java.awt.Color getColorForTileType(TileType type) {
         switch (type) {
             case START:
-                return Color.GREEN;
-            case GOAL:
-                return Color.RED;
+                return java.awt.Color.WHITE;
             case PATH:
-                return Color.LIGHT_GRAY;
+                return java.awt.Color.LIGHT_GRAY;
             case OBSTACLE:
-                return Color.DARK_GRAY;
+                return java.awt.Color.DARK_GRAY;
+            case TIMER:
+                return java.awt.Color.RED;
             default:
-                return Color.WHITE;
+                return java.awt.Color.WHITE;
+        }
+    }
+
+    private java.awt.Color getColorForTile(Tile tile) {
+        switch (tile.getColor()) {
+            case ORANGE:
+                return java.awt.Color.ORANGE;
+            case PURPLE:
+                return java.awt.Color.MAGENTA;
+            case GREEN:
+                return java.awt.Color.GREEN;
+            case YELLOW:
+                return java.awt.Color.YELLOW;
+            default:
+                return java.awt.Color.WHITE;
         }
     }
 
@@ -110,7 +132,7 @@ public class BoardUI extends JFrame {
         int left = tile.hasWallLeft() ? thickness : 0;
         int right = tile.hasWallRight() ? thickness : 0;
 
-        return BorderFactory.createMatteBorder(top, left, bottom, right, Color.BLACK);
+        return BorderFactory.createMatteBorder(top, left, bottom, right, java.awt.Color.BLACK);
     }
 
     private void movePawn(String direction) {
@@ -123,11 +145,11 @@ public class BoardUI extends JFrame {
 
         highlightPawn();
 
-        // Check if the pawn has reached the goal
-        if (board.get(pawn.getX()).get(pawn.getY()).getType() == TileType.GOAL) {
-            JOptionPane.showMessageDialog(this, "Congratulations! You reached the goal!");
-            System.exit(0); // End the program
-        }
+//        // Check if the pawn has reached the goal
+//        if (board.get(pawn.getX()).get(pawn.getY()).getType() == TileType.GOAL) {
+//            JOptionPane.showMessageDialog(this, "Congratulations! You reached the goal!");
+//            System.exit(0); // End the program
+//        }
     }
 
     public static void main(String[] args) {

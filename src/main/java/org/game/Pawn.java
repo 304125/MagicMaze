@@ -1,3 +1,5 @@
+package org.game;
+
 import java.util.List;
 
 public class Pawn {
