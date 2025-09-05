@@ -42,13 +42,15 @@ public class BoardUI extends JFrame {
         // Load images for each TileType
         tileTypeImages = new java.util.HashMap<>();
         BufferedImage vortexImage = null;
+        BufferedImage discoverImage = null;
         try {
             vortexImage = ImageIO.read(getClass().getClassLoader().getResourceAsStream("images/vortex.png"));
+            discoverImage = ImageIO.read(getClass().getClassLoader().getResourceAsStream("images/discover.png"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         tileTypeImages.put(TileType.VORTEX, new ImageIcon(vortexImage));
-//        tileTypeImages.put(TileType.VORTEX, new ImageIcon(renderSVGToBufferedImage("images/vortex.svg", TILE_SIZE, TILE_SIZE)));
+        tileTypeImages.put(TileType.DISCOVERY, new ImageIcon(discoverImage));
 
 
         setLayout(new GridLayout(rows, cols));
@@ -154,7 +156,10 @@ public class BoardUI extends JFrame {
         JLabel pawnIcon = new JLabel();
         pawnIcon.setPreferredSize(new Dimension(TILE_SIZE / 2, TILE_SIZE / 2));
         pawnIcon.setOpaque(true);
-        pawnIcon.setBackground(java.awt.Color.YELLOW); // Pawn color
+        Color pawnColor = pawn.getColor();
+        pawnIcon.setBackground(java.awt.Color.decode(pawnColor.getHexCode())); // Pawn color
+        // put black border around
+        pawnIcon.setBorder(BorderFactory.createLineBorder(java.awt.Color.BLACK, 2));
         pawnTile.setLayout(new GridBagLayout());
         pawnTile.add(pawnIcon);
 
@@ -166,29 +171,28 @@ public class BoardUI extends JFrame {
         switch (type) {
             case START:
                 return java.awt.Color.WHITE;
-            case PATH:
-                return java.awt.Color.LIGHT_GRAY;
             case OBSTACLE:
-                return java.awt.Color.DARK_GRAY;
+                return java.awt.Color.decode(Color.BROWN.getHexCode());
             case TIMER:
-                return java.awt.Color.RED;
+                return java.awt.Color.decode(Color.RED.getHexCode());
+            case PATH:
             default:
-                return java.awt.Color.WHITE;
+                return java.awt.Color.decode(Color.NONE.getHexCode());
         }
     }
 
     private java.awt.Color getColorForTile(Tile tile) {
         switch (tile.getColor()) {
             case ORANGE:
-                return java.awt.Color.ORANGE;
+                return java.awt.Color.decode(Color.ORANGE.getHexCode());
             case PURPLE:
-                return java.awt.Color.MAGENTA;
+                return java.awt.Color.decode(Color.PURPLE.getHexCode());
             case GREEN:
-                return java.awt.Color.GREEN;
+                return java.awt.Color.decode(Color.GREEN.getHexCode());
             case YELLOW:
-                return java.awt.Color.YELLOW;
+                return java.awt.Color.decode(Color.YELLOW.getHexCode());
             default:
-                return java.awt.Color.WHITE;
+                return java.awt.Color.decode(Color.NONE.getHexCode());
         }
     }
 
