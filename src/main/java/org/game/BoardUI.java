@@ -22,7 +22,11 @@ import java.util.List;
 public class BoardUI extends JFrame {
     private static final int TILE_SIZE = 50;
     private JPanel[][] tilePanels;
-    private Pawn pawn;
+    private Pawn yello_pawn;
+    private Pawn orange_pawn;
+    private Pawn purple_pawn;
+    private Pawn green_pawn;
+    private List<Pawn> allPawns;
     private List<List<Tile>> board;
     private java.util.Map<TileType, ImageIcon> tileTypeImages;
 
@@ -87,28 +91,44 @@ public class BoardUI extends JFrame {
         }
 
         // Initialize the pawn at the START position
-        pawn = new Pawn(startX, startY, Color.YELLOW);
-        highlightPawn();
+        allPawns = new java.util.ArrayList<>();
+        yello_pawn = new Pawn(startX, startY, Color.YELLOW);
+        allPawns.add(yello_pawn);
+        highlightPawn(yello_pawn);
 
         new Thread(() -> {
             try (java.util.Scanner scanner = new java.util.Scanner(System.in)) {
                 while (true) {
-                    System.out.print("Enter direction (n: north, s: south, w: west, e: east): ");
+                    System.out.print("Enter color of pawn (y: yellow, o: orange, p: purple, g: green) and direction (n: north, s: south, w: west, e: east): ");
                     String input = scanner.nextLine().trim().toLowerCase();
-                    String direction = switch (input) {
-                        case "n", "s", "w", "e" -> input; // Return the input directly if it's valid
+                    // split input into color and direction
+                    if (input.length() != 2) {
+                        System.out.println("Invalid input. Please provide both color and direction.");
+                        continue;
+                    }
+                    String colorString = String.valueOf(input.charAt(0));
+                    String directionString = String.valueOf(input.charAt(1));
+                    Color pawnColor = switch (colorString) {
+                        case "y" -> Color.YELLOW;
+                        case "o" -> Color.ORANGE;
+                        case "p" -> Color.PURPLE;
+                        case "g" -> Color.GREEN;
+                        default -> null;
+                    };
+                    String direction = switch (directionString) {
+                        case "n", "s", "w", "e" -> directionString; // Return the input directly if it's valid
                         default -> null;
                     };
 
-                    if (direction != null) {
-                        boolean movePerformed = movePawn(direction);
+                    if (direction != null && pawnColor != null) {
+                        boolean movePerformed = movePawn(pawnColor, direction);
                         if(movePerformed) {
-                            System.out.println("Moved " + direction.toUpperCase() + " to position (" + pawn.getX() + ", " + pawn.getY() + ")");
+                            System.out.println("Moved " + direction.toUpperCase() + " pawn of color " + pawnColor);
                         } else {
-                            System.out.println("Move " + direction.toUpperCase() + " blocked by wall or out of bounds. Current position: (" + pawn.getX() + ", " + pawn.getY() + ")");
+                            System.out.println("Could not move pawn of color " + pawnColor + " in direction " + direction.toUpperCase());
                         }
                     } else {
-                        System.out.println("Invalid input. Please use n, s, w or e.");
+                        System.out.println("Invalid input. Please provide both color and direction in correct format.");
                     }
                 }
             } catch (Exception e) {
@@ -121,7 +141,7 @@ public class BoardUI extends JFrame {
         setVisible(true);
     }
 
-    private void highlightPawn() {
+    private void highlightPawn(Pawn pawn) {
         // Clear all tiles
         for (int i = 0; i < tilePanels.length; i++) {
             for (int j = 0; j < tilePanels[i].length; j++) {
@@ -182,7 +202,15 @@ public class BoardUI extends JFrame {
         return BorderFactory.createMatteBorder(top, left, bottom, right, java.awt.Color.BLACK);
     }
 
-    private boolean movePawn(String direction) {
+    private boolean movePawn(Color pawnColor, String direction) {
+        // get pawn from allPawns where pawnColor == pawn.Color
+        Pawn pawn = allPawns.stream().filter(p -> p.getColor() == pawnColor).findFirst().orElse(null);
+
+        if(pawn == null){
+            System.out.println("Pawn of color " + pawnColor + " not found.");
+            return false;
+        }
+
         int oldX = pawn.getX();
         int oldY = pawn.getY();
 
@@ -193,7 +221,7 @@ public class BoardUI extends JFrame {
         int y = Math.max(0, Math.min(pawn.getY(), tilePanels[0].length - 1));
         pawn = new Pawn(x, y, pawn.getColor());
 
-        highlightPawn();
+        highlightPawn(pawn);
 
         if(oldX == pawn.getX() && oldY == pawn.getY()) {
             return false;
