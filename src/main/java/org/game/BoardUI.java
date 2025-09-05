@@ -87,25 +87,34 @@ public class BoardUI extends JFrame {
         }
 
         // Initialize the pawn at the START position
-        pawn = new Pawn(startX, startY);
+        pawn = new Pawn(startX, startY, Color.YELLOW);
         highlightPawn();
 
-        addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                String direction = switch (e.getKeyCode()) {
-                    case KeyEvent.VK_W -> "n"; // Move north
-                    case KeyEvent.VK_S -> "s"; // Move south
-                    case KeyEvent.VK_A -> "w"; // Move west
-                    case KeyEvent.VK_D -> "e"; // Move east
-                    default -> null;
-                };
+        new Thread(() -> {
+            try (java.util.Scanner scanner = new java.util.Scanner(System.in)) {
+                while (true) {
+                    System.out.print("Enter direction (n: north, s: south, w: west, e: east): ");
+                    String input = scanner.nextLine().trim().toLowerCase();
+                    String direction = switch (input) {
+                        case "n", "s", "w", "e" -> input; // Return the input directly if it's valid
+                        default -> null;
+                    };
 
-                if (direction != null) {
-                    movePawn(direction);
+                    if (direction != null) {
+                        boolean movePerformed = movePawn(direction);
+                        if(movePerformed) {
+                            System.out.println("Moved " + direction.toUpperCase() + " to position (" + pawn.getX() + ", " + pawn.getY() + ")");
+                        } else {
+                            System.out.println("Move " + direction.toUpperCase() + " blocked by wall or out of bounds. Current position: (" + pawn.getX() + ", " + pawn.getY() + ")");
+                        }
+                    } else {
+                        System.out.println("Invalid input. Please use n, s, w or e.");
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        });
+        }).start();
 
         pack();
         setLocationRelativeTo(null);
@@ -173,15 +182,24 @@ public class BoardUI extends JFrame {
         return BorderFactory.createMatteBorder(top, left, bottom, right, java.awt.Color.BLACK);
     }
 
-    private void movePawn(String direction) {
+    private boolean movePawn(String direction) {
+        int oldX = pawn.getX();
+        int oldY = pawn.getY();
+
         pawn.move(direction, board);
 
         // Ensure the pawn stays within bounds
         int x = Math.max(0, Math.min(pawn.getX(), tilePanels.length - 1));
         int y = Math.max(0, Math.min(pawn.getY(), tilePanels[0].length - 1));
-        pawn = new Pawn(x, y);
+        pawn = new Pawn(x, y, pawn.getColor());
 
         highlightPawn();
+
+        if(oldX == pawn.getX() && oldY == pawn.getY()) {
+            return false;
+        } else {
+            return true;
+        }
 
 //        // Check if the pawn has reached the goal
 //        if (board.get(pawn.getX()).get(pawn.getY()).getType() == TileType.GOAL) {

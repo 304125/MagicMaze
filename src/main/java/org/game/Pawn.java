@@ -5,10 +5,12 @@ import java.util.List;
 public class Pawn {
     private int x; // Row position
     private int y; // Column position
+    private Color color;
 
-    public Pawn(int startX, int startY) {
+    public Pawn(int startX, int startY, Color color) {
         this.x = startX;
         this.y = startY;
+        this.color = color;
     }
 
     public int getX() {
@@ -44,5 +46,9 @@ public class Pawn {
                 }
                 break;
         }
+    }
+
+    public Color getColor() {
+        return color;
     }
 }
