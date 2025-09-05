@@ -7,14 +7,16 @@ public class Tile {
     private boolean wallDown;
     private boolean wallLeft;
     private boolean wallRight;
+    private int cardId;
 
-    public Tile(TileType type, Color color, boolean wallUp, boolean wallDown, boolean wallLeft, boolean wallRight) {
+    public Tile(TileType type, Color color, boolean wallUp, boolean wallDown, boolean wallLeft, boolean wallRight, int cardId) {
         this.type = type;
         this.wallUp = wallUp;
         this.wallDown = wallDown;
         this.wallLeft = wallLeft;
         this.wallRight = wallRight;
         this.color = color;
+        this.cardId = cardId;
     }
 
     public TileType getType() {
@@ -39,6 +41,10 @@ public class Tile {
 
     public Color getColor() {
         return color;
+    }
+
+    public int getCardId() {
+        return cardId;
     }
 
     @Override

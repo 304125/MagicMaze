@@ -36,6 +36,7 @@ public class BoardSetUp {
             Map<String, Object> selectedTile = tiles.get(random.nextInt(tiles.size()));
 
             // Parse layout and walls
+            int id = (Integer) selectedTile.get("id");
             List<List<String>> layout = (List<List<String>>) selectedTile.get("layout");
             List<List<String>> color = (List<List<String>>) selectedTile.get("color");
             List<List<Boolean>> walls_up = (List<List<Boolean>>) selectedTile.get("walls_up");
@@ -43,13 +44,13 @@ public class BoardSetUp {
             List<List<Boolean>> walls_left = (List<List<Boolean>>) selectedTile.get("walls_left");
             List<List<Boolean>> walls_right = (List<List<Boolean>>) selectedTile.get("walls_right");
 
-            return createBoardFromJson(layout, color, walls_up, walls_down, walls_left, walls_right);
+            return createBoardFromJson(id, layout, color, walls_up, walls_down, walls_left, walls_right);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load board from JSON", e);
         }
     }
 
-    private List<List<Tile>> createBoardFromJson(List<List<String>> layout, List<List<String>> color, List<List<Boolean>> walls_up, List<List<Boolean>> walls_down, List<List<Boolean>> walls_left, List<List<Boolean>> walls_right) {
+    private List<List<Tile>> createBoardFromJson(int id, List<List<String>> layout, List<List<String>> color, List<List<Boolean>> walls_up, List<List<Boolean>> walls_down, List<List<Boolean>> walls_left, List<List<Boolean>> walls_right) {
         List<List<Tile>> board = new ArrayList<>();
         for (int i = 0; i < layout.size(); i++) {
             List<Tile> row = new ArrayList<>();
@@ -60,7 +61,7 @@ public class BoardSetUp {
                 boolean wallDownConfig = walls_down.get(i).get(j);
                 boolean wallLeftConfig = walls_left.get(i).get(j);
                 boolean wallRightConfig = walls_right.get(i).get(j);
-                row.add(new Tile(type, tileColor, wallUpConfig, wallDownConfig, wallLeftConfig, wallRightConfig));
+                row.add(new Tile(type, tileColor, wallUpConfig, wallDownConfig, wallLeftConfig, wallRightConfig, id));
 
             }
             board.add(row);
