@@ -11,10 +11,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -22,21 +19,16 @@ import java.util.List;
 public class BoardUI extends JFrame {
     private static final int TILE_SIZE = 50;
     private JPanel[][] tilePanels;
-    private Pawn yello_pawn;
-    private Pawn orange_pawn;
-    private Pawn purple_pawn;
-    private Pawn green_pawn;
-    private List<Pawn> allPawns;
     private Board board;
     private java.util.Map<TileType, ImageIcon> tileTypeImages;
 
-    public BoardUI(BoardSetUp boardSetUp) {
+    public BoardUI(Game game) {
         setTitle("Magic Maze Board");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        this.board = boardSetUp.getBoard(); // Initialize the board
-        int rows = board.getTiles().size();
-        int cols = board.getTiles().get(0).size();
+        this.board = game.getBoard(); // Initialize the board
+        int rows = board.getNumRows();
+        int cols = board.getNumCols();
         tilePanels = new JPanel[rows][cols];
 
         // Load images for each TileType
@@ -56,47 +48,49 @@ public class BoardUI extends JFrame {
         setLayout(new GridLayout(rows, cols));
 
         // Initialize the board and find the START position
-        int startX = 0, startY = 0;
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                Tile tile = board.getTiles().get(i).get(j);
+                Tile tile = board.getTiles()[i][j];
                 JPanel tilePanel = new JPanel();
                 tilePanel.setPreferredSize(new Dimension(TILE_SIZE, TILE_SIZE));
-                java.awt.Color bgColor;
-                if(tile.getColor() != Color.NONE){
-                    bgColor = getColorForTile(tile);
+                if(tile == null){
+                    tilePanel.setBackground(java.awt.Color.LIGHT_GRAY);
+                    tilePanels[i][j] = tilePanel;
+                    add(tilePanel);
+                    continue;
                 }
                 else{
-                    bgColor = getColorForTileType(tile.getType());
-                }
+                    java.awt.Color bgColor;
+                    if(tile.getColor() != Color.NONE){
+                        bgColor = getColorForTile(tile);
+                    }
+                    else{
+                        bgColor = getColorForTileType(tile.getType());
+                    }
 
-                ImageIcon tileImage = tileTypeImages.get(tile.getType());
-                if (tileImage != null) {
-                    tilePanel = new ImagePanel(tileImage.getImage(), 0.8, bgColor);
-                } else {
-                    tilePanel = new JPanel();
-                    tilePanel.setBackground(bgColor);
-                    tilePanel.setPreferredSize(new Dimension(TILE_SIZE, TILE_SIZE));
-                }
+                    ImageIcon tileImage = tileTypeImages.get(tile.getType());
+                    if (tileImage != null) {
+                        tilePanel = new ImagePanel(tileImage.getImage(), 0.8, bgColor);
+                    } else {
+                        tilePanel = new JPanel();
+                        tilePanel.setBackground(bgColor);
+                        tilePanel.setPreferredSize(new Dimension(TILE_SIZE, TILE_SIZE));
+                    }
 
 
 
-                tilePanel.setBorder(createTileBorder(tile));
-                tilePanels[i][j] = tilePanel;
-                add(tilePanel);
-
-                if (tile.getType() == TileType.START) {
-                    startX = i;
-                    startY = j;
+                    tilePanel.setBorder(createTileBorder(tile));
+                    tilePanels[i][j] = tilePanel;
+                    add(tilePanel);
                 }
             }
         }
 
         // Initialize the pawn at the START position
-        allPawns = new java.util.ArrayList<>();
-        yello_pawn = new Pawn(startX, startY, Color.YELLOW);
-        allPawns.add(yello_pawn);
-        highlightPawn(yello_pawn);
+        List<Pawn> allPawns = board.getPawns();
+        for (Pawn pawn : allPawns) {
+            highlightPawn(pawn);
+        }
 
         new Thread(() -> {
             try (java.util.Scanner scanner = new java.util.Scanner(System.in)) {
@@ -123,12 +117,7 @@ public class BoardUI extends JFrame {
                     };
 
                     if (direction != null && pawnColor != null) {
-                        boolean movePerformed = movePawn(pawnColor, direction);
-                        if(movePerformed) {
-                            System.out.println("Moved " + direction.toUpperCase() + " pawn of color " + pawnColor);
-                        } else {
-                            System.out.println("Could not move pawn of color " + pawnColor + " in direction " + direction.toUpperCase());
-                        }
+                        movePawn(pawnColor, direction);
                     } else {
                         System.out.println("Invalid input. Please provide both color and direction in correct format.");
                     }
@@ -144,15 +133,9 @@ public class BoardUI extends JFrame {
     }
 
     private void highlightPawn(Pawn pawn) {
-        // Clear all tiles
-        for (int i = 0; i < tilePanels.length; i++) {
-            for (int j = 0; j < tilePanels[i].length; j++) {
-                tilePanels[i][j].removeAll();
-            }
-        }
-
         // Highlight the pawn's position
         JPanel pawnTile = tilePanels[pawn.getX()][pawn.getY()];
+        System.out.println("Highlighting pawn at: (" + pawn.getX() + ", " + pawn.getY() + ")");
         JLabel pawnIcon = new JLabel();
         pawnIcon.setPreferredSize(new Dimension(TILE_SIZE / 2, TILE_SIZE / 2));
         pawnIcon.setOpaque(true);
@@ -165,6 +148,28 @@ public class BoardUI extends JFrame {
 
         revalidate();
         repaint();
+    }
+
+    private void unhighlightPawn(Pawn pawn){
+        System.out.println("Un-highlighting pawn at: (" + pawn.getX() + ", " + pawn.getY() + ")");
+        // get children of tilePanels component at x and y
+
+        JPanel pawnTile = tilePanels[pawn.getX()][pawn.getY()];
+
+        for (Component child : pawnTile.getComponents()) {
+            if (child instanceof JLabel) {
+                pawnTile.remove(child);
+            }
+        }
+
+        //tilePanels[pawn.getX()][pawn.getY()].removeAll();
+        tilePanels[pawn.getX()][pawn.getY()].setLayout(new GridBagLayout());
+        tilePanels[pawn.getX()][pawn.getY()].revalidate();
+        tilePanels[pawn.getX()][pawn.getY()].repaint();
+        revalidate();
+        repaint();
+
+
     }
 
     private java.awt.Color getColorForTileType(TileType type) {
@@ -206,32 +211,13 @@ public class BoardUI extends JFrame {
         return BorderFactory.createMatteBorder(top, left, bottom, right, java.awt.Color.BLACK);
     }
 
-    private boolean movePawn(Color pawnColor, String direction) {
-        // get pawn from allPawns where pawnColor == pawn.Color
-        Pawn pawn = allPawns.stream().filter(p -> p.getColor() == pawnColor).findFirst().orElse(null);
+    private void movePawn(Color pawnColor, String direction) {
+        Pawn previousPawn = new Pawn(board.getPawnByColor(pawnColor));
+        Pawn updatedPawn = board.movePawn(pawnColor, direction);
+        board.printAllPawns();
 
-        if(pawn == null){
-            System.out.println("Pawn of color " + pawnColor + " not found.");
-            return false;
-        }
-
-        int oldX = pawn.getX();
-        int oldY = pawn.getY();
-
-        pawn.move(direction, board);
-
-        // Ensure the pawn stays within bounds
-        int x = Math.max(0, Math.min(pawn.getX(), tilePanels.length - 1));
-        int y = Math.max(0, Math.min(pawn.getY(), tilePanels[0].length - 1));
-        pawn = new Pawn(x, y, pawn.getColor());
-
-        highlightPawn(pawn);
-
-        if(oldX == pawn.getX() && oldY == pawn.getY()) {
-            return false;
-        } else {
-            return true;
-        }
+        unhighlightPawn(previousPawn);
+        highlightPawn(updatedPawn);
 
 //        // Check if the pawn has reached the goal
 //        if (board.get(pawn.getX()).get(pawn.getY()).getType() == TileType.GOAL) {
@@ -274,8 +260,8 @@ public class BoardUI extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            BoardSetUp boardSetUp = new BoardSetUp();
-            new BoardUI(boardSetUp);
+            Game game = new Game();
+            new BoardUI(game);
         });
     }
 }

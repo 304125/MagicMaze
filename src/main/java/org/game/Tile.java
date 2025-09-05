@@ -8,6 +8,7 @@ public class Tile {
     private boolean wallLeft;
     private boolean wallRight;
     private int cardId;
+    private boolean isOccupied = false;
 
     public Tile(TileType type, Color color, boolean wallUp, boolean wallDown, boolean wallLeft, boolean wallRight, int cardId) {
         this.type = type;
@@ -56,5 +57,13 @@ public class Tile {
                 ", wallLeft=" + wallLeft +
                 ", wallRight=" + wallRight +
                 '}';
+    }
+
+    public boolean isOccupied() {
+        return isOccupied;
+    }
+
+    public void setOccupied(boolean occupied) {
+        isOccupied = occupied;
     }
 }
