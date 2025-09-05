@@ -12,11 +12,11 @@ import java.util.Map;
 import java.util.Random;
 
 public class BoardSetUp {
-    private List<List<Tile>> board;
+    private Board board;
     private final String filePath = "tiles.json";
 
     public BoardSetUp() {
-        board = loadBoardFromJson(filePath);
+        board = new Board(loadBoardFromJson(filePath));
     }
 
     private List<List<Tile>> loadBoardFromJson(String filePath) {
@@ -68,21 +68,12 @@ public class BoardSetUp {
         return board;
     }
 
-    public List<List<Tile>> getBoard() {
+    public Board getBoard() {
         return board;
-    }
-
-    public void printBoard() {
-        for (List<Tile> row : board) {
-            for (Tile tile : row) {
-                System.out.print(tile.getType() + " ");
-            }
-            System.out.println();
-        }
     }
 
     public static void main(String[] args) {
         BoardSetUp boardSetUp = new BoardSetUp();
-        boardSetUp.printBoard();
+        boardSetUp.board.printBoard();
     }
 }

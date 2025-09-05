@@ -27,7 +27,7 @@ public class BoardUI extends JFrame {
     private Pawn purple_pawn;
     private Pawn green_pawn;
     private List<Pawn> allPawns;
-    private List<List<Tile>> board;
+    private Board board;
     private java.util.Map<TileType, ImageIcon> tileTypeImages;
 
     public BoardUI(BoardSetUp boardSetUp) {
@@ -35,8 +35,8 @@ public class BoardUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.board = boardSetUp.getBoard(); // Initialize the board
-        int rows = board.size();
-        int cols = board.get(0).size();
+        int rows = board.getTiles().size();
+        int cols = board.getTiles().get(0).size();
         tilePanels = new JPanel[rows][cols];
 
         // Load images for each TileType
@@ -59,7 +59,7 @@ public class BoardUI extends JFrame {
         int startX = 0, startY = 0;
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                Tile tile = board.get(i).get(j);
+                Tile tile = board.getTiles().get(i).get(j);
                 JPanel tilePanel = new JPanel();
                 tilePanel.setPreferredSize(new Dimension(TILE_SIZE, TILE_SIZE));
                 java.awt.Color bgColor;

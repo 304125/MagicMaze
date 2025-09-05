@@ -21,8 +21,8 @@ public class Pawn {
         return y;
     }
 
-    public void move(String direction, List<List<Tile>> board) {
-        Tile currentTile = board.get(x).get(y);
+    public void move(String direction, Board board) {
+        Tile currentTile = board.getTiles().get(x).get(y);
 
         switch (direction.toLowerCase()) {
             case "n": // Move north
@@ -31,7 +31,7 @@ public class Pawn {
                 }
                 break;
             case "s": // Move south
-                if (!currentTile.hasWallDown() && x < board.size() - 1) {
+                if (!currentTile.hasWallDown() && x < board.getTiles().size() - 1) {
                     x++;
                 }
                 break;
@@ -41,11 +41,12 @@ public class Pawn {
                 }
                 break;
             case "e": // Move east
-                if (!currentTile.hasWallRight() && y < board.get(0).size() - 1) {
+                if (!currentTile.hasWallRight() && y < board.getTiles().get(0).size() - 1) {
                     y++;
                 }
                 break;
         }
+        System.out.println("Pawn moved to (" + x + ", " + y + ")");
     }
 
     public Color getColor() {
