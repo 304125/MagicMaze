@@ -1,4 +1,6 @@
-package org.game;
+package org.game.model;
+
+import org.game.utils.JsonReader;
 
 import java.util.List;
 

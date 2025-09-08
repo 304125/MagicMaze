@@ -1,4 +1,4 @@
-package org.game;
+package org.game.ui;
 
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.bridge.BridgeContext;
@@ -6,6 +6,9 @@ import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgentAdapter;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.util.XMLResourceDescriptor;
+import org.game.model.*;
+import org.game.model.Action;
+import org.game.model.Color;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -64,7 +67,7 @@ public class BoardUI extends JFrame {
                 else{
                     System.out.println("Rendering tile at: (" + i + ", " + j + ") of type " + tile.getType());
                     java.awt.Color bgColor;
-                    if(tile.getColor() != Color.NONE){
+                    if(tile.getColor() != org.game.model.Color.NONE){
                         bgColor = getColorForTile(tile);
                     }
                     else{
@@ -105,20 +108,20 @@ public class BoardUI extends JFrame {
                     }
                     String colorString = String.valueOf(input.charAt(0));
                     String directionString = String.valueOf(input.charAt(1));
-                    Color pawnColor = switch (colorString) {
-                        case "y" -> Color.YELLOW;
-                        case "o" -> Color.ORANGE;
-                        case "p" -> Color.PURPLE;
-                        case "g" -> Color.GREEN;
+                    org.game.model.Color pawnColor = switch (colorString) {
+                        case "y" -> org.game.model.Color.YELLOW;
+                        case "o" -> org.game.model.Color.ORANGE;
+                        case "p" -> org.game.model.Color.PURPLE;
+                        case "g" -> org.game.model.Color.GREEN;
                         default -> null;
                     };
-                    Action action = switch (directionString) {
-                        case "n" -> Action.MOVE_NORTH;
-                        case "s" -> Action.MOVE_SOUTH;
-                        case "w" -> Action.MOVE_WEST;
-                        case "e" -> Action.MOVE_EAST;
-                        case "d" -> Action.DISCOVER;
-                        case "v" -> Action.VORTEX;
+                    org.game.model.Action action = switch (directionString) {
+                        case "n" -> org.game.model.Action.MOVE_NORTH;
+                        case "s" -> org.game.model.Action.MOVE_SOUTH;
+                        case "w" -> org.game.model.Action.MOVE_WEST;
+                        case "e" -> org.game.model.Action.MOVE_EAST;
+                        case "d" -> org.game.model.Action.DISCOVER;
+                        case "v" -> org.game.model.Action.VORTEX;
                         default -> null;
                     };
 
@@ -145,7 +148,7 @@ public class BoardUI extends JFrame {
         JLabel pawnIcon = new JLabel();
         pawnIcon.setPreferredSize(new Dimension(TILE_SIZE / 2, TILE_SIZE / 2));
         pawnIcon.setOpaque(true);
-        Color pawnColor = pawn.getColor();
+        org.game.model.Color pawnColor = pawn.getColor();
         pawnIcon.setBackground(java.awt.Color.decode(pawnColor.getHexCode())); // Pawn color
         // put black border around
         pawnIcon.setBorder(BorderFactory.createLineBorder(java.awt.Color.BLACK, 2));
@@ -183,27 +186,27 @@ public class BoardUI extends JFrame {
             case START:
                 return java.awt.Color.WHITE;
             case OBSTACLE:
-                return java.awt.Color.decode(Color.BROWN.getHexCode());
+                return java.awt.Color.decode(org.game.model.Color.BROWN.getHexCode());
             case TIMER:
-                return java.awt.Color.decode(Color.RED.getHexCode());
+                return java.awt.Color.decode(org.game.model.Color.RED.getHexCode());
             case PATH:
             default:
-                return java.awt.Color.decode(Color.NONE.getHexCode());
+                return java.awt.Color.decode(org.game.model.Color.NONE.getHexCode());
         }
     }
 
     private java.awt.Color getColorForTile(Tile tile) {
         switch (tile.getColor()) {
             case ORANGE:
-                return java.awt.Color.decode(Color.ORANGE.getHexCode());
+                return java.awt.Color.decode(org.game.model.Color.ORANGE.getHexCode());
             case PURPLE:
-                return java.awt.Color.decode(Color.PURPLE.getHexCode());
+                return java.awt.Color.decode(org.game.model.Color.PURPLE.getHexCode());
             case GREEN:
-                return java.awt.Color.decode(Color.GREEN.getHexCode());
+                return java.awt.Color.decode(org.game.model.Color.GREEN.getHexCode());
             case YELLOW:
-                return java.awt.Color.decode(Color.YELLOW.getHexCode());
+                return java.awt.Color.decode(org.game.model.Color.YELLOW.getHexCode());
             default:
-                return java.awt.Color.decode(Color.NONE.getHexCode());
+                return java.awt.Color.decode(org.game.model.Color.NONE.getHexCode());
         }
     }
 
@@ -217,13 +220,13 @@ public class BoardUI extends JFrame {
         return BorderFactory.createMatteBorder(top, left, bottom, right, java.awt.Color.BLACK);
     }
 
-    private void movePawn(Color pawnColor, Action action) {
+    private void movePawn(org.game.model.Color pawnColor, org.game.model.Action action) {
         Pawn previousPawn = new Pawn(board.getPawnByColor(pawnColor));
         Pawn updatedPawn;
-        if(action == Action.MOVE_EAST || action == Action.MOVE_WEST || action == Action.MOVE_NORTH || action == Action.MOVE_SOUTH){
+        if(action == org.game.model.Action.MOVE_EAST || action == org.game.model.Action.MOVE_WEST || action == org.game.model.Action.MOVE_NORTH || action == org.game.model.Action.MOVE_SOUTH){
             updatedPawn = board.movePawn(pawnColor, action);
         }
-        else if(action == Action.DISCOVER){
+        else if(action == org.game.model.Action.DISCOVER){
             updatedPawn = previousPawn;
             // check if the pawn is standing on discovery tile
             Tile currentTile = board.getTileAt(updatedPawn.getX(), updatedPawn.getY());

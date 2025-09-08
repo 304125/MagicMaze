@@ -1,7 +1,11 @@
-package org.game;
+package org.game.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.game.model.Card;
+import org.game.model.Color;
+import org.game.model.Tile;
+import org.game.model.TileType;
 
 import java.io.IOException;
 import java.io.InputStream;

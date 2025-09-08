@@ -1,4 +1,4 @@
-package org.game;
+package org.game.model;
 
 public class Coordinate {
     private int x; // Row position

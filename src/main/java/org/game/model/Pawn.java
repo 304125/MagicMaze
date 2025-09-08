@@ -1,6 +1,4 @@
-package org.game;
-
-import java.util.List;
+package org.game.model;
 
 public class Pawn {
     private int x; // Row position
