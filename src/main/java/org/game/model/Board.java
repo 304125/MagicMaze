@@ -262,4 +262,8 @@ public class Board {
                     " to " + (escalator.getEnd() != null ? escalator.getEnd().getX() + "," + escalator.getEnd().getY() : "not set"));
         }
     }
+
+    public List<BoardEscalator> getEscalators() {
+        return escalators;
+    }
 }
