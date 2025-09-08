@@ -367,6 +367,15 @@ public class BoardUI extends JFrame {
     }
 
     private void drawLineBetweenTiles(int x1, int y1, int x2, int y2) {
+        // switch x and y
+        int temp = x1;
+        x1 = y1;
+        y1 = temp;
+        temp = x2;
+        x2 = y2;
+        y2 = temp;
+
+
         int startX = x1 * TILE_SIZE + TILE_SIZE / 2;
         int startY = y1 * TILE_SIZE + TILE_SIZE / 2;
         int endX = x2 * TILE_SIZE + TILE_SIZE / 2;
