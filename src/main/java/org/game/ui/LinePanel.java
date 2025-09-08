@@ -18,7 +18,7 @@ public class LinePanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.BLACK);
-        g2d.setStroke(new BasicStroke(2)); // Set line thickness
+        g2d.setStroke(new BasicStroke(10)); // Set line thickness
 
         for (Line line : lines) {
             g2d.drawLine(line.x1, line.y1, line.x2, line.y2);

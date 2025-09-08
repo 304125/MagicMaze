@@ -21,7 +21,7 @@ import java.util.List;
 
 public class BoardUI extends JFrame {
     private final Game game;
-    private static final int TILE_SIZE = 50;
+    private static final int TILE_SIZE = 30;
     private JPanel[][] tilePanels;
     private LinePanel linePanel;
     private Board board;
@@ -51,7 +51,8 @@ public class BoardUI extends JFrame {
         tileTypeImages.put(TileType.DISCOVERY, new ImageIcon(discoverImage));
 
 
-        setLayout(new GridLayout(rows, cols));
+        JPanel gridPanel = new JPanel();
+        gridPanel.setLayout(new GridLayout(rows, cols));
 
         // Initialize the board and find the START position
         for (int i = 0; i < rows; i++) {
@@ -62,7 +63,7 @@ public class BoardUI extends JFrame {
                 if(tile == null){
                     tilePanel.setBackground(java.awt.Color.LIGHT_GRAY);
                     tilePanels[i][j] = tilePanel;
-                    add(tilePanel);
+                    gridPanel.add(tilePanel);
                     continue;
                 }
                 else{
@@ -87,7 +88,7 @@ public class BoardUI extends JFrame {
 
                     tilePanel.setBorder(createTileBorder(tile));
                     tilePanels[i][j] = tilePanel;
-                    add(tilePanel);
+                    gridPanel.add(tilePanel);
                 }
             }
         }
@@ -96,6 +97,23 @@ public class BoardUI extends JFrame {
         List<Pawn> allPawns = board.getPawns();
         for (Pawn pawn : allPawns) {
             highlightPawn(pawn);
+        }
+
+        initializeLinePanel();
+        JLayeredPane layeredPane = new JLayeredPane();
+        layeredPane.setLayout(new OverlayLayout(layeredPane));
+        layeredPane.add(gridPanel, Integer.valueOf(0));
+        layeredPane.add(linePanel, Integer.valueOf(1));
+
+        setContentPane(layeredPane);
+        setVisible(true);
+
+        for (BoardEscalator escalator : board.getEscalators()) {
+            Coordinate start = escalator.getStart();
+            Coordinate end = escalator.getEnd();
+            if (start != null && end != null) {
+                drawLineBetweenTiles(start.getX(), start.getY(), end.getX(), end.getY());
+            }
         }
 
         new Thread(() -> {
@@ -338,7 +356,6 @@ public class BoardUI extends JFrame {
         linePanel = new LinePanel();
         linePanel.setOpaque(false); // Make it transparent
         linePanel.setBounds(0, 0, getWidth(), getHeight()); // Match the board size
-        getContentPane().add(linePanel, 0); // Add it as the top layer
     }
 
     private void drawLineBetweenTiles(int x1, int y1, int x2, int y2) {
