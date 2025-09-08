@@ -266,4 +266,50 @@ public class Board {
     public List<BoardEscalator> getEscalators() {
         return escalators;
     }
+
+    public Pawn useEscalator(Color pawnColor){
+        Pawn pawn = null;
+        for (Pawn p : pawns) {
+            if (p.getColor() == pawnColor) {
+                pawn = p;
+                break;
+            }
+        }
+        Tile currentTile = tiles[pawn.getX()][pawn.getY()];
+
+        // find the currentTile in escalators
+        for (BoardEscalator escalator : escalators) {
+            if (escalator.getId().equals(currentTile.getEscalator())) {
+                // the currentTile is either start or end
+                Coordinate end = escalator.getEnd();
+                Coordinate start = escalator.getStart();
+
+                Coordinate current = new Coordinate(pawn.getX(), pawn.getY());
+                Coordinate destination;
+                if(current.equals(start)){
+                    // move to end
+                    destination = escalator.getEnd();
+
+                }
+                else if(current.equals(end)){
+                    // move to start
+                    destination = escalator.getStart();
+
+                }
+                else{
+                    System.out.println("Error: Pawn is not on the escalator tile");
+                    return null;
+                }
+
+                System.out.println("Pawn " + pawnColor + " used escalator " + escalator.getId() + " to (" + destination.getX() + "," + destination.getY() + ")");
+
+                // set previous tile not occupied, move pawn to destination, set new tile to occupied
+                tiles[pawn.getX()][pawn.getY()].setOccupied(false);
+                pawn.moveTo(destination.getX(), destination.getY());
+                tiles[pawn.getX()][pawn.getY()].setOccupied(true);
+
+            }
+        }
+        return pawn;
+    }
 }

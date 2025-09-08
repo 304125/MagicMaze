@@ -24,4 +24,11 @@ public class Coordinate {
     public String toString(){
         return "("+x+", "+y+")";
     }
+
+    public boolean equals(Object o){
+        if(this == o) return true;
+        if(o == null || getClass() != o.getClass()) return false;
+        Coordinate that = (Coordinate) o;
+        return this.x == that.x && this.y == that.y;
+    }
 }

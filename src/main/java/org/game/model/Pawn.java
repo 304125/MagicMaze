@@ -38,6 +38,11 @@ public class Pawn {
         y--;
     }
 
+    public void moveTo(int newX, int newY) {
+        this.x = newX;
+        this.y = newY;
+    }
+
     public Color getColor() {
         return color;
     }

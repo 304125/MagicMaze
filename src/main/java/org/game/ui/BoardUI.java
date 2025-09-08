@@ -26,6 +26,7 @@ public class BoardUI extends JFrame {
     private LinePanel linePanel;
     private Board board;
     private java.util.Map<TileType, ImageIcon> tileTypeImages;
+    private JPanel gridPanel;
 
     public BoardUI(Game game) {
         this.game = game;
@@ -51,7 +52,7 @@ public class BoardUI extends JFrame {
         tileTypeImages.put(TileType.DISCOVERY, new ImageIcon(discoverImage));
 
 
-        JPanel gridPanel = new JPanel();
+        gridPanel = new JPanel();
         gridPanel.setLayout(new GridLayout(rows, cols));
 
         // Initialize the board and find the START position
@@ -127,7 +128,7 @@ public class BoardUI extends JFrame {
                         continue;
                     }
                     String colorString = String.valueOf(input.charAt(0));
-                    String directionString = String.valueOf(input.charAt(1));
+                    String actionString = String.valueOf(input.charAt(1));
                     org.game.model.Color pawnColor = switch (colorString) {
                         case "y" -> org.game.model.Color.YELLOW;
                         case "o" -> org.game.model.Color.ORANGE;
@@ -135,13 +136,14 @@ public class BoardUI extends JFrame {
                         case "g" -> org.game.model.Color.GREEN;
                         default -> null;
                     };
-                    org.game.model.Action action = switch (directionString) {
+                    org.game.model.Action action = switch (actionString) {
                         case "n" -> org.game.model.Action.MOVE_NORTH;
                         case "s" -> org.game.model.Action.MOVE_SOUTH;
                         case "w" -> org.game.model.Action.MOVE_WEST;
                         case "e" -> org.game.model.Action.MOVE_EAST;
                         case "d" -> org.game.model.Action.DISCOVER;
                         case "v" -> org.game.model.Action.VORTEX;
+                        case "x" -> org.game.model.Action.ESCALATOR;
                         default -> null;
                     };
 
@@ -171,7 +173,7 @@ public class BoardUI extends JFrame {
         org.game.model.Color pawnColor = pawn.getColor();
         pawnIcon.setBackground(java.awt.Color.decode(pawnColor.getHexCode())); // Pawn color
         // put black border around
-        pawnIcon.setBorder(BorderFactory.createLineBorder(java.awt.Color.BLACK, 2));
+        pawnIcon.setBorder(BorderFactory.createLineBorder(java.awt.Color.BLACK, 1));
         pawnTile.setLayout(new GridBagLayout());
         pawnTile.add(pawnIcon);
 
@@ -237,7 +239,7 @@ public class BoardUI extends JFrame {
         int left = tile.hasWallLeft() ? thickness : 0;
         int right = tile.hasWallRight() ? thickness : 0;
 
-        return BorderFactory.createMatteBorder(top, left, bottom, right, java.awt.Color.BLACK);
+        return BorderFactory.createMatteBorder(top, left, bottom, right, java.awt.Color.decode(org.game.model.Color.BROWN.getHexCode()));
     }
 
     private void movePawn(org.game.model.Color pawnColor, org.game.model.Action action) {
@@ -245,6 +247,12 @@ public class BoardUI extends JFrame {
         Pawn updatedPawn;
         if(action == org.game.model.Action.MOVE_EAST || action == org.game.model.Action.MOVE_WEST || action == org.game.model.Action.MOVE_NORTH || action == org.game.model.Action.MOVE_SOUTH){
             updatedPawn = board.movePawn(pawnColor, action);
+        }
+        else if(action == org.game.model.Action.ESCALATOR){
+            updatedPawn = board.useEscalator(pawnColor);
+            if(updatedPawn.equals(previousPawn)){
+                System.out.println("No escalator to use for pawn " + pawnColor);
+            }
         }
         else if(action == org.game.model.Action.DISCOVER){
             updatedPawn = previousPawn;
@@ -310,8 +318,8 @@ public class BoardUI extends JFrame {
                         tilePanel.setBorder(createTileBorder(tile));
                         tilePanels[boardX][boardY] = tilePanel;
                         // replace the panel in the grid layout
-                        getContentPane().remove(boardX * board.getNumCols() + boardY);
-                        getContentPane().add(tilePanel, boardX * board.getNumCols() + boardY);
+                        gridPanel.remove(boardX * board.getNumCols() + boardY);
+                        gridPanel.add(tilePanel, boardX * board.getNumCols() + boardY);
                     }
                 }
             }
