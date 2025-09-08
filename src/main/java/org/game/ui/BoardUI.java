@@ -23,6 +23,7 @@ public class BoardUI extends JFrame {
     private final Game game;
     private static final int TILE_SIZE = 50;
     private JPanel[][] tilePanels;
+    private LinePanel linePanel;
     private Board board;
     private java.util.Map<TileType, ImageIcon> tileTypeImages;
 
@@ -331,6 +332,22 @@ public class BoardUI extends JFrame {
         } catch (Exception e) {
             throw new RuntimeException("Failed to render SVG: " + svgPath, e);
         }
+    }
+
+    private void initializeLinePanel() {
+        linePanel = new LinePanel();
+        linePanel.setOpaque(false); // Make it transparent
+        linePanel.setBounds(0, 0, getWidth(), getHeight()); // Match the board size
+        getContentPane().add(linePanel, 0); // Add it as the top layer
+    }
+
+    private void drawLineBetweenTiles(int x1, int y1, int x2, int y2) {
+        int startX = x1 * TILE_SIZE + TILE_SIZE / 2;
+        int startY = y1 * TILE_SIZE + TILE_SIZE / 2;
+        int endX = x2 * TILE_SIZE + TILE_SIZE / 2;
+        int endY = y2 * TILE_SIZE + TILE_SIZE / 2;
+
+        linePanel.addLine(startX, startY, endX, endY);
     }
 
     public static void main(String[] args) {
