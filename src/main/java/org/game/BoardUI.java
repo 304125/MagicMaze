@@ -112,13 +112,18 @@ public class BoardUI extends JFrame {
                         case "g" -> Color.GREEN;
                         default -> null;
                     };
-                    String direction = switch (directionString) {
-                        case "n", "s", "w", "e" -> directionString; // Return the input directly if it's valid
+                    Action action = switch (directionString) {
+                        case "n" -> Action.MOVE_NORTH;
+                        case "s" -> Action.MOVE_SOUTH;
+                        case "w" -> Action.MOVE_WEST;
+                        case "e" -> Action.MOVE_EAST;
+                        case "d" -> Action.DISCOVER;
+                        case "v" -> Action.VORTEX;
                         default -> null;
                     };
 
-                    if (direction != null && pawnColor != null) {
-                        movePawn(pawnColor, direction);
+                    if (action != null && pawnColor != null) {
+                        movePawn(pawnColor, action);
                     } else {
                         System.out.println("Invalid input. Please provide both color and direction in correct format.");
                     }
@@ -212,30 +217,39 @@ public class BoardUI extends JFrame {
         return BorderFactory.createMatteBorder(top, left, bottom, right, java.awt.Color.BLACK);
     }
 
-    private void movePawn(Color pawnColor, String direction) {
+    private void movePawn(Color pawnColor, Action action) {
         Pawn previousPawn = new Pawn(board.getPawnByColor(pawnColor));
-        Pawn updatedPawn = board.movePawn(pawnColor, direction);
+        Pawn updatedPawn;
+        if(action == Action.MOVE_EAST || action == Action.MOVE_WEST || action == Action.MOVE_NORTH || action == Action.MOVE_SOUTH){
+            updatedPawn = board.movePawn(pawnColor, action);
+        }
+        else if(action == Action.DISCOVER){
+            updatedPawn = previousPawn;
+            // check if the pawn is standing on discovery tile
+            Tile currentTile = board.getTileAt(updatedPawn.getX(), updatedPawn.getY());
+            if(currentTile.getType() == TileType.DISCOVERY && pawnColor == currentTile.getColor()){
+                Coordinate corner = board.getLeftTopCornerOfNewCard(new Coordinate(updatedPawn.getX(), updatedPawn.getY()));
+                game.discoverCard(updatedPawn.getX(), updatedPawn.getY());
+                // re-render the board
+                renderDiscoveredTiles(corner);
+            }
+        }
+        else if(action == Action.VORTEX){
+            System.out.println("not implemented yet");
+            updatedPawn = previousPawn;
+        }
+        else{
+            System.out.println("Unknown action");
+            updatedPawn = previousPawn;
+            return;
+        }
+
         board.printAllPawns();
 
         unhighlightPawn(previousPawn);
         highlightPawn(updatedPawn);
 
-        // check if the pawn has stepped on discovery tile
-        Tile currentTile = board.getTileAt(updatedPawn.getX(), updatedPawn.getY());
-        if(currentTile.getType() == TileType.DISCOVERY && pawnColor == currentTile.getColor()){
-            System.out.println("Pawn " + pawnColor + " stepped on discovery tile at (" + updatedPawn.getX() + ", " + updatedPawn.getY() + ")");
-            Coordinate corner = board.getLeftTopCornerOfNewCard(new Coordinate(updatedPawn.getX(), updatedPawn.getY()));
-            game.discoverCard(updatedPawn.getX(), updatedPawn.getY());
-            // re-render the board
-            renderDiscoveredTiles(corner);
 
-        }
-
-//        // Check if the pawn has reached the goal
-//        if (board.get(pawn.getX()).get(pawn.getY()).getType() == TileType.GOAL) {
-//            JOptionPane.showMessageDialog(this, "Congratulations! You reached the goal!");
-//            System.exit(0); // End the program
-//        }
     }
 
     private void renderDiscoveredTiles(Coordinate corner) {

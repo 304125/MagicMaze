@@ -104,7 +104,7 @@ public class Board {
         return pawns;
     }
 
-    public Pawn movePawn(Color pawnColor, String direction) {
+    public Pawn movePawn(Color pawnColor, Action action) {
         Pawn pawn = null;
         for (Pawn p : pawns) {
             if (p.getColor() == pawnColor) {
@@ -115,29 +115,29 @@ public class Board {
         Tile currentTile = tiles[pawn.getX()][pawn.getY()];
         boolean moved = false;
 
-        switch (direction.toLowerCase()) {
-            case "n": // Move north
+        switch (action) {
+            case MOVE_NORTH:
                 if (!currentTile.hasWallUp() && tiles[pawn.getX() - 1][pawn.getY()] != null && !tiles[pawn.getX() - 1][pawn.getY()].isOccupied()) {
                     pawn.moveNorth();
                     System.out.println("Moved "+ pawnColor +" north");
                     moved = true;
                 }
                 break;
-            case "s": // Move south
+            case MOVE_SOUTH:
                 if( !currentTile.hasWallDown() && tiles[pawn.getX() + 1][pawn.getY()] != null && !tiles[pawn.getX() + 1][pawn.getY()].isOccupied()) {
                     pawn.moveSouth();
                     System.out.println("Moved "+ pawnColor +" south");
                     moved = true;
                 }
                 break;
-            case "w": // Move west
+            case MOVE_WEST:
                 if (!currentTile.hasWallLeft() && tiles[pawn.getX()][pawn.getY() - 1] != null && !tiles[pawn.getX()][pawn.getY() - 1].isOccupied()) {
                     pawn.moveWest();
                     System.out.println("Moved "+ pawnColor +" west");
                     moved = true;
                 }
                 break;
-            case "e": // Move east
+            case MOVE_EAST:
                 if( !currentTile.hasWallRight() && tiles[pawn.getX()][pawn.getY() + 1] != null && !tiles[pawn.getX()][pawn.getY() + 1].isOccupied()) {
                     pawn.moveEast();
                     System.out.println("Moved "+ pawnColor +" east");
@@ -150,17 +150,17 @@ public class Board {
         if(moved){
             tiles[pawn.getX()][pawn.getY()].setOccupied(true);
             // set the previous tile to not occupied
-            switch (direction.toLowerCase()) {
-                case "n":
+            switch (action) {
+                case MOVE_NORTH:
                     tiles[pawn.getX() + 1][pawn.getY()].setOccupied(false);
                     break;
-                case "s":
+                case MOVE_SOUTH:
                     tiles[pawn.getX() - 1][pawn.getY()].setOccupied(false);
                     break;
-                case "w":
+                case MOVE_WEST:
                     tiles[pawn.getX()][pawn.getY() + 1].setOccupied(false);
                     break;
-                case "e":
+                case MOVE_EAST:
                     tiles[pawn.getX()][pawn.getY() - 1].setOccupied(false);
                     break;
             }
