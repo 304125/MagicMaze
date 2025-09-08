@@ -1,5 +1,50 @@
 [
   {
+    "id": 1,
+    "layout": [
+      ["TIMER", "PATH", "DISCOVERY", "VORTEX"],
+      ["DISCOVERY", "PATH", "PATH", "VORTEX"],
+      ["VORTEX", "PATH", "PATH", "DISCOVERY"],
+      ["VORTEX", "DISCOVERY", "PATH", "OBSTACLE"]
+    ],
+    "color": [
+      ["NONE", "NONE", "ORANGE", "PURPLE"],
+      ["PURPLE", "NONE", "NONE", "YELLOW"],
+      ["ORANGE", "NONE", "NONE", "GREEN"],
+      ["GREEN", "YELLOW", "NONE", "NONE"]
+    ],
+    "walls_up": [
+      [true, true, false, true],
+      [true, false, false, true],
+      [true, false, false, true],
+      [true, false, false, true]
+    ],
+    "walls_down": [
+      [true, false, false, true],
+      [true, false, false, true],
+      [true, false, false, true],
+      [true, false, true, true]
+    ],
+    "walls_left": [
+      [true, false, false, false],
+      [false, false, false, false],
+      [true, false, false, true],
+      [true, false, false, true]
+    ],
+    "walls_right": [
+      [false, false, false, true],
+      [false, false, false, true],
+      [false, false, true, false],
+      [false, false, true, true]
+    ],
+    "escalators": [
+      ["-", "-", "-", "-"],
+      ["-", "-", "-", "-"],
+      ["-", "-", "-", "a"],
+      ["-", "-", "a", "-"]
+    ]
+  },
+  {
     "id": 3,
     "layout": [
       ["PATH", "PATH", "VORTEX", "OBSTACLE"],
@@ -36,6 +81,12 @@
         [true, false, false, true],
         [false, false, false, false],
         [true, false, true, true]
+    ],
+    "escalators": [
+      ["-", "-", "-", "-"],
+      ["-", "-", "-", "-"],
+      ["-", "-", "-", "-"],
+      ["-", "-", "-", "-"]
     ]
   },
   {
@@ -75,6 +126,12 @@
         [true, true, true, true],
         [false, false, false, false],
         [true, true, false, true]
+    ],
+    "escalators": [
+      ["-", "-", "-", "-"],
+      ["-", "-", "-", "-"],
+      ["-", "-", "-", "-"],
+      ["-", "-", "-", "-"]
     ]
   }
 ]

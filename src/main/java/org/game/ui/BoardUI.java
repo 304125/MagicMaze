@@ -73,6 +73,7 @@ public class BoardUI extends JFrame {
                     else{
                         bgColor = getColorForTileType(tile.getType());
                     }
+                    System.out.println("escalator: " + tile.getEscalator());
 
                     ImageIcon tileImage = tileTypeImages.get(tile.getType());
                     if (tileImage != null) {
@@ -232,7 +233,7 @@ public class BoardUI extends JFrame {
             Tile currentTile = board.getTileAt(updatedPawn.getX(), updatedPawn.getY());
             if(currentTile.getType() == TileType.DISCOVERY && pawnColor == currentTile.getColor()){
                 Coordinate corner = board.getLeftTopCornerOfNewCard(new Coordinate(updatedPawn.getX(), updatedPawn.getY()));
-                game.discoverCard(updatedPawn.getX(), updatedPawn.getY());
+                game.discoverCard(new Coordinate(updatedPawn.getX(), updatedPawn.getY()));
                 // re-render the board
                 renderDiscoveredTiles(corner);
             }
@@ -272,6 +273,10 @@ public class BoardUI extends JFrame {
                         }
                         else{
                             bgColor = getColorForTileType(tile.getType());
+                        }
+
+                        if(tile.hasEscalator()){
+                            System.out.println("Rendering escalator at: (" + boardX + ", " + boardY + ")");
                         }
 
                         ImageIcon tileImage = tileTypeImages.get(tile.getType());

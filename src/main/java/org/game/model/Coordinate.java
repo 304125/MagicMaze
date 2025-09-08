@@ -16,4 +16,12 @@ public class Coordinate {
     public int getY() {
         return y;
     }
+
+    public Coordinate move(int x, int y){
+        return new Coordinate(this.x + x, this.y + y);
+    }
+
+    public String toString(){
+        return "("+x+", "+y+")";
+    }
 }

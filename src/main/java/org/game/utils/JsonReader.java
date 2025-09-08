@@ -9,6 +9,7 @@ import org.game.model.TileType;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,8 @@ public class JsonReader {
                 List<List<Boolean>> walls_down = (List<List<Boolean>>) tile.get("walls_down");
                 List<List<Boolean>> walls_left = (List<List<Boolean>>) tile.get("walls_left");
                 List<List<Boolean>> walls_right = (List<List<Boolean>>) tile.get("walls_right");
-                cards.add(createCardFromJson(id, layout, color, walls_up, walls_down, walls_left, walls_right));
+                List<List<String>> escalators = (List<List<String>>) tile.get("escalators");
+                cards.add(createCardFromJson(id, layout, color, walls_up, walls_down, walls_left, walls_right, escalators));
             }
 
             return cards;
@@ -49,7 +51,7 @@ public class JsonReader {
         }
     }
 
-    private Card createCardFromJson(int id, List<List<String>> layout, List<List<String>> color, List<List<Boolean>> walls_up, List<List<Boolean>> walls_down, List<List<Boolean>> walls_left, List<List<Boolean>> walls_right) {
+    private Card createCardFromJson(int id, List<List<String>> layout, List<List<String>> color, List<List<Boolean>> walls_up, List<List<Boolean>> walls_down, List<List<Boolean>> walls_left, List<List<Boolean>> walls_right, List<List<String>> escalators) {
         Tile[][] tiles = new Tile[layout.size()][layout.get(0).size()];
         for (int i = 0; i < layout.size(); i++) {
             List<Tile> row = new ArrayList<>();
@@ -60,11 +62,20 @@ public class JsonReader {
                 boolean wallDownConfig = walls_down.get(i).get(j);
                 boolean wallLeftConfig = walls_left.get(i).get(j);
                 boolean wallRightConfig = walls_right.get(i).get(j);
-                row.add(new Tile(type, tileColor, wallUpConfig, wallDownConfig, wallLeftConfig, wallRightConfig, id));
-
+                Tile thisTile;
+                if(!escalators.get(i).get(j).equals("-")) {
+                    // there is an escalator on this tile
+                    String escalatorString = String.valueOf(id).concat(String.valueOf(escalators.get(i).get(j)));
+                    thisTile = new Tile(type, tileColor, wallUpConfig, wallDownConfig, wallLeftConfig, wallRightConfig, id, escalatorString);
+                }
+                else{
+                    thisTile = new Tile(type, tileColor, wallUpConfig, wallDownConfig, wallLeftConfig, wallRightConfig, id);
+                }
+                row.add(thisTile);
             }
             tiles[i] = row.toArray(new Tile[0]);
         }
+
         Card card = new Card(id, tiles);
         return card;
     }

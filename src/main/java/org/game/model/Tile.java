@@ -9,6 +9,7 @@ public class Tile {
     private boolean wallRight;
     private int cardId;
     private boolean isOccupied = false;
+    private String escalator;
 
     public Tile(TileType type, Color color, boolean wallUp, boolean wallDown, boolean wallLeft, boolean wallRight, int cardId) {
         this.type = type;
@@ -18,6 +19,17 @@ public class Tile {
         this.wallRight = wallRight;
         this.color = color;
         this.cardId = cardId;
+    }
+
+    public Tile(TileType type, Color color, boolean wallUp, boolean wallDown, boolean wallLeft, boolean wallRight, int cardId, String escalator) {
+        this.type = type;
+        this.wallUp = wallUp;
+        this.wallDown = wallDown;
+        this.wallLeft = wallLeft;
+        this.wallRight = wallRight;
+        this.color = color;
+        this.cardId = cardId;
+        this.escalator = escalator;
     }
 
     public TileType getType() {
@@ -62,6 +74,14 @@ public class Tile {
 
     public int getCardId() {
         return cardId;
+    }
+
+    public boolean hasEscalator(){
+        return escalator != null;
+    }
+
+    public String getEscalator(){
+        return escalator;
     }
 
     @Override

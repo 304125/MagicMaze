@@ -4,10 +4,12 @@ import java.util.List;
 
 public class Board {
     // store tiles as a 2-d array of size 70x70
-    private Tile[][] tiles;
+    private final Tile[][] tiles;
     private final int numRows;
     private final int numCols;
     private List<Pawn> pawns;
+    private List<BoardEscalator> escalators = new java.util.ArrayList<>();
+
 
     public Board(int maxSize) {
         numRows = maxSize;
@@ -24,9 +26,15 @@ public class Board {
 
         for (int i = 0; i < startingTiles.length; i++) {
             for (int j = 0; j < startingTiles[i].length; j++) {
-                tiles[(int) (i+ (double) (numRows / 2))][(int) (j+ (double) (numRows / 2))] = startingTiles[i][j];
+                int x = (int) (i+ (double) (numRows / 2));
+                int y = (int) (j+ (double) (numRows / 2));
+                tiles[x][y] = startingTiles[i][j];
+                if(startingTiles[i][j].hasEscalator()){
+                    updateEscalator(startingTiles[i][j], new Coordinate(x, y));
+                }
             }
         }
+        printEscalators();
     }
 
     public void initializeStartingPawns(List<Pawn> initialPawns) {
@@ -39,40 +47,61 @@ public class Board {
         }
     }
 
-    public void addCardToBoard(Card newCard, int startX, int startY) {
+    public void addCardToBoard(Card newCard, Coordinate coordinate) {
         System.out.println("Discovered tiles before adding card: " + countDiscoveredTiles());
         Card rotatedCard = newCard; // default no rotation
 
         // no tile to the right
-        if(!isTileAt(startX, startY+1)) {
+        if(!isTileAt(coordinate.move(0, 1))) {
             // rotate newTiles 90 degrees clockwise
             rotatedCard = newCard.rotate90();
         }
         // no tile to the left
-        else if(!isTileAt(startX, startY-1)) {
+        else if(!isTileAt(coordinate.move(0, -1))) {
             // rotate newTiles 90 degrees counter-clockwise
             rotatedCard = newCard.rotate270();
         }
         // no tile above
-        else if(!isTileAt(startX-1, startY)) {
+        else if(!isTileAt(coordinate.move(-1, 0))) {
             // do not rotate
         }
         // no tile below
-        else if(!isTileAt(startX+1, startY)) {
+        else if(!isTileAt(coordinate.move(1, 0))) {
             // rotate newTiles 180 degrees
             rotatedCard = newCard.rotate180();
         }
 
-        Coordinate corner = getLeftTopCornerOfNewCard(new Coordinate(startX, startY));
+        Coordinate corner = getLeftTopCornerOfNewCard(coordinate);
         Tile[][] rotatedTiles = rotatedCard.getTiles();
         // add the new tiles to the board at the correct position
         for (int i = 0; i < rotatedTiles.length; i++) {
             for (int j = 0; j < rotatedTiles[i].length; j++) {
                 tiles[corner.getX() + i][corner.getY() + j] = rotatedTiles[i][j];
+                if(rotatedTiles[i][j].hasEscalator()){
+                    updateEscalator(rotatedTiles[i][j], new Coordinate(i, j));
+                }
             }
         }
 
+
         System.out.println("Discovered tiles after adding card: " + countDiscoveredTiles());
+    }
+
+    private void updateEscalator(Tile tile, Coordinate position){
+        // if escalators does not contain BoardEscalator where hasId equals startingTiles[i][j].getEscalator()
+        // if there is no escalator with the same id, add a new one
+        if(escalators.stream().noneMatch(e -> e.getId().equals(tile.getEscalator()))){
+            escalators.add(new BoardEscalator(position, tile.getEscalator()));
+        }
+        else{
+            // find BoardEscalator with the same id and add the new coordinate to it
+            for (BoardEscalator escalator : escalators) {
+                if (escalator.getId().equals(tile.getEscalator())) {
+                    escalator.setEnd(position);
+                    break;
+                }
+            }
+        }
     }
 
     public void printBoard() {
@@ -84,8 +113,8 @@ public class Board {
         }
     }
 
-    public boolean isTileAt(int x, int y) {
-        if (tiles[x][y] != null) {
+    public boolean isTileAt(Coordinate position) {
+        if (tiles[position.getX()][position.getY()] != null) {
             return true;
         } else {
             return false;
@@ -209,21 +238,28 @@ public class Board {
         int startY = position.getY();
 
         // no tile to the right
-        if(!isTileAt(startX, startY+1)){
+        if(!isTileAt(position.move(0, 1))){
             return new Coordinate(startX-1, startY+1);
         }
         // no tile to the left
-        else if(!isTileAt(startX, startY-1)){
+        else if(!isTileAt(position.move(0, -1))){
             return new Coordinate(startX-2, startY-4);
         }
         // no tile above
-        else if(!isTileAt(startX-1, startY)){
+        else if(!isTileAt(position.move(-1, 0))){
             return new Coordinate(startX-4, startY-1);
         }
         // no tile below
-        else if(!isTileAt(startX+1, startY)){
+        else if(!isTileAt(position.move(1, 0))){
             return new Coordinate(startX+1, startY-2);
         }
         return null; // should not reach here
+    }
+
+    public void printEscalators(){
+        for (BoardEscalator escalator : escalators) {
+            System.out.println("Escalator ID: " + escalator.getId() + " from " + escalator.getStart().getX() + "," + escalator.getStart().getY() +
+                    " to " + (escalator.getEnd() != null ? escalator.getEnd().getX() + "," + escalator.getEnd().getY() : "not set"));
+        }
     }
 }

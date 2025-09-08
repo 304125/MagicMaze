@@ -8,7 +8,7 @@ public class Game {
     private Board board;
     private StackOfCards unplayedCards;
     private final JsonReader jsonReader = new JsonReader();
-    private int startingCardId = 3;
+    private int startingCardId = 1;
     private Card startingCard;
     private final int boardMaxSize = 32;
 
@@ -75,8 +75,8 @@ public class Game {
         return boardMaxSize;
     }
 
-    public void discoverCard(int x, int y) {
+    public void discoverCard(Coordinate coordinate) {
         Card nextCard = unplayedCards.drawCard();
-        board.addCardToBoard(nextCard, x, y);
+        board.addCardToBoard(nextCard, coordinate);
     }
 }
