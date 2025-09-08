@@ -22,7 +22,6 @@ public class Board {
     public void initializeStartingTile(Card startingCard) {
         Tile[][] startingTiles = startingCard.getTiles();
 
-        // place the tile startingTiles at 0,0 to 34,37 in tiles
         for (int i = 0; i < startingTiles.length; i++) {
             for (int j = 0; j < startingTiles[i].length; j++) {
                 tiles[(int) (i+ (double) (numRows / 2))][(int) (j+ (double) (numRows / 2))] = startingTiles[i][j];
@@ -41,67 +40,39 @@ public class Board {
     }
 
     public void addCardToBoard(Card newCard, int startX, int startY) {
-        Tile[][] newTiles = newCard.getTiles();
+        System.out.println("Discovered tiles before adding card: " + countDiscoveredTiles());
+        Card rotatedCard = newCard; // default no rotation
 
         // no tile to the right
-        if(!isTileAt(startX+1, startY)) {
+        if(!isTileAt(startX, startY+1)) {
             // rotate newTiles 90 degrees clockwise
-            Tile[][] rotatedTiles = new Tile[newTiles[0].length][newTiles.length];
-            for (int i = 0; i < newTiles.length; i++) {
-                for (int j = 0; j < newTiles[i].length; j++) {
-                    rotatedTiles[j][newTiles.length - 1 - i] = newTiles[i][j];
-                }
-            }
-
-            // add the rotated tile to the board starting from startX+1, startY+1
-            for (int i = 0; i < rotatedTiles.length; i++) {
-                for (int j = 0; j < rotatedTiles[i].length; j++) {
-                    tiles[startX + 1 + i][startY + 1 + j] = rotatedTiles[i][j];
-                }
-            }
+            rotatedCard = newCard.rotate90();
         }
         // no tile to the left
-        else if(!isTileAt(startX-1, startY)) {
+        else if(!isTileAt(startX, startY-1)) {
             // rotate newTiles 90 degrees counter-clockwise
-            Tile[][] rotatedTiles = new Tile[newTiles[0].length][newTiles.length];
-            for (int i = 0; i < newTiles.length; i++) {
-                for (int j = 0; j < newTiles[i].length; j++) {
-                    rotatedTiles[newTiles[0].length - 1 - j][i] = newTiles[i][j];
-                }
-            }
-            // add the rotated tile to the board starting from startX-4, startY+2
-            for (int i = 0; i < rotatedTiles.length; i++) {
-                for (int j = 0; j < rotatedTiles[i].length; j++) {
-                    tiles[startX - 4 + i][startY + 2 + j] = rotatedTiles[i][j];
-                }
-            }
+            rotatedCard = newCard.rotate270();
         }
         // no tile above
-        else if(!isTileAt(startX, startY-1)) {
+        else if(!isTileAt(startX-1, startY)) {
             // do not rotate
-            // add the tile to the board starting from startX-2, startY+4
-            for (int i = 0; i < newTiles.length; i++) {
-                for (int j = 0; j < newTiles[i].length; j++) {
-                    tiles[startX - 2 + i][startY + 4 + j] = newTiles[i][j];
-                }
-            }
         }
         // no tile below
-        else if(!isTileAt(startX, startY+1)) {
+        else if(!isTileAt(startX+1, startY)) {
             // rotate newTiles 180 degrees
-            Tile[][] rotatedTiles = new Tile[newTiles.length][newTiles[0].length];
-            for (int i = 0; i < newTiles.length; i++) {
-                for (int j = 0; j < newTiles[i].length; j++) {
-                    rotatedTiles[newTiles.length - 1 - i][newTiles[0].length - 1 - j] = newTiles[i][j];
-                }
-            }
-            // add the rotated tile to the board starting from startX-2, startY-1
-            for (int i = 0; i < rotatedTiles.length; i++) {
-                for (int j = 0; j < rotatedTiles[i].length; j++) {
-                    tiles[startX - 2 + i][startY - 1 + j] = rotatedTiles[i][j];
-                }
+            rotatedCard = newCard.rotate180();
+        }
+
+        Coordinate corner = getLeftTopCornerOfNewCard(new Coordinate(startX, startY));
+        Tile[][] rotatedTiles = rotatedCard.getTiles();
+        // add the new tiles to the board at the correct position
+        for (int i = 0; i < rotatedTiles.length; i++) {
+            for (int j = 0; j < rotatedTiles[i].length; j++) {
+                tiles[corner.getX() + i][corner.getY() + j] = rotatedTiles[i][j];
             }
         }
+
+        System.out.println("Discovered tiles after adding card: " + countDiscoveredTiles());
     }
 
     public void printBoard() {
@@ -211,5 +182,48 @@ public class Board {
         for (Pawn pawn : pawns) {
             System.out.println("Pawn color: " + pawn.getColor() + " at position (" + pawn.getX() + ", " + pawn.getY() + ")");
         }
+    }
+
+    public Tile getTileAt(int x, int y) {
+        if (tiles[x][y] != null) {
+            return tiles[x][y];
+        } else {
+            return null;
+        }
+    }
+
+    public int countDiscoveredTiles() {
+        int count = 0;
+        for (Tile[] row : tiles) {
+            for (Tile tile : row) {
+                if (tile != null) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    public Coordinate getLeftTopCornerOfNewCard(Coordinate position) {
+        int startX = position.getX();
+        int startY = position.getY();
+
+        // no tile to the right
+        if(!isTileAt(startX, startY+1)){
+            return new Coordinate(startX-1, startY+1);
+        }
+        // no tile to the left
+        else if(!isTileAt(startX, startY-1)){
+            return new Coordinate(startX-2, startY-4);
+        }
+        // no tile above
+        else if(!isTileAt(startX-1, startY)){
+            return new Coordinate(startX-4, startY-1);
+        }
+        // no tile below
+        else if(!isTileAt(startX+1, startY)){
+            return new Coordinate(startX+1, startY-2);
+        }
+        return null; // should not reach here
     }
 }

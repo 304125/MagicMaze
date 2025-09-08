@@ -44,6 +44,22 @@ public class Tile {
         return color;
     }
 
+    public void setWallUp(boolean wallUp) {
+        this.wallUp = wallUp;
+    }
+
+    public void setWallDown(boolean wallDown) {
+        this.wallDown = wallDown;
+    }
+
+    public void setWallLeft(boolean wallLeft) {
+        this.wallLeft = wallLeft;
+    }
+
+    public void setWallRight(boolean wallRight) {
+        this.wallRight = wallRight;
+    }
+
     public int getCardId() {
         return cardId;
     }

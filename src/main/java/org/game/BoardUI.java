@@ -17,12 +17,14 @@ import java.io.InputStream;
 import java.util.List;
 
 public class BoardUI extends JFrame {
+    private final Game game;
     private static final int TILE_SIZE = 50;
     private JPanel[][] tilePanels;
     private Board board;
     private java.util.Map<TileType, ImageIcon> tileTypeImages;
 
     public BoardUI(Game game) {
+        this.game = game;
         setTitle("Magic Maze Board");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -60,6 +62,7 @@ public class BoardUI extends JFrame {
                     continue;
                 }
                 else{
+                    System.out.println("Rendering tile at: (" + i + ", " + j + ") of type " + tile.getType());
                     java.awt.Color bgColor;
                     if(tile.getColor() != Color.NONE){
                         bgColor = getColorForTile(tile);
@@ -76,8 +79,6 @@ public class BoardUI extends JFrame {
                         tilePanel.setBackground(bgColor);
                         tilePanel.setPreferredSize(new Dimension(TILE_SIZE, TILE_SIZE));
                     }
-
-
 
                     tilePanel.setBorder(createTileBorder(tile));
                     tilePanels[i][j] = tilePanel;
@@ -219,11 +220,63 @@ public class BoardUI extends JFrame {
         unhighlightPawn(previousPawn);
         highlightPawn(updatedPawn);
 
+        // check if the pawn has stepped on discovery tile
+        Tile currentTile = board.getTileAt(updatedPawn.getX(), updatedPawn.getY());
+        if(currentTile.getType() == TileType.DISCOVERY && pawnColor == currentTile.getColor()){
+            System.out.println("Pawn " + pawnColor + " stepped on discovery tile at (" + updatedPawn.getX() + ", " + updatedPawn.getY() + ")");
+            Coordinate corner = board.getLeftTopCornerOfNewCard(new Coordinate(updatedPawn.getX(), updatedPawn.getY()));
+            game.discoverCard(updatedPawn.getX(), updatedPawn.getY());
+            // re-render the board
+            renderDiscoveredTiles(corner);
+
+        }
+
 //        // Check if the pawn has reached the goal
 //        if (board.get(pawn.getX()).get(pawn.getY()).getType() == TileType.GOAL) {
 //            JOptionPane.showMessageDialog(this, "Congratulations! You reached the goal!");
 //            System.exit(0); // End the program
 //        }
+    }
+
+    private void renderDiscoveredTiles(Coordinate corner) {
+        int startX = corner.getX();
+        int startY = corner.getY();
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                int boardX = startX + i;
+                int boardY = startY + j;
+                if (boardX >= 0 && boardX < board.getNumRows() && boardY >= 0 && boardY < board.getNumCols()) {
+                    Tile tile = board.getTiles()[boardX][boardY];
+                    if (tile != null) {
+                        JPanel tilePanel = tilePanels[boardX][boardY];
+                        java.awt.Color bgColor;
+                        if(tile.getColor() != Color.NONE){
+                            bgColor = getColorForTile(tile);
+                        }
+                        else{
+                            bgColor = getColorForTileType(tile.getType());
+                        }
+
+                        ImageIcon tileImage = tileTypeImages.get(tile.getType());
+                        if (tileImage != null) {
+                            tilePanel = new ImagePanel(tileImage.getImage(), 0.8, bgColor);
+                        } else {
+                            tilePanel = new JPanel();
+                            tilePanel.setBackground(bgColor);
+                            tilePanel.setPreferredSize(new Dimension(TILE_SIZE, TILE_SIZE));
+                        }
+
+                        tilePanel.setBorder(createTileBorder(tile));
+                        tilePanels[boardX][boardY] = tilePanel;
+                        // replace the panel in the grid layout
+                        getContentPane().remove(boardX * board.getNumCols() + boardY);
+                        getContentPane().add(tilePanel, boardX * board.getNumCols() + boardY);
+                    }
+                }
+            }
+        }
+        revalidate();
+        repaint();
     }
 
 

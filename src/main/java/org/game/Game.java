@@ -29,6 +29,9 @@ public class Game {
 
         // remove starting card from allCards
         allCards.remove(startingCard);
+
+        // shuffle allCards
+        java.util.Collections.shuffle(allCards);
         this.unplayedCards = new StackOfCards(allCards);
     }
 
@@ -49,10 +52,10 @@ public class Game {
         List<Pawn> pawns;
         // make a list of starting positions as List of (int, int)
         List<int[]> startingPositions = new java.util.ArrayList<>(List.of(
-                new int[]{middle, middle}, // center
-                new int[]{middle, middle+1}, // left
-                new int[]{middle+1, middle}, // right
-                new int[]{middle+1, middle+1}  // up
+                new int[]{middle, middle}, // left top
+                new int[]{middle, middle+1}, // right top
+                new int[]{middle+1, middle}, // left bottom
+                new int[]{middle+1, middle+1}  // right bottom
         ));
 
         // shuffle the list in a random way
@@ -68,5 +71,10 @@ public class Game {
 
     public int getBoardMaxSize() {
         return boardMaxSize;
+    }
+
+    public void discoverCard(int x, int y) {
+        Card nextCard = unplayedCards.drawCard();
+        board.addCardToBoard(nextCard, x, y);
     }
 }

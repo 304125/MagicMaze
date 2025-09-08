@@ -8,4 +8,15 @@ public class StackOfCards {
     public StackOfCards(List<Card> unplayedCards) {
         this.unplayedCards = unplayedCards;
     }
+
+    public boolean isEmpty() {
+        return unplayedCards.isEmpty();
+    }
+
+    public Card drawCard() {
+        if (isEmpty()) {
+            throw new IllegalStateException("No more cards to draw");
+        }
+        return unplayedCards.removeFirst();
+    }
 }
