@@ -75,8 +75,9 @@ public class Game {
         return boardMaxSize;
     }
 
-    public void discoverCard(Coordinate coordinate) {
+    public boolean discoverCard(Coordinate coordinate) {
         Card nextCard = unplayedCards.drawCard();
-        board.addCardToBoard(nextCard, coordinate);
+        System.out.println("Discovered card with ID: " + nextCard.getId());
+        return board.addCardToBoard(nextCard, coordinate);
     }
 }

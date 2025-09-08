@@ -42,14 +42,20 @@ public class BoardUI extends JFrame {
         tileTypeImages = new java.util.HashMap<>();
         BufferedImage vortexImage = null;
         BufferedImage discoverImage = null;
+        BufferedImage exitImage = null;
+        BufferedImage itemImage = null;
         try {
             vortexImage = ImageIO.read(getClass().getClassLoader().getResourceAsStream("images/vortex.png"));
             discoverImage = ImageIO.read(getClass().getClassLoader().getResourceAsStream("images/discover.png"));
+            exitImage = ImageIO.read(getClass().getClassLoader().getResourceAsStream("images/exit.png"));
+            itemImage = ImageIO.read(getClass().getClassLoader().getResourceAsStream("images/item.png"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         tileTypeImages.put(TileType.VORTEX, new ImageIcon(vortexImage));
         tileTypeImages.put(TileType.DISCOVERY, new ImageIcon(discoverImage));
+        tileTypeImages.put(TileType.GOAL_EXIT, new ImageIcon(exitImage));
+        tileTypeImages.put(TileType.GOAL_ITEM, new ImageIcon(itemImage));
 
 
         gridPanel = new JPanel();
@@ -76,7 +82,6 @@ public class BoardUI extends JFrame {
                     else{
                         bgColor = getColorForTileType(tile.getType());
                     }
-                    System.out.println("escalator: " + tile.getEscalator());
 
                     ImageIcon tileImage = tileTypeImages.get(tile.getType());
                     if (tileImage != null) {
@@ -109,13 +114,7 @@ public class BoardUI extends JFrame {
         setContentPane(layeredPane);
         setVisible(true);
 
-        for (BoardEscalator escalator : board.getEscalators()) {
-            Coordinate start = escalator.getStart();
-            Coordinate end = escalator.getEnd();
-            if (start != null && end != null) {
-                drawLineBetweenTiles(start.getX(), start.getY(), end.getX(), end.getY());
-            }
-        }
+        drawEscalators();
 
         new Thread(() -> {
             try (java.util.Scanner scanner = new java.util.Scanner(System.in)) {
@@ -161,6 +160,16 @@ public class BoardUI extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+    }
+
+    private void drawEscalators() {
+        for (BoardEscalator escalator : board.getEscalators()) {
+            Coordinate start = escalator.getStart();
+            Coordinate end = escalator.getEnd();
+            if (start != null && end != null) {
+                drawLineBetweenTiles(start.getX(), start.getY(), end.getX(), end.getY());
+            }
+        }
     }
 
     private void highlightPawn(Pawn pawn) {
@@ -260,9 +269,11 @@ public class BoardUI extends JFrame {
             Tile currentTile = board.getTileAt(updatedPawn.getX(), updatedPawn.getY());
             if(currentTile.getType() == TileType.DISCOVERY && pawnColor == currentTile.getColor()){
                 Coordinate corner = board.getLeftTopCornerOfNewCard(new Coordinate(updatedPawn.getX(), updatedPawn.getY()));
-                game.discoverCard(new Coordinate(updatedPawn.getX(), updatedPawn.getY()));
+                boolean discovered = game.discoverCard(new Coordinate(updatedPawn.getX(), updatedPawn.getY()));
                 // re-render the board
-                renderDiscoveredTiles(corner);
+                if(discovered){
+                    renderDiscoveredTiles(corner);
+                }
             }
         }
         else if(action == Action.VORTEX){
@@ -324,6 +335,7 @@ public class BoardUI extends JFrame {
                 }
             }
         }
+        drawEscalators();
         revalidate();
         repaint();
     }

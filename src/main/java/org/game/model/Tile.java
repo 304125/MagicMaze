@@ -10,6 +10,7 @@ public class Tile {
     private int cardId;
     private boolean isOccupied = false;
     private String escalator;
+    private boolean used = false;
 
     public Tile(TileType type, Color color, boolean wallUp, boolean wallDown, boolean wallLeft, boolean wallRight, int cardId) {
         this.type = type;
@@ -101,5 +102,13 @@ public class Tile {
 
     public void setOccupied(boolean occupied) {
         isOccupied = occupied;
+    }
+
+    public boolean isUsed() {
+        return used;
+    }
+
+    public void setUsed(boolean used) {
+        this.used = used;
     }
 }

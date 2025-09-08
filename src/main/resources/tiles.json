@@ -183,7 +183,7 @@
       "id": 5,
       "layout": [
           ["OBSTACLE", "VORTEX", "DISCOVERY", "PATH"],
-          ["PATH", "PATH", "PATH", "PATH"],
+          ["START", "PATH", "PATH", "PATH"],
           ["PATH", "PATH", "TIMER", "DISCOVERY"],
           ["OBSTACLE", "DISCOVERY", "PATH", "PATH"]
       ],

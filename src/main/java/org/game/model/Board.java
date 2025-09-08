@@ -47,8 +47,24 @@ public class Board {
         }
     }
 
-    public void addCardToBoard(Card newCard, Coordinate coordinate) {
-        System.out.println("Discovered tiles before adding card: " + countDiscoveredTiles());
+    public boolean addCardToBoard(Card newCard, Coordinate coordinate) {
+        // calculate the newCard so that the START is on the bottom left corner of the coordinate
+        Tile[][] newCardTiles = newCard.getTiles();
+
+        // check the 4 possible positions of Start
+        // left
+        if(newCardTiles[1][0].getType() == TileType.START){
+            newCard = newCard.rotate270();
+        }
+        //right
+        else if(newCardTiles[2][3].getType() == TileType.START){
+            newCard = newCard.rotate90();
+        }
+        //top
+        else if(newCardTiles[0][2].getType() == TileType.START){
+            newCard = newCard.rotate180();
+        }
+
         Card rotatedCard = newCard; // default no rotation
 
         // no tile to the right
@@ -70,6 +86,10 @@ public class Board {
             // rotate newTiles 180 degrees
             rotatedCard = newCard.rotate180();
         }
+        else{
+            System.out.println("Error: Cannot place card at the given coordinate, there are tiles in all 4 directions.");
+            return false;
+        }
 
         Coordinate corner = getLeftTopCornerOfNewCard(coordinate);
         Tile[][] rotatedTiles = rotatedCard.getTiles();
@@ -78,13 +98,11 @@ public class Board {
             for (int j = 0; j < rotatedTiles[i].length; j++) {
                 tiles[corner.getX() + i][corner.getY() + j] = rotatedTiles[i][j];
                 if(rotatedTiles[i][j].hasEscalator()){
-                    updateEscalator(rotatedTiles[i][j], new Coordinate(i, j));
+                    updateEscalator(rotatedTiles[i][j], new Coordinate(corner.getX() + i, corner.getY() + j));
                 }
             }
         }
-
-
-        System.out.println("Discovered tiles after adding card: " + countDiscoveredTiles());
+        return true;
     }
 
     private void updateEscalator(Tile tile, Coordinate position){

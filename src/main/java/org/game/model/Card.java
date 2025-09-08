@@ -31,7 +31,8 @@ public class Card {
                         tiles[i][j].hasWallRight(), // new down is old right
                         tiles[i][j].hasWallDown(), // new left is old down
                         tiles[i][j].hasWallUp(), // new right is old up
-                        tiles[i][j].getCardId()
+                        tiles[i][j].getCardId(),
+                        tiles[i][j].getEscalator()
                 );
 
             }
