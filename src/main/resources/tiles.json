@@ -45,6 +45,51 @@
     ]
   },
   {
+    "id": 2,
+    "layout": [
+      ["GOAL_EXIT", "OBSTACLE", "OBSTACLE", "OBSTACLE"],
+      ["PATH", "OBSTACLE", "OBSTACLE", "VORTEX"],
+      ["OBSTACLE", "OBSTACLE", "PATH", "START"],
+      ["OBSTACLE", "DISCOVERY", "PATH", "VORTEX"]
+    ],
+    "color": [
+      ["PURPLE", "NONE", "NONE", "NONE"],
+      ["NONE", "NONE", "NONE", "PURPLE"],
+      ["NONE", "NONE", "NONE", "NONE"],
+      ["NONE", "ORANGE", "NONE", "GREEN"]
+    ],
+    "walls_up": [
+      [true, true, true, true],
+      [false, true, true, true],
+      [true, true, true, false],
+      [true, true, false, true]
+    ],
+    "walls_down": [
+      [false, true, true, true],
+      [true, true, true, false],
+      [true, true, false, true],
+      [true, false, true, true]
+    ],
+    "walls_left": [
+      [true, true, true, true],
+      [true, true, true, true],
+      [true, true, true, false],
+      [true, true, false, false]
+    ],
+    "walls_right": [
+      [true, true, true, true],
+      [true, true, true, true],
+      [true, true, false, false],
+      [true, false, false, true]
+    ],
+    "escalators": [
+      ["-", "-", "-", "-"],
+      ["a", "-", "-", "-"],
+      ["-", "-", "-", "-"],
+      ["-", "a", "-", "-"]
+    ]
+  },
+  {
     "id": 3,
     "layout": [
       ["PATH", "PATH", "VORTEX", "OBSTACLE"],
@@ -133,5 +178,366 @@
       ["-", "-", "-", "-"],
       ["-", "-", "-", "-"]
     ]
+  },
+  {
+      "id": 5,
+      "layout": [
+          ["OBSTACLE", "VORTEX", "DISCOVERY", "PATH"],
+          ["PATH", "PATH", "PATH", "PATH"],
+          ["PATH", "PATH", "TIMER", "DISCOVERY"],
+          ["OBSTACLE", "DISCOVERY", "PATH", "PATH"]
+      ],
+      "color": [
+      ["NONE", "PURPLE", "YELLOW", "NONE"],
+      ["NONE", "NONE", "NONE", "NONE"],
+      ["NONE", "NONE", "NONE", "ORANGE"],
+      ["NONE", "GREEN", "NONE", "NONE"]
+      ],
+      "walls_up": [
+          [true, true, false, true],
+          [true, false, true, false],
+          [false, false, true, true],
+          [true, false, true, false]
+      ],
+      "walls_down": [
+          [true, false, true, false],
+          [false, false, true, true],
+          [true, false, true, false],
+          [true, false, true, true]
+      ],
+      "walls_left": [
+          [true, true, true, false],
+          [false, true, false, false],
+          [true, false, false, true],
+          [true, true, false, false]
+      ],
+      "walls_right": [
+          [true, true, false, true],
+          [true, false, false, true],
+          [false, false, true, false],
+          [true, false, false, true]
+      ],
+      "escalators": [
+      ["-", "-", "-", "-"],
+      ["-", "-", "-", "-"],
+      ["-", "-", "-", "-"],
+      ["-", "-", "-", "-"]
+      ]
+  },
+    {
+        "id": 6,
+        "layout": [
+            ["OBSTACLE", "OBSTACLE", "GOAL_ITEM", "OBSTACLE"],
+            ["DISCOVERY", "PATH", "PATH", "OBSTACLE"],
+            ["OBSTACLE", "PATH", "PATH", "START"],
+            ["OBSTACLE", "DISCOVERY", "OBSTACLE", "VORTEX"]
+        ],
+        "color": [
+        ["NONE", "NONE", "YELLOW", "NONE"],
+        ["GREEN", "NONE", "NONE", "NONE"],
+        ["NONE", "NONE", "NONE", "NONE"],
+        ["NONE", "ORANGE", "NONE", "PURPLE"]
+        ],
+        "walls_up": [
+            [true, true, true, true],
+          [true, true, false, true],
+          [true, false, false, true],
+          [true, false, true, false]
+        ],
+        "walls_down": [
+            [true, true, false, true],
+          [true, false, false, true],
+          [true, false, true, false],
+          [true, false, true, true]
+        ],
+        "walls_left": [
+            [true, true, true, true],
+          [false, false, false, true],
+          [true, true, true, false],
+          [true, true, true, true]
+        ],
+        "walls_right": [
+            [true, true, true, true],
+          [false, false, true, true],
+          [true, true, false, false],
+          [true, true, true, true]
+        ],
+        "escalators": [
+        ["-", "-", "-", "-"],
+        ["-", "-", "-", "-"],
+        ["-", "-", "-", "-"],
+        ["-", "-", "-", "-"]
+        ]
+    },
+    {
+        "id": 7,
+        "layout": [
+            ["OBSTACLE", "OBSTACLE", "VORTEX", "OBSTACLE"],
+            ["PATH", "PATH", "PATH", "PATH"],
+            ["GOAL_ITEM", "OBSTACLE", "OBSTACLE", "DISCOVERY"],
+            ["OBSTACLE", "START", "OBSTACLE", "VORTEX"]
+        ],
+        "color": [
+        ["NONE", "NONE", "GREEN", "NONE"],
+        ["NONE", "NONE", "NONE", "NONE"],
+        ["ORANGE", "NONE", "NONE", "PURPLE"],
+        ["NONE", "NONE", "NONE", "YELLOW"]
+        ],
+        "walls_up": [
+            [true, true, true, true],
+          [true, true, false, true],
+          [false, true, true, false],
+          [true, true, true, false]
+        ],
+        "walls_down": [
+            [true, true, false, true],
+          [false, true, true, false],
+          [true, true, true, false],
+          [true, false, true, true]
+        ],
+        "walls_left": [
+            [true, true, true, true],
+          [true, false, false, false],
+          [true, true, true, true],
+          [true, true, true, true]
+        ],
+        "walls_right": [
+            [true, true, true, true],
+          [false, false, false, true],
+          [true, true, true, false],
+          [true, true, true, true]
+        ],
+        "escalators": [
+        ["-", "-", "-", "-"],
+        ["-", "-", "a", "-"],
+        ["-", "-", "-", "-"],
+        ["-", "a", "-", "-"]
+        ]
+    },
+    {
+        "id": 8,
+        "layout": [
+            ["PATH", "PATH", "PATH", "PATH"],
+            ["DISCOVERY", "OBSTACLE", "VORTEX", "PATH"],
+            ["OBSTACLE", "OBSTACLE", "OBSTACLE", "DISCOVERY"],
+            ["GOAL_ITEM", "START", "PATH", "PATH"]
+        ],
+        "color": [
+        ["NONE", "NONE", "NONE", "NONE"],
+        ["ORANGE", "NONE", "YELLOW", "NONE"],
+        ["NONE", "NONE", "NONE", "PURPLE"],
+        ["GREEN", "NONE", "NONE", "NONE"]
+        ],
+        "walls_up": [
+            [true, true, true, true],
+          [false, true, false, false],
+          [true, true, true, false],
+          [true, true, true, false]
+        ],
+        "walls_down": [
+          [false, true, false, false],
+          [true, true, true, false],
+          [true, true, true, false],
+          [true, false, true, true]
+        ],
+        "walls_left": [
+            [true, false, false, false],
+          [false, true, true, true],
+          [true, true, true, true],
+          [true, false, false, false]
+        ],
+        "walls_right": [
+            [false, false, false, true],
+          [true, true, true, true],
+          [true, true, true, false],
+          [false, false, false, true]
+        ],
+        "escalators": [
+        ["-", "-", "-", "-"],
+        ["-", "-", "-", "-"],
+        ["-", "-", "-", "-"],
+        ["-", "-", "-", "-"]
+        ]
+    },
+  {
+    "id": 9,
+    "layout": [
+      ["OBSTACLE", "PATH", "PATH", "PATH"],
+      ["START", "PATH", "OBSTACLE", "PATH"],
+      ["OBSTACLE", "OBSTACLE", "VORTEX", "PATH"],
+      ["GOAL_ITEM", "DISCOVERY", "PATH", "PATH"]
+    ],
+    "color": [
+      ["NONE", "NONE", "NONE", "NONE"],
+      ["NONE", "NONE", "NONE", "NONE"],
+      ["NONE", "NONE", "ORANGE", "NONE"],
+      ["PURPLE", "YELLOW", "NONE", "NONE"]
+    ],
+    "walls_up": [
+      [true, true, true, true],
+      [true, false, true, false],
+      [true, true, true, false],
+      [true, true, false, false]
+    ],
+    "walls_down": [
+      [true, false, true, false],
+      [true, true, true, false],
+      [true, true, false, false],
+      [true, false, true, true]
+    ],
+    "walls_left": [
+      [true, true, false, false],
+      [false, false, true, true],
+      [true, true, true, true],
+      [true, false, false, false]
+    ],
+    "walls_right": [
+      [true, false, false, true],
+      [false, true, true, true],
+      [true, true, true, true],
+      [false, false, false, true]
+    ],
+    "escalators": [
+      ["-", "-", "-", "-"],
+      ["-", "-", "-", "-"],
+      ["-", "-", "-", "-"],
+      ["-", "-", "-", "-"]
+    ]
+  },
+  {
+    "id": 10,
+    "layout": [
+      ["OBSTACLE", "OBSTACLE", "DISCOVERY", "OBSTACLE"],
+      ["VORTEX", "OBSTACLE", "PATH", "PATH"],
+      ["PATH", "PATH", "OBSTACLE", "START"],
+      ["GOAL_EXIT", "DISCOVERY", "OBSTACLE", "VORTEX"]
+    ],
+    "color": [
+      ["NONE", "NONE", "YELLOW", "NONE"],
+      ["ORANGE", "NONE", "NONE", "NONE"],
+      ["NONE", "NONE", "NONE", "NONE"],
+      ["GREEN", "PURPLE", "NONE", "GREEN"]
+    ],
+    "walls_up": [
+      [true, true, false, true],
+      [true, true, false, true],
+      [false, true, true, false],
+      [false, false, true, false]
+    ],
+    "walls_down": [
+      [true, true, false, true],
+      [false, true, true, false],
+      [false, false, true, false],
+      [true, false, true, true]
+    ],
+    "walls_left": [
+      [true, true, true, true],
+      [true, true, true, false],
+      [true, false, true, true],
+      [true, true, true, true]
+    ],
+    "walls_right": [
+      [true, true, true, true],
+      [true, true, false, true],
+      [false, true, true, false],
+      [true, true, true, true]
+    ],
+    "escalators": [
+      ["-", "-", "-", "-"],
+      ["-", "-", "a", "-"],
+      ["-", "a", "-", "-"],
+      ["-", "-", "-", "-"]
+    ]
+  },
+  {
+    "id": 11,
+    "layout": [
+      ["GOAL_EXIT", "OBSTACLE", "DISCOVERY", "OBSTACLE"],
+      ["PATH", "PATH", "PATH", "VORTEX"],
+      ["PATH", "PATH", "PATH", "START"],
+      ["PATH", "DISCOVERY", "PATH", "PATH"]
+    ],
+    "color": [
+      ["YELLOW", "NONE", "ORANGE", "NONE"],
+      ["NONE", "NONE", "NONE", "YELLOW"],
+      ["NONE", "NONE", "NONE", "NONE"],
+      ["NONE", "GREEN", "NONE", "NONE"]
+    ],
+    "walls_up": [
+      [true, true, false, true],
+      [false, true, false, true],
+      [false, true, true, false],
+      [false, false, false, false]
+    ],
+    "walls_down": [
+      [false, true, false, true],
+      [false, true, true, false],
+      [false, false, false, false],
+      [true, false, true, true]
+    ],
+    "walls_left": [
+      [true, true, true, true],
+      [true, false, false, true],
+      [true, true, false, true],
+      [true, false, true, false]
+    ],
+    "walls_right": [
+      [true, true, true, true],
+      [false, false, true, true],
+      [true, false, true, false],
+      [false, true, false, true]
+    ],
+    "escalators": [
+      ["-", "-", "-", "-"],
+      ["-", "-", "-", "-"],
+      ["-", "-", "-", "-"],
+      ["-", "-", "-", "-"]
+    ]
+  },
+  {
+    "id": 12,
+    "layout": [
+      ["PATH", "PATH", "OBSTACLE", "OBSTACLE"],
+      ["DISCOVERY", "OBSTACLE", "PATH", "VORTEX"],
+      ["PATH", "OBSTACLE", "PATH", "START"],
+      ["GOAL_EXIT", "PATH", "PATH", "VORTEX"]
+    ],
+    "color": [
+      ["NONE", "NONE", "NONE", "NONE"],
+      ["YELLOW", "NONE", "NONE", "ORANGE"],
+      ["NONE", "NONE", "NONE", "NONE"],
+      ["ORANGE", "NONE", "NONE", "PURPLE"]
+    ],
+    "walls_up": [
+      [true, true, true, true],
+      [false, true, true, true],
+      [false, true, false, false],
+      [false, true, false, false]
+    ],
+    "walls_down": [
+      [false, true, true, true],
+      [false, true, false, false],
+      [false, true, false, false],
+      [true, true, true, true]
+    ],
+    "walls_left": [
+      [true, false, true, true],
+      [false, true, true, true],
+      [true, true, true, false],
+      [true, true, false, true]
+    ],
+    "walls_right": [
+      [false, true, true, true],
+      [true, true, true, true],
+      [true, true, false, false],
+      [true, false, true, true]
+    ],
+    "escalators": [
+      ["-", "a", "-", "-"],
+      ["-", "-", "a", "-"],
+      ["b", "-", "-", "-"],
+      ["-", "b", "-", "-"]
+    ]
   }
+
 ]
