@@ -92,6 +92,18 @@ public class BoardUI extends JFrame {
                         tilePanel.setPreferredSize(new Dimension(TILE_SIZE, TILE_SIZE));
                     }
 
+                    if(tile.getType() == TileType.VORTEX){
+                        // Add cardId as a JLabel on top of the tile
+                        JLabel cardIdLabel = new JLabel(String.valueOf(tile.getCardId()));
+                        cardIdLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                        cardIdLabel.setForeground(java.awt.Color.BLACK);
+                        cardIdLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                        cardIdLabel.setVerticalAlignment(SwingConstants.CENTER);
+
+                        tilePanel.setLayout(new BorderLayout());
+                        tilePanel.add(cardIdLabel, BorderLayout.CENTER);
+                    }
+
                     tilePanel.setBorder(createTileBorder(tile));
                     tilePanels[i][j] = tilePanel;
                     gridPanel.add(tilePanel);
@@ -324,6 +336,18 @@ public class BoardUI extends JFrame {
                             tilePanel = new JPanel();
                             tilePanel.setBackground(bgColor);
                             tilePanel.setPreferredSize(new Dimension(TILE_SIZE, TILE_SIZE));
+                        }
+
+                        if(tile.getType() == TileType.VORTEX){
+                            // Add cardId as a JLabel on top of the tile
+                            JLabel cardIdLabel = new JLabel(String.valueOf(tile.getCardId()));
+                            cardIdLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                            cardIdLabel.setForeground(java.awt.Color.BLACK);
+                            cardIdLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                            cardIdLabel.setVerticalAlignment(SwingConstants.CENTER);
+
+                            tilePanel.setLayout(new BorderLayout());
+                            tilePanel.add(cardIdLabel, BorderLayout.CENTER);
                         }
 
                         tilePanel.setBorder(createTileBorder(tile));
