@@ -1,5 +1,6 @@
 package org.game.model;
 
+import java.awt.*;
 import java.util.List;
 
 public class Board {
@@ -9,6 +10,10 @@ public class Board {
     private final int numCols;
     private List<Pawn> pawns;
     private List<BoardEscalator> escalators = new java.util.ArrayList<>();
+    private List<BoardVortex> yellowVortices = new java.util.ArrayList<>();
+    private List<BoardVortex> purpleVortices = new java.util.ArrayList<>();
+    private List<BoardVortex> greenVortices = new java.util.ArrayList<>();
+    private List<BoardVortex> orangeVortices = new java.util.ArrayList<>();
 
 
     public Board(int maxSize) {
@@ -32,9 +37,27 @@ public class Board {
                 if(startingTiles[i][j].hasEscalator()){
                     updateEscalator(startingTiles[i][j], new Coordinate(x, y));
                 }
+                if(startingTiles[i][j].getType() == TileType.VORTEX){
+                    if(startingTiles[i][j].getColor() == Color.YELLOW){
+                        addVortex(yellowVortices, startingTiles[i][j], new Coordinate(x, y));
+                    }
+                    else if(startingTiles[i][j].getColor() == Color.PURPLE){
+                        addVortex(purpleVortices, startingTiles[i][j], new Coordinate(x, y));
+                    }
+                    else if(startingTiles[i][j].getColor() == Color.GREEN){
+                        addVortex(greenVortices, startingTiles[i][j], new Coordinate(x, y));
+                    }
+                    else if(startingTiles[i][j].getColor() == Color.ORANGE){
+                        addVortex(orangeVortices, startingTiles[i][j], new Coordinate(x, y));
+                    }
+                }
             }
         }
         printEscalators();
+    }
+
+    private void addVortex(List<BoardVortex> vortexList, Tile tile, Coordinate position){
+        vortexList.add(new BoardVortex(position, tile.getCardId(), tile.getColor()));
     }
 
     public void initializeStartingPawns(List<Pawn> initialPawns) {
@@ -97,8 +120,23 @@ public class Board {
         for (int i = 0; i < rotatedTiles.length; i++) {
             for (int j = 0; j < rotatedTiles[i].length; j++) {
                 tiles[corner.getX() + i][corner.getY() + j] = rotatedTiles[i][j];
+                Coordinate c = new Coordinate(corner.getX() + i, corner.getY() + j);
                 if(rotatedTiles[i][j].hasEscalator()){
-                    updateEscalator(rotatedTiles[i][j], new Coordinate(corner.getX() + i, corner.getY() + j));
+                    updateEscalator(rotatedTiles[i][j], c);
+                }
+                if(rotatedTiles[i][j].getType() == TileType.VORTEX){
+                    if(rotatedTiles[i][j].getColor() == Color.YELLOW){
+                        addVortex(yellowVortices, rotatedTiles[i][j], c);
+                    }
+                    else if(rotatedTiles[i][j].getColor() == Color.PURPLE){
+                        addVortex(purpleVortices, rotatedTiles[i][j], c);
+                    }
+                    else if(rotatedTiles[i][j].getColor() == Color.GREEN){
+                        addVortex(greenVortices, rotatedTiles[i][j], c);
+                    }
+                    else if(rotatedTiles[i][j].getColor() == Color.ORANGE){
+                        addVortex(orangeVortices, rotatedTiles[i][j], c);
+                    }
                 }
             }
         }
@@ -152,13 +190,7 @@ public class Board {
     }
 
     public Pawn movePawn(Color pawnColor, Action action) {
-        Pawn pawn = null;
-        for (Pawn p : pawns) {
-            if (p.getColor() == pawnColor) {
-                pawn = p;
-                break;
-            }
-        }
+        Pawn pawn = getPawnByColor(pawnColor);
         Tile currentTile = tiles[pawn.getX()][pawn.getY()];
         boolean moved = false;
 
@@ -286,13 +318,7 @@ public class Board {
     }
 
     public Pawn useEscalator(Color pawnColor){
-        Pawn pawn = null;
-        for (Pawn p : pawns) {
-            if (p.getColor() == pawnColor) {
-                pawn = p;
-                break;
-            }
-        }
+        Pawn pawn = getPawnByColor(pawnColor);
         Tile currentTile = tiles[pawn.getX()][pawn.getY()];
 
         // find the currentTile in escalators
@@ -326,6 +352,48 @@ public class Board {
                 pawn.moveTo(destination.getX(), destination.getY());
                 tiles[pawn.getX()][pawn.getY()].setOccupied(true);
 
+            }
+        }
+        return pawn;
+    }
+
+    public Pawn useVortex(Color pawnColor, int vortexNumber){
+        Pawn pawn = getPawnByColor(pawnColor);
+
+        // find the vortex in the corresponding color list
+        List<BoardVortex> vortexList;
+        if(pawnColor == Color.YELLOW){
+            vortexList = yellowVortices;
+        }
+        else if(pawnColor == Color.PURPLE){
+            vortexList = purpleVortices;
+        }
+        else if(pawnColor == Color.GREEN){
+            vortexList = greenVortices;
+        }
+        else if(pawnColor == Color.ORANGE){
+            vortexList = orangeVortices;
+        }
+        else{
+            return pawn; // should not reach here
+        }
+
+        // find the vortex with the given cardId
+        for (BoardVortex vortex : vortexList) {
+            if (vortex.getCardId() == vortexNumber) {
+                Coordinate destination = vortex.getPosition();
+                // check if the destination is occupied
+                if(tiles[destination.getX()][destination.getY()].isOccupied()){
+                    System.out.println("Error: Vortex destination is occupied");
+                    return pawn;
+                }
+                System.out.println("Pawn " + pawnColor + " used vortex " + vortexNumber + " to (" + destination.getX() + "," + destination.getY() + ")");
+
+                // set previous tile not occupied, move pawn to destination, set new tile to occupied
+                tiles[pawn.getX()][pawn.getY()].setOccupied(false);
+                pawn.moveTo(destination.getX(), destination.getY());
+                tiles[pawn.getX()][pawn.getY()].setOccupied(true);
+                return pawn;
             }
         }
         return pawn;

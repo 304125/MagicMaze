@@ -17,7 +17,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 public class BoardUI extends JFrame {
     private final Game game;
@@ -25,7 +28,7 @@ public class BoardUI extends JFrame {
     private JPanel[][] tilePanels;
     private LinePanel linePanel;
     private Board board;
-    private java.util.Map<TileType, ImageIcon> tileTypeImages;
+    private Map<TileType, ImageIcon> tileTypeImages;
     private JPanel gridPanel;
 
     public BoardUI(Game game) {
@@ -39,7 +42,7 @@ public class BoardUI extends JFrame {
         tilePanels = new JPanel[rows][cols];
 
         // Load images for each TileType
-        tileTypeImages = new java.util.HashMap<>();
+        tileTypeImages = new HashMap<>();
         BufferedImage vortexImage = null;
         BufferedImage discoverImage = null;
         BufferedImage exitImage = null;
@@ -76,7 +79,7 @@ public class BoardUI extends JFrame {
                 else{
                     System.out.println("Rendering tile at: (" + i + ", " + j + ") of type " + tile.getType());
                     java.awt.Color bgColor;
-                    if(tile.getColor() != org.game.model.Color.NONE){
+                    if(tile.getColor() != Color.NONE){
                         bgColor = getColorForTile(tile);
                     }
                     else{
@@ -95,7 +98,7 @@ public class BoardUI extends JFrame {
                     if(tile.getType() == TileType.VORTEX){
                         // Add cardId as a JLabel on top of the tile
                         JLabel cardIdLabel = new JLabel(String.valueOf(tile.getCardId()));
-                        cardIdLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                        cardIdLabel.setFont(new Font("Arial", Font.BOLD, 9));
                         cardIdLabel.setForeground(java.awt.Color.BLACK);
                         cardIdLabel.setHorizontalAlignment(SwingConstants.CENTER);
                         cardIdLabel.setVerticalAlignment(SwingConstants.CENTER);
@@ -129,38 +132,61 @@ public class BoardUI extends JFrame {
         drawEscalators();
 
         new Thread(() -> {
-            try (java.util.Scanner scanner = new java.util.Scanner(System.in)) {
+            try (Scanner scanner = new Scanner(System.in)) {
                 while (true) {
                     System.out.print("Enter color of pawn (y: yellow, o: orange, p: purple, g: green) and direction (n: north, s: south, w: west, e: east): ");
                     String input = scanner.nextLine().trim().toLowerCase();
                     // split input into color and direction
-                    if (input.length() != 2) {
+                    if (input.length() != 2 && input.length() != 3 && input.length() != 4) {
                         System.out.println("Invalid input. Please provide both color and direction.");
                         continue;
                     }
                     String colorString = String.valueOf(input.charAt(0));
                     String actionString = String.valueOf(input.charAt(1));
-                    org.game.model.Color pawnColor = switch (colorString) {
-                        case "y" -> org.game.model.Color.YELLOW;
-                        case "o" -> org.game.model.Color.ORANGE;
-                        case "p" -> org.game.model.Color.PURPLE;
-                        case "g" -> org.game.model.Color.GREEN;
+                    int vortexNumber = 0;
+                    try {
+                        if (input.length() == 3) {
+                            vortexNumber = Character.getNumericValue(input.charAt(2));
+                        } else if (input.length() == 4) {
+                            vortexNumber = Integer.parseInt(input.substring(2, 4));
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid vortex number. Please enter a valid number.");
+                        continue;
+                    }
+
+                    Color pawnColor = switch (colorString) {
+                        case "y" -> Color.YELLOW;
+                        case "o" -> Color.ORANGE;
+                        case "p" -> Color.PURPLE;
+                        case "g" -> Color.GREEN;
                         default -> null;
                     };
-                    org.game.model.Action action = switch (actionString) {
-                        case "n" -> org.game.model.Action.MOVE_NORTH;
-                        case "s" -> org.game.model.Action.MOVE_SOUTH;
-                        case "w" -> org.game.model.Action.MOVE_WEST;
-                        case "e" -> org.game.model.Action.MOVE_EAST;
-                        case "d" -> org.game.model.Action.DISCOVER;
-                        case "v" -> org.game.model.Action.VORTEX;
-                        case "x" -> org.game.model.Action.ESCALATOR;
+                    Action action = switch (actionString) {
+                        case "n" -> Action.MOVE_NORTH;
+                        case "s" -> Action.MOVE_SOUTH;
+                        case "w" -> Action.MOVE_WEST;
+                        case "e" -> Action.MOVE_EAST;
+                        case "d" -> Action.DISCOVER;
+                        case "v" -> Action.VORTEX;
+                        case "x" -> Action.ESCALATOR;
                         default -> null;
                     };
 
-                    if (action != null && pawnColor != null) {
+                    //
+                    if ((vortexNumber != 0 && action != Action.VORTEX) || vortexNumber == 0 && action == Action.VORTEX) {
+                        System.out.println("Invalid input. Vortex action requires a number (e.g., 'yv1' for yellow vortex 1).");
+                        continue;
+                    }
+
+                    if (action != null && pawnColor != null && vortexNumber == 0) {
                         movePawn(pawnColor, action);
-                    } else {
+                    }
+                    // vortexNumber != 0
+                    else if (action == Action.VORTEX && pawnColor != null){
+                        vortexPawn(pawnColor, vortexNumber);
+                    }
+                    else {
                         System.out.println("Invalid input. Please provide both color and direction in correct format.");
                     }
                 }
@@ -187,11 +213,21 @@ public class BoardUI extends JFrame {
     private void highlightPawn(Pawn pawn) {
         // Highlight the pawn's position
         JPanel pawnTile = tilePanels[pawn.getX()][pawn.getY()];
+
+        // if there is a vortex number on the tile, remove it
+        if(pawnTile.getComponentCount() > 0){
+            for (Component child : pawnTile.getComponents()) {
+                if (child instanceof JLabel) {
+                    pawnTile.remove(child);
+                }
+            }
+        }
+
         System.out.println("Highlighting pawn at: (" + pawn.getX() + ", " + pawn.getY() + ")");
         JLabel pawnIcon = new JLabel();
         pawnIcon.setPreferredSize(new Dimension(TILE_SIZE / 2, TILE_SIZE / 2));
         pawnIcon.setOpaque(true);
-        org.game.model.Color pawnColor = pawn.getColor();
+        Color pawnColor = pawn.getColor();
         pawnIcon.setBackground(java.awt.Color.decode(pawnColor.getHexCode())); // Pawn color
         // put black border around
         pawnIcon.setBorder(BorderFactory.createLineBorder(java.awt.Color.BLACK, 1));
@@ -214,6 +250,20 @@ public class BoardUI extends JFrame {
             }
         }
 
+        // re-print the vortex number if it is a vortex
+        Tile tile = board.getTileAt(pawn.getX(), pawn.getY());
+        if(tile.getType() == TileType.VORTEX){
+            // Add cardId as a JLabel on top of the tile
+            JLabel cardIdLabel = new JLabel(String.valueOf(tile.getCardId()));
+            cardIdLabel.setFont(new Font("Arial", Font.BOLD, 12));
+            cardIdLabel.setForeground(java.awt.Color.BLACK);
+            cardIdLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            cardIdLabel.setVerticalAlignment(SwingConstants.CENTER);
+
+            pawnTile.setLayout(new BorderLayout());
+            pawnTile.add(cardIdLabel, BorderLayout.CENTER);
+        }
+
         //tilePanels[pawn.getX()][pawn.getY()].removeAll();
         tilePanels[pawn.getX()][pawn.getY()].setLayout(new GridBagLayout());
         tilePanels[pawn.getX()][pawn.getY()].revalidate();
@@ -229,27 +279,27 @@ public class BoardUI extends JFrame {
             case START:
                 return java.awt.Color.WHITE;
             case OBSTACLE:
-                return java.awt.Color.decode(org.game.model.Color.BROWN.getHexCode());
+                return java.awt.Color.decode(Color.BROWN.getHexCode());
             case TIMER:
-                return java.awt.Color.decode(org.game.model.Color.RED.getHexCode());
+                return java.awt.Color.decode(Color.RED.getHexCode());
             case PATH:
             default:
-                return java.awt.Color.decode(org.game.model.Color.NONE.getHexCode());
+                return java.awt.Color.decode(Color.NONE.getHexCode());
         }
     }
 
     private java.awt.Color getColorForTile(Tile tile) {
         switch (tile.getColor()) {
             case ORANGE:
-                return java.awt.Color.decode(org.game.model.Color.ORANGE.getHexCode());
+                return java.awt.Color.decode(Color.ORANGE.getHexCode());
             case PURPLE:
-                return java.awt.Color.decode(org.game.model.Color.PURPLE.getHexCode());
+                return java.awt.Color.decode(Color.PURPLE.getHexCode());
             case GREEN:
-                return java.awt.Color.decode(org.game.model.Color.GREEN.getHexCode());
+                return java.awt.Color.decode(Color.GREEN.getHexCode());
             case YELLOW:
-                return java.awt.Color.decode(org.game.model.Color.YELLOW.getHexCode());
+                return java.awt.Color.decode(Color.YELLOW.getHexCode());
             default:
-                return java.awt.Color.decode(org.game.model.Color.NONE.getHexCode());
+                return java.awt.Color.decode(Color.NONE.getHexCode());
         }
     }
 
@@ -260,22 +310,22 @@ public class BoardUI extends JFrame {
         int left = tile.hasWallLeft() ? thickness : 0;
         int right = tile.hasWallRight() ? thickness : 0;
 
-        return BorderFactory.createMatteBorder(top, left, bottom, right, java.awt.Color.decode(org.game.model.Color.BROWN.getHexCode()));
+        return BorderFactory.createMatteBorder(top, left, bottom, right, java.awt.Color.decode(Color.BROWN.getHexCode()));
     }
 
-    private void movePawn(org.game.model.Color pawnColor, org.game.model.Action action) {
+    private void movePawn(Color pawnColor, Action action) {
         Pawn previousPawn = new Pawn(board.getPawnByColor(pawnColor));
         Pawn updatedPawn;
-        if(action == org.game.model.Action.MOVE_EAST || action == org.game.model.Action.MOVE_WEST || action == org.game.model.Action.MOVE_NORTH || action == org.game.model.Action.MOVE_SOUTH){
+        if(action == Action.MOVE_EAST || action == Action.MOVE_WEST || action == Action.MOVE_NORTH || action == Action.MOVE_SOUTH){
             updatedPawn = board.movePawn(pawnColor, action);
         }
-        else if(action == org.game.model.Action.ESCALATOR){
+        else if(action == Action.ESCALATOR){
             updatedPawn = board.useEscalator(pawnColor);
             if(updatedPawn.equals(previousPawn)){
                 System.out.println("No escalator to use for pawn " + pawnColor);
             }
         }
-        else if(action == org.game.model.Action.DISCOVER){
+        else if(action == Action.DISCOVER){
             updatedPawn = previousPawn;
             // check if the pawn is standing on discovery tile
             Tile currentTile = board.getTileAt(updatedPawn.getX(), updatedPawn.getY());
@@ -302,8 +352,20 @@ public class BoardUI extends JFrame {
 
         unhighlightPawn(previousPawn);
         highlightPawn(updatedPawn);
+    }
 
+    private void vortexPawn(Color pawnColor, int vortexNumber) {
+        Pawn previousPawn = new Pawn(board.getPawnByColor(pawnColor));
+        Pawn updatedPawn = board.useVortex(pawnColor, vortexNumber);
+        if(updatedPawn.equals(previousPawn)){
+            System.out.println("No vortex to use for pawn " + pawnColor + " with number " + vortexNumber);
+            return;
+        }
 
+        board.printAllPawns();
+
+        unhighlightPawn(previousPawn);
+        highlightPawn(updatedPawn);
     }
 
     private void renderDiscoveredTiles(Coordinate corner) {
