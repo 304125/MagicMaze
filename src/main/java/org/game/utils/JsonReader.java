@@ -2,10 +2,7 @@ package org.game.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.game.model.Card;
-import org.game.model.Color;
-import org.game.model.Tile;
-import org.game.model.TileType;
+import org.game.model.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -78,5 +75,43 @@ public class JsonReader {
 
         Card card = new Card(id, tiles);
         return card;
+    }
+
+    public List<Player> loadPlayersFromJson(int numPlayers) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String filePath = "actions.json";
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath)) {
+            if (inputStream == null) {
+                throw new RuntimeException("File not found: " + filePath);
+            }
+
+            List<Map<String, Object>> playersData = objectMapper.readValue(
+                    inputStream,
+                    new TypeReference<List<Map<String, Object>>>() {}
+            );
+
+            List<Player> players = new ArrayList<>();
+            for (Map<String, Object> playerData : playersData) {
+                int numberOfPlayers = (Integer) playerData.get("players");
+                List<List<String>> actionCards = (List<List<String>>) playerData.get("cards");
+
+                // only continue if numberOfPlayers == numPlayers
+                if (numberOfPlayers == numPlayers) {
+                    for (List<String> actionCardList : actionCards) {
+                        List<Action> actions = new ArrayList<>();
+                        for (String actionString : actionCardList) {
+                            actions.add(Action.valueOf(actionString));
+                        }
+                        players.add(new Player(actions));
+                    }
+                    break; // exit the loop once we've found the matching number of players
+                }
+            }
+
+            return players;
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load players from JSON", e);
+        }
     }
 }

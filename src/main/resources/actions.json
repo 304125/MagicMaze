@@ -1,0 +1,72 @@
+[
+  {
+    "players": 2,
+    "cards": [
+      ["MOVE_SOUTH", "MOVE_WEST", "ESCALATOR", "DISCOVER"],
+      ["VORTEX", "MOVE_NORTH", "MOVE_EAST"]
+    ]
+  },
+  {
+    "players": 3,
+    "cards": [
+      ["MOVE_WEST", "VORTEX"],
+      ["ESCALATOR", "DISCOVER", "MOVE_SOUTH"],
+      ["MOVE_NORTH", "MOVE_EAST"]
+    ]
+  },
+  {
+    "players": 4,
+    "cards": [
+      ["DISCOVER", "MOVE_SOUTH"],
+      ["MOVE_NORTH"],
+      ["MOVE_WEST", "VORTEX"],
+      ["ESCALATOR", "MOVE_EAST"]
+    ]
+  },
+  {
+    "players": 5,
+    "cards": [
+      ["DISCOVER", "MOVE_SOUTH"],
+      ["MOVE_NORTH"],
+      ["MOVE_WEST", "VORTEX"],
+      ["ESCALATOR", "MOVE_EAST"],
+      ["MOVE_WEST"]
+    ]
+  },
+  {
+    "players": 6,
+    "cards": [
+      ["DISCOVER", "MOVE_SOUTH"],
+      ["MOVE_NORTH"],
+      ["MOVE_WEST", "VORTEX"],
+      ["ESCALATOR", "MOVE_EAST"],
+      ["MOVE_WEST"],
+      ["MOVE_EAST"]
+    ]
+  },
+  {
+    "players": 7,
+    "cards": [
+      ["DISCOVER", "MOVE_SOUTH"],
+      ["MOVE_NORTH"],
+      ["MOVE_WEST", "VORTEX"],
+      ["ESCALATOR", "MOVE_EAST"],
+      ["MOVE_SOUTH"],
+      ["MOVE_WEST"],
+      ["MOVE_EAST"]
+    ]
+  },
+  {
+    "players": 8,
+    "cards": [
+      ["DISCOVER", "MOVE_SOUTH"],
+      ["MOVE_NORTH"],
+      ["MOVE_WEST", "VORTEX"],
+      ["ESCALATOR", "MOVE_EAST"],
+      ["MOVE_SOUTH"],
+      ["MOVE_NORTH"],
+      ["MOVE_WEST"],
+      ["MOVE_EAST"]
+    ]
+  }
+]

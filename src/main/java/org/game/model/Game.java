@@ -11,10 +11,15 @@ public class Game {
     private int startingCardId = 1;
     private Card startingCard;
     private final int boardMaxSize = 32;
+    private final int numberOfPlayers = 4;
+    private List<Player> players;
+
 
     public Game() {
         initializeCards();
         initializeBoard();
+        initializePlayers();
+        printPlayers();
     }
 
     private void initializeCards(){
@@ -35,6 +40,19 @@ public class Game {
         // shuffle allCards
         java.util.Collections.shuffle(allCards);
         this.unplayedCards = new StackOfCards(allCards);
+    }
+
+    private void initializePlayers(){
+        players = jsonReader.loadPlayersFromJson(numberOfPlayers);
+    }
+
+    private void printPlayers(){
+        for(int i = 0; i < players.size(); i++){
+            System.out.println("Player " + (i+1) + ":");
+            for(Action action : players.get(i).getActions()){
+                System.out.println(" - " + action);
+            }
+        }
     }
 
     private void initializeBoard(){
