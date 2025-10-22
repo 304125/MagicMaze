@@ -10,10 +10,9 @@ public class Game {
     private final JsonReader jsonReader = new JsonReader();
     private int startingCardId = 1;
     private Card startingCard;
-    private final int boardMaxSize = 32;
+    private final int boardMaxSize = 23;
     private final int numberOfPlayers = 4;
     private List<Player> players;
-
 
     public Game() {
         initializeCards();

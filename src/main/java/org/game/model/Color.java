@@ -7,7 +7,8 @@ public enum Color {
     ORANGE("#EE7E16"),
     NONE("#E0EEF6"),
     BROWN("#7B6555"),
-    RED("#E30815");
+    RED("#E30815"),
+    DARK_RED("#510307");
 
     private final String hexCode;
 

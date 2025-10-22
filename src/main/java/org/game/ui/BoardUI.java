@@ -12,6 +12,7 @@ import org.game.model.Color;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -62,10 +63,32 @@ public class BoardUI extends JFrame {
 
 
         gridPanel = new JPanel();
-        gridPanel.setLayout(new GridLayout(rows, cols));
+        gridPanel.setLayout(new GridLayout(rows+1, cols));
+
+        // set content of the first row to be the top border of the board, showing timer
+        for (int j = 0; j < cols; j++) {
+            JPanel tilePanel = new JPanel();
+            tilePanel.setPreferredSize(new Dimension(TILE_SIZE, TILE_SIZE));
+            if(j == cols / 2){
+                // fetch game.getTimer().getTimeLeftInTimer() every second and display it
+                JLabel timerLabel = new JLabel(""+game.getBoard().getTimer().getTimeLeftInTimer());
+                timerLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                tilePanel.setLayout(new BorderLayout());
+                tilePanel.add(timerLabel, BorderLayout.CENTER);
+                // update timer every second
+                new Timer(1000, e -> timerLabel.setText(""+game.getBoard().getTimer().getTimeLeftInTimer())).start();
+                tilePanel.setBackground(java.awt.Color.LIGHT_GRAY);
+
+            }
+            else{
+                tilePanel.setBackground(java.awt.Color.LIGHT_GRAY);
+            }
+            tilePanels[0][j] = tilePanel;
+            gridPanel.add(tilePanel);
+        }
 
         // Initialize the board and find the START position
-        for (int i = 0; i < rows; i++) {
+        for (int i = 1; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 Tile tile = board.getTiles()[i][j];
                 JPanel tilePanel = new JPanel();
@@ -83,12 +106,12 @@ public class BoardUI extends JFrame {
                         bgColor = getColorForTile(tile);
                     }
                     else{
-                        bgColor = getColorForTileType(tile.getType());
+                        bgColor = getColorForTileType(tile.getType(), tile);
                     }
 
                     ImageIcon tileImage = tileTypeImages.get(tile.getType());
                     if (tileImage != null) {
-                        tilePanel = new ImagePanel(tileImage.getImage(), 0.8, bgColor);
+                        tilePanel = new ImagePanel(tileImage.getImage(), 0.6, bgColor);
                     } else {
                         tilePanel = new JPanel();
                         tilePanel.setBackground(bgColor);
@@ -274,13 +297,16 @@ public class BoardUI extends JFrame {
 
     }
 
-    private java.awt.Color getColorForTileType(TileType type) {
+    private java.awt.Color getColorForTileType(TileType type, Tile tile) {
         switch (type) {
             case START:
                 return java.awt.Color.WHITE;
             case OBSTACLE:
                 return java.awt.Color.decode(Color.BROWN.getHexCode());
             case TIMER:
+                if(tile.isUsed()){
+                    return java.awt.Color.decode(Color.DARK_RED.getHexCode());
+                }
                 return java.awt.Color.decode(Color.RED.getHexCode());
             case PATH:
             default:
@@ -318,6 +344,13 @@ public class BoardUI extends JFrame {
         Pawn updatedPawn;
         if(action == Action.MOVE_EAST || action == Action.MOVE_WEST || action == Action.MOVE_NORTH || action == Action.MOVE_SOUTH){
             updatedPawn = board.movePawn(pawnColor, action);
+            if(board.isPawnAtTimerTile(updatedPawn)){
+                // change color of timer tile to dark red
+                Tile timerTile = board.getTileAt(updatedPawn.getX(), updatedPawn.getY());
+                JPanel timerTilePanel = tilePanels[updatedPawn.getX()][updatedPawn.getY()];
+                java.awt.Color bgColor = getColorForTileType(timerTile.getType(), timerTile);
+                timerTilePanel.setBackground(bgColor);
+            }
         }
         else if(action == Action.ESCALATOR){
             updatedPawn = board.useEscalator(pawnColor);
@@ -337,10 +370,6 @@ public class BoardUI extends JFrame {
                     renderDiscoveredTiles(corner);
                 }
             }
-        }
-        else if(action == Action.VORTEX){
-            System.out.println("not implemented yet");
-            updatedPawn = previousPawn;
         }
         else{
             System.out.println("Unknown action");
@@ -384,7 +413,7 @@ public class BoardUI extends JFrame {
                             bgColor = getColorForTile(tile);
                         }
                         else{
-                            bgColor = getColorForTileType(tile.getType());
+                            bgColor = getColorForTileType(tile.getType(), tile);
                         }
 
                         if(tile.hasEscalator()){

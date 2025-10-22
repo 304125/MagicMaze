@@ -14,12 +14,15 @@ public class Board {
     private List<BoardVortex> purpleVortices = new java.util.ArrayList<>();
     private List<BoardVortex> greenVortices = new java.util.ArrayList<>();
     private List<BoardVortex> orangeVortices = new java.util.ArrayList<>();
+    private Timer timer;
+
 
 
     public Board(int maxSize) {
         numRows = maxSize;
         numCols = maxSize;
         this.tiles = new Tile[numRows][numCols];
+        this.timer = new Timer();
     }
 
     public Tile[][] getTiles() {
@@ -245,6 +248,14 @@ public class Board {
             }
         }
 
+        // check if the pawn has moved onto a Timer tile
+        Tile newTile = tiles[pawn.getX()][pawn.getY()];
+        if(moved && newTile.getType() == TileType.TIMER && !newTile.isUsed()){
+            System.out.println("Pawn " + pawnColor + " landed on a Timer tile!");
+            timer.flipTimer();
+            newTile.setUsed(true);
+        }
+
         return pawn;
     }
 
@@ -397,5 +408,14 @@ public class Board {
             }
         }
         return pawn;
+    }
+
+    public Timer getTimer() {
+        return timer;
+    }
+
+    public boolean isPawnAtTimerTile(Pawn pawn){
+        Tile tile = tiles[pawn.getX()][pawn.getY()];
+        return tile.getType() == TileType.TIMER;
     }
 }
