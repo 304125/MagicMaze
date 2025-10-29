@@ -9,13 +9,13 @@ public class Board {
     private final int numRows;
     private final int numCols;
     private List<Pawn> pawns;
-    private List<BoardEscalator> escalators = new java.util.ArrayList<>();
-    private List<BoardVortex> yellowVortices = new java.util.ArrayList<>();
-    private List<BoardVortex> purpleVortices = new java.util.ArrayList<>();
-    private List<BoardVortex> greenVortices = new java.util.ArrayList<>();
-    private List<BoardVortex> orangeVortices = new java.util.ArrayList<>();
-    private Timer timer;
-
+    private final List<BoardEscalator> escalators = new java.util.ArrayList<>();
+    private final List<BoardVortex> yellowVortices = new java.util.ArrayList<>();
+    private final List<BoardVortex> purpleVortices = new java.util.ArrayList<>();
+    private final List<BoardVortex> greenVortices = new java.util.ArrayList<>();
+    private final List<BoardVortex> orangeVortices = new java.util.ArrayList<>();
+    private final Timer timer;
+    private PawnManager pawnManager;
 
 
     public Board(int maxSize) {
@@ -23,6 +23,7 @@ public class Board {
         numCols = maxSize;
         this.tiles = new Tile[numRows][numCols];
         this.timer = new Timer();
+        this.pawnManager = new PawnManager(this);
     }
 
     public Tile[][] getTiles() {
@@ -192,72 +193,7 @@ public class Board {
         return pawns;
     }
 
-    public Pawn movePawn(Color pawnColor, Action action) {
-        Pawn pawn = getPawnByColor(pawnColor);
-        Tile currentTile = tiles[pawn.getX()][pawn.getY()];
-        boolean moved = false;
 
-        switch (action) {
-            case MOVE_NORTH:
-                if (!currentTile.hasWallUp() && tiles[pawn.getX() - 1][pawn.getY()] != null && !tiles[pawn.getX() - 1][pawn.getY()].isOccupied()) {
-                    pawn.moveNorth();
-                    System.out.println("Moved "+ pawnColor +" north");
-                    moved = true;
-                }
-                break;
-            case MOVE_SOUTH:
-                if( !currentTile.hasWallDown() && tiles[pawn.getX() + 1][pawn.getY()] != null && !tiles[pawn.getX() + 1][pawn.getY()].isOccupied()) {
-                    pawn.moveSouth();
-                    System.out.println("Moved "+ pawnColor +" south");
-                    moved = true;
-                }
-                break;
-            case MOVE_WEST:
-                if (!currentTile.hasWallLeft() && tiles[pawn.getX()][pawn.getY() - 1] != null && !tiles[pawn.getX()][pawn.getY() - 1].isOccupied()) {
-                    pawn.moveWest();
-                    System.out.println("Moved "+ pawnColor +" west");
-                    moved = true;
-                }
-                break;
-            case MOVE_EAST:
-                if( !currentTile.hasWallRight() && tiles[pawn.getX()][pawn.getY() + 1] != null && !tiles[pawn.getX()][pawn.getY() + 1].isOccupied()) {
-                    pawn.moveEast();
-                    System.out.println("Moved "+ pawnColor +" east");
-                    moved = true;
-                }
-                break;
-        }
-
-        //update occupied
-        if(moved){
-            tiles[pawn.getX()][pawn.getY()].setOccupied(true);
-            // set the previous tile to not occupied
-            switch (action) {
-                case MOVE_NORTH:
-                    tiles[pawn.getX() + 1][pawn.getY()].setOccupied(false);
-                    break;
-                case MOVE_SOUTH:
-                    tiles[pawn.getX() - 1][pawn.getY()].setOccupied(false);
-                    break;
-                case MOVE_WEST:
-                    tiles[pawn.getX()][pawn.getY() + 1].setOccupied(false);
-                    break;
-                case MOVE_EAST:
-                    tiles[pawn.getX()][pawn.getY() - 1].setOccupied(false);
-                    break;
-            }
-        }
-
-        // check if the pawn has moved onto a Timer tile
-        Tile newTile = tiles[pawn.getX()][pawn.getY()];
-        if(moved && newTile.getType() == TileType.TIMER && !newTile.isUsed()){
-            System.out.println("Pawn " + pawnColor + " landed on a Timer tile!");
-            timer.flipTimer();
-            newTile.setUsed(true);
-        }
-
-        return pawn;
-    }
 
     public Pawn getPawnByColor(Color color) {
         for (Pawn pawn : pawns) {
@@ -328,87 +264,9 @@ public class Board {
         return escalators;
     }
 
-    public Pawn useEscalator(Color pawnColor){
-        Pawn pawn = getPawnByColor(pawnColor);
-        Tile currentTile = tiles[pawn.getX()][pawn.getY()];
 
-        // find the currentTile in escalators
-        for (BoardEscalator escalator : escalators) {
-            if (escalator.getId().equals(currentTile.getEscalator())) {
-                // the currentTile is either start or end
-                Coordinate end = escalator.getEnd();
-                Coordinate start = escalator.getStart();
 
-                Coordinate current = new Coordinate(pawn.getX(), pawn.getY());
-                Coordinate destination;
-                if(current.equals(start)){
-                    // move to end
-                    destination = escalator.getEnd();
 
-                }
-                else if(current.equals(end)){
-                    // move to start
-                    destination = escalator.getStart();
-
-                }
-                else{
-                    System.out.println("Error: Pawn is not on the escalator tile");
-                    return null;
-                }
-
-                System.out.println("Pawn " + pawnColor + " used escalator " + escalator.getId() + " to (" + destination.getX() + "," + destination.getY() + ")");
-
-                // set previous tile not occupied, move pawn to destination, set new tile to occupied
-                tiles[pawn.getX()][pawn.getY()].setOccupied(false);
-                pawn.moveTo(destination.getX(), destination.getY());
-                tiles[pawn.getX()][pawn.getY()].setOccupied(true);
-
-            }
-        }
-        return pawn;
-    }
-
-    public Pawn useVortex(Color pawnColor, int vortexNumber){
-        Pawn pawn = getPawnByColor(pawnColor);
-
-        // find the vortex in the corresponding color list
-        List<BoardVortex> vortexList;
-        if(pawnColor == Color.YELLOW){
-            vortexList = yellowVortices;
-        }
-        else if(pawnColor == Color.PURPLE){
-            vortexList = purpleVortices;
-        }
-        else if(pawnColor == Color.GREEN){
-            vortexList = greenVortices;
-        }
-        else if(pawnColor == Color.ORANGE){
-            vortexList = orangeVortices;
-        }
-        else{
-            return pawn; // should not reach here
-        }
-
-        // find the vortex with the given cardId
-        for (BoardVortex vortex : vortexList) {
-            if (vortex.getCardId() == vortexNumber) {
-                Coordinate destination = vortex.getPosition();
-                // check if the destination is occupied
-                if(tiles[destination.getX()][destination.getY()].isOccupied()){
-                    System.out.println("Error: Vortex destination is occupied");
-                    return pawn;
-                }
-                System.out.println("Pawn " + pawnColor + " used vortex " + vortexNumber + " to (" + destination.getX() + "," + destination.getY() + ")");
-
-                // set previous tile not occupied, move pawn to destination, set new tile to occupied
-                tiles[pawn.getX()][pawn.getY()].setOccupied(false);
-                pawn.moveTo(destination.getX(), destination.getY());
-                tiles[pawn.getX()][pawn.getY()].setOccupied(true);
-                return pawn;
-            }
-        }
-        return pawn;
-    }
 
     public Timer getTimer() {
         return timer;
@@ -417,5 +275,49 @@ public class Board {
     public boolean isPawnAtTimerTile(Pawn pawn){
         Tile tile = tiles[pawn.getX()][pawn.getY()];
         return tile.getType() == TileType.TIMER;
+    }
+
+    public Pawn getRandomPawn(){
+        java.util.Random rand = new java.util.Random();
+        int randomIndex = rand.nextInt(pawns.size());
+        return pawns.get(randomIndex);
+    }
+
+    public List<BoardVortex> getYellowVortices() {
+        return yellowVortices;
+    }
+
+    public List<BoardVortex> getPurpleVortices() {
+        return purpleVortices;
+    }
+
+    public List<BoardVortex> getGreenVortices() {
+        return greenVortices;
+    }
+
+    public List<BoardVortex> getOrangeVortices() {
+        return orangeVortices;
+    }
+
+    public List<BoardVortex> getVortexListByColor(Color color) {
+        switch (color) {
+            case YELLOW: return yellowVortices;
+            case PURPLE: return purpleVortices;
+            case GREEN: return greenVortices;
+            case ORANGE: return orangeVortices;
+            default: return new java.util.ArrayList<>();
+        }
+    }
+
+    public Pawn useVortex(Color pawnColor, int vortexNumber){
+        return pawnManager.useVortex(pawnColor, vortexNumber);
+    }
+
+    public Pawn useEscalator(Color pawnColor){
+        return pawnManager.useEscalator(pawnColor);
+    }
+
+    public Pawn movePawn(Color pawnColor, Action action) {
+        return pawnManager.movePawn(pawnColor, action);
     }
 }
