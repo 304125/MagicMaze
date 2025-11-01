@@ -3,10 +3,11 @@ package org.game.utils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.game.model.*;
+import org.game.model.AI.AIPlayer;
+import org.game.model.AI.OneHeroPlayer;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,8 @@ public class JsonReader {
         return card;
     }
 
-    public List<Player> loadPlayersFromJson(int numPlayers) {
+    public List<Player> loadPlayersFromJson(int numPlayers, int numAiPlayers, Board board) {
+        int aiPlayersLeft = numAiPlayers;
         ObjectMapper objectMapper = new ObjectMapper();
         String filePath = "actions.json";
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath)) {
@@ -102,7 +104,13 @@ public class JsonReader {
                         for (String actionString : actionCardList) {
                             actions.add(Action.valueOf(actionString));
                         }
-                        players.add(new Player(actions));
+                        if(aiPlayersLeft > 0){
+                            players.add(new OneHeroPlayer(actions, board));
+                            aiPlayersLeft--;
+                        }
+                        else{
+                            players.add(new Player(actions));
+                        }
                     }
                     break; // exit the loop once we've found the matching number of players
                 }

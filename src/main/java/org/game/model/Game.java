@@ -12,6 +12,7 @@ public class Game {
     private Card startingCard;
     private final int boardMaxSize = 23;
     private final int numberOfPlayers = 4;
+    private final int numberOfAiPlayers = 4;
     private List<Player> players;
 
     public Game() {
@@ -42,7 +43,7 @@ public class Game {
     }
 
     private void initializePlayers(){
-        players = jsonReader.loadPlayersFromJson(numberOfPlayers);
+        players = jsonReader.loadPlayersFromJson(numberOfPlayers, numberOfAiPlayers, this.board);
     }
 
     private void printPlayers(){
