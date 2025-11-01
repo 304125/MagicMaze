@@ -1,5 +1,7 @@
 package org.game.model;
 
+import org.game.model.AI.SearchPath;
+
 import java.awt.*;
 import java.util.List;
 
@@ -16,6 +18,7 @@ public class Board {
     private final List<BoardVortex> orangeVortices = new java.util.ArrayList<>();
     private final Timer timer;
     private PawnManager pawnManager;
+    private PathFinder pathFinder;
 
 
     public Board(int maxSize) {
@@ -24,6 +27,22 @@ public class Board {
         this.tiles = new Tile[numRows][numCols];
         this.timer = new Timer();
         this.pawnManager = new PawnManager(this);
+        this.pathFinder = new PathFinder(tiles);
+    }
+
+    public void testPathFinder(){
+        // locate one of the pawns
+        Pawn pawn = getRandomPawn();
+        System.out.println("Finding path from (14,11) to (13,11)");
+        SearchPath path = pathFinder.findShortestPath(14, 11, 12, 11);
+        if (path != null) {
+            System.out.println("Path found:");
+            for (SearchPath.Node node : path.getNodes()) {
+                System.out.println("Step to (" + node.getX() + ", " + node.getY() + ")");
+            }
+        } else {
+            System.out.println("No path found.");
+        }
     }
 
     public Tile[][] getTiles() {
@@ -35,23 +54,21 @@ public class Board {
 
         for (int i = 0; i < startingTiles.length; i++) {
             for (int j = 0; j < startingTiles[i].length; j++) {
-                int x = (int) (i+ (double) (numRows / 2));
-                int y = (int) (j+ (double) (numRows / 2));
+                int x = (int) (i + (double) (numRows / 2));
+                int y = (int) (j + (double) (numRows / 2));
+                System.out.println("Placing tile at (" + x + ", " + y + ") of type " + startingTiles[i][j].getType());
                 tiles[x][y] = startingTiles[i][j];
-                if(startingTiles[i][j].hasEscalator()){
+                if (startingTiles[i][j].hasEscalator()) {
                     updateEscalator(startingTiles[i][j], new Coordinate(x, y));
                 }
-                if(startingTiles[i][j].getType() == TileType.VORTEX){
-                    if(startingTiles[i][j].getColor() == Color.YELLOW){
+                if (startingTiles[i][j].getType() == TileType.VORTEX) {
+                    if (startingTiles[i][j].getColor() == Color.YELLOW) {
                         addVortex(yellowVortices, startingTiles[i][j], new Coordinate(x, y));
-                    }
-                    else if(startingTiles[i][j].getColor() == Color.PURPLE){
+                    } else if (startingTiles[i][j].getColor() == Color.PURPLE) {
                         addVortex(purpleVortices, startingTiles[i][j], new Coordinate(x, y));
-                    }
-                    else if(startingTiles[i][j].getColor() == Color.GREEN){
+                    } else if (startingTiles[i][j].getColor() == Color.GREEN) {
                         addVortex(greenVortices, startingTiles[i][j], new Coordinate(x, y));
-                    }
-                    else if(startingTiles[i][j].getColor() == Color.ORANGE){
+                    } else if (startingTiles[i][j].getColor() == Color.ORANGE) {
                         addVortex(orangeVortices, startingTiles[i][j], new Coordinate(x, y));
                     }
                 }
@@ -164,15 +181,6 @@ public class Board {
         }
     }
 
-    public void printBoard() {
-        for (Tile[] row : tiles) {
-            for (Tile tile : row) {
-                System.out.print(tile.getType() + " ");
-            }
-            System.out.println();
-        }
-    }
-
     public boolean isTileAt(Coordinate position) {
         if (tiles[position.getX()][position.getY()] != null) {
             return true;
@@ -192,8 +200,6 @@ public class Board {
     public List<Pawn> getPawns() {
         return pawns;
     }
-
-
 
     public Pawn getPawnByColor(Color color) {
         for (Pawn pawn : pawns) {
@@ -216,18 +222,6 @@ public class Board {
         } else {
             return null;
         }
-    }
-
-    public int countDiscoveredTiles() {
-        int count = 0;
-        for (Tile[] row : tiles) {
-            for (Tile tile : row) {
-                if (tile != null) {
-                    count++;
-                }
-            }
-        }
-        return count;
     }
 
     public Coordinate getLeftTopCornerOfNewCard(Coordinate position) {
@@ -264,10 +258,6 @@ public class Board {
         return escalators;
     }
 
-
-
-
-
     public Timer getTimer() {
         return timer;
     }
@@ -281,22 +271,6 @@ public class Board {
         java.util.Random rand = new java.util.Random();
         int randomIndex = rand.nextInt(pawns.size());
         return pawns.get(randomIndex);
-    }
-
-    public List<BoardVortex> getYellowVortices() {
-        return yellowVortices;
-    }
-
-    public List<BoardVortex> getPurpleVortices() {
-        return purpleVortices;
-    }
-
-    public List<BoardVortex> getGreenVortices() {
-        return greenVortices;
-    }
-
-    public List<BoardVortex> getOrangeVortices() {
-        return orangeVortices;
     }
 
     public List<BoardVortex> getVortexListByColor(Color color) {

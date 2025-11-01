@@ -21,4 +21,8 @@ public enum Color {
     public String getHexCode() {
         return hexCode;
     }
+
+    public String toString() {
+        return this.name().toLowerCase();
+    }
 }

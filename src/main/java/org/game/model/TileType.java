@@ -8,5 +8,9 @@ public enum TileType {
     OBSTACLE, // blank tile
     VORTEX, // Vortex tile
     DISCOVERY, // Discovery tile
-    TIMER // Timer tile
+    TIMER; // Timer tile
+
+    public String toString(){
+        return this.name().toLowerCase();
+    }
 }
