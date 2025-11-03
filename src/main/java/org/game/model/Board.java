@@ -1,8 +1,8 @@
 package org.game.model;
 
+import org.game.model.AI.PathFinder;
 import org.game.model.AI.SearchPath;
 
-import java.awt.*;
 import java.util.List;
 
 public class Board {
@@ -33,12 +33,14 @@ public class Board {
     public void testPathFinder(){
         // locate one of the pawns
         Pawn pawn = getRandomPawn();
-        System.out.println("Finding path from (14,11) to (13,11)");
-        SearchPath path = pathFinder.findShortestPath(14, 11, 12, 11);
+        Coordinate from = new Coordinate(13, 11);
+        Coordinate to = new Coordinate(13, 14);
+        System.out.println("Finding path from "+ from +" to "+ to);
+        SearchPath path = pathFinder.findShortestPath(from, to);
         if (path != null) {
             System.out.println("Path found:");
             for (SearchPath.Node node : path.getNodes()) {
-                System.out.println("Step to (" + node.getX() + ", " + node.getY() + ")");
+                System.out.println("Step to (" + node.getX() + ", " + node.getY() + ") using " + node.getAction());
             }
         } else {
             System.out.println("No path found.");

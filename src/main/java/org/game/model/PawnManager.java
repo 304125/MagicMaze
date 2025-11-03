@@ -3,10 +3,10 @@ package org.game.model;
 import java.util.List;
 
 public class PawnManager {
-    private final Board board;
+    private static Board board;
 
     public PawnManager(Board board) {
-        this.board = board;
+        PawnManager.board = board;
     }
 
     public Pawn useVortex(Color pawnColor, int vortexNumber){
@@ -38,6 +38,29 @@ public class PawnManager {
         Pawn pawn = board.getPawnByColor(pawnColor);
         Tile currentTile = board.getTileAt(pawn.getX(), pawn.getY());
 
+        Coordinate destination = getOtherSideOfEscalator(new Coordinate(pawn.getX(), pawn.getY()));
+        if(destination == null){
+            System.out.println("Error: No escalator found at current position");
+            return pawn;
+        }
+        if(board.getTileAt(destination.getX(), destination.getY()).isOccupied()){
+            System.out.println("Error: Escalator destination is occupied");
+            return pawn;
+        }
+        else{
+            System.out.println("Pawn " + pawnColor + " used an escalator to (" + destination.getX() + "," + destination.getY() + ")");
+
+            // set previous tile not occupied, move pawn to destination, set new tile to occupied
+            board.getTileAt(pawn.getX(), pawn.getY()).setOccupied(false);
+            pawn.moveTo(destination.getX(), destination.getY());
+            board.getTileAt(pawn.getX(), pawn.getY()).setOccupied(true);
+        }
+        return pawn;
+    }
+
+    public static Coordinate getOtherSideOfEscalator(Coordinate currentCoordinate){
+        Tile currentTile = board.getTileAt(currentCoordinate.getX(), currentCoordinate.getY());
+
         // find the currentTile in escalators
         for (BoardEscalator escalator : board.getEscalators()) {
             if (escalator.getId().equals(currentTile.getEscalator())) {
@@ -45,33 +68,22 @@ public class PawnManager {
                 Coordinate end = escalator.getEnd();
                 Coordinate start = escalator.getStart();
 
-                Coordinate current = new Coordinate(pawn.getX(), pawn.getY());
-                Coordinate destination;
-                if(current.equals(start)){
+                if(currentCoordinate.equals(start)){
                     // move to end
-                    destination = escalator.getEnd();
-
+                    return escalator.getEnd();
                 }
-                else if(current.equals(end)){
+                else if(currentCoordinate.equals(end)){
                     // move to start
-                    destination = escalator.getStart();
-
+                    return escalator.getStart();
                 }
                 else{
-                    System.out.println("Error: Pawn is not on the escalator tile");
+                    System.out.println("Error: Coordinate is not an escalator tile");
                     return null;
                 }
-
-                System.out.println("Pawn " + pawnColor + " used escalator " + escalator.getId() + " to (" + destination.getX() + "," + destination.getY() + ")");
-
-                // set previous tile not occupied, move pawn to destination, set new tile to occupied
-                board.getTileAt(pawn.getX(), pawn.getY()).setOccupied(false);
-                pawn.moveTo(destination.getX(), destination.getY());
-                board.getTileAt(pawn.getX(), pawn.getY()).setOccupied(true);
-
             }
         }
-        return pawn;
+        // should not get here
+        return null;
     }
 
     public Pawn movePawn(Color pawnColor, Action action) {
