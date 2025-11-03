@@ -157,7 +157,7 @@ public class BoardUI extends JFrame {
         new Thread(() -> {
             try (Scanner scanner = new Scanner(System.in)) {
                 while (true) {
-                    System.out.print("Enter color of pawn (y: yellow, o: orange, p: purple, g: green) and direction (n: north, s: south, w: west, e: east): ");
+                    System.out.print("Enter color of pawn (y: yellow, o: orange, p: purple, g: green) and direction (n: north, s: south, w: west, e: east) or action (d: discover, v: vortex, x: escalator):");
                     String input = scanner.nextLine().trim().toLowerCase();
                     // split input into color and direction
                     if (input.length() != 2 && input.length() != 3 && input.length() != 4) {
