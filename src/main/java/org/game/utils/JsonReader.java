@@ -3,8 +3,8 @@ package org.game.utils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.game.model.*;
-import org.game.model.AI.AIPlayer;
 import org.game.model.AI.OneHeroPlayer;
+import org.game.model.board.Board;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,5 +1,6 @@
 package org.game.model;
 
+import org.game.model.board.Board;
 import org.game.utils.JsonReader;
 
 import java.util.List;

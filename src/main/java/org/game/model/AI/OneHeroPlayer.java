@@ -1,7 +1,7 @@
 package org.game.model.AI;
 
 import org.game.model.Action;
-import org.game.model.Board;
+import org.game.model.board.Board;
 import org.game.model.Pawn;
 
 import java.util.List;

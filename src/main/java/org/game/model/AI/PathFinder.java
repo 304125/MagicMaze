@@ -1,7 +1,7 @@
 package org.game.model.AI;
 
 import org.game.model.Coordinate;
-import org.game.model.PawnManager;
+import org.game.model.board.PawnManager;
 import org.game.model.Tile;
 
 import java.util.Comparator;

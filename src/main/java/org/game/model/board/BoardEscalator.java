@@ -1,4 +1,6 @@
-package org.game.model;
+package org.game.model.board;
+
+import org.game.model.Coordinate;
 
 public class BoardEscalator {
     Coordinate start;

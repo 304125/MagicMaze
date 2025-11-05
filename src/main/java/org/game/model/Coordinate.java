@@ -31,4 +31,8 @@ public class Coordinate {
         Coordinate that = (Coordinate) o;
         return this.x == that.x && this.y == that.y;
     }
+
+    public Coordinate copy(){
+        return new Coordinate(this.x, this.y);
+    }
 }

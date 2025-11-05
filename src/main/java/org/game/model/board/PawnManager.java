@@ -1,4 +1,6 @@
-package org.game.model;
+package org.game.model.board;
+
+import org.game.model.*;
 
 import java.util.List;
 
@@ -148,6 +150,8 @@ public class PawnManager {
             System.out.println("Pawn " + pawnColor + " landed on a Timer tile!");
             board.getTimer().flipTimer();
             newTile.setUsed(true);
+            // remove timer from board's active timers
+            board.removeTimerFromGoals(new Coordinate(pawn.getX(), pawn.getY()));
         }
 
         return pawn;

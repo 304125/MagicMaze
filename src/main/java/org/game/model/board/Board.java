@@ -1,5 +1,6 @@
-package org.game.model;
+package org.game.model.board;
 
+import org.game.model.*;
 import org.game.model.AI.PathFinder;
 import org.game.model.AI.SearchPath;
 
@@ -17,8 +18,9 @@ public class Board {
     private final List<BoardVortex> greenVortices = new java.util.ArrayList<>();
     private final List<BoardVortex> orangeVortices = new java.util.ArrayList<>();
     private final Timer timer;
-    private PawnManager pawnManager;
-    private PathFinder pathFinder;
+    private final PawnManager pawnManager;
+    private final PathFinder pathFinder;
+    private GeneralGoalManager generalGoalManager;
 
 
     public Board(int maxSize) {
@@ -28,6 +30,7 @@ public class Board {
         this.timer = new Timer();
         this.pawnManager = new PawnManager(this);
         this.pathFinder = new PathFinder(tiles);
+        this.generalGoalManager = new GeneralGoalManager();
     }
 
     public void testPathFinder(){
@@ -60,26 +63,63 @@ public class Board {
                 int y = (int) (j + (double) (numRows / 2));
                 System.out.println("Placing tile at (" + x + ", " + y + ") of type " + startingTiles[i][j].getType());
                 tiles[x][y] = startingTiles[i][j];
-                if (startingTiles[i][j].hasEscalator()) {
-                    updateEscalator(startingTiles[i][j], new Coordinate(x, y));
-                }
-                if (startingTiles[i][j].getType() == TileType.VORTEX) {
-                    if (startingTiles[i][j].getColor() == Color.YELLOW) {
-                        addVortex(yellowVortices, startingTiles[i][j], new Coordinate(x, y));
-                    } else if (startingTiles[i][j].getColor() == Color.PURPLE) {
-                        addVortex(purpleVortices, startingTiles[i][j], new Coordinate(x, y));
-                    } else if (startingTiles[i][j].getColor() == Color.GREEN) {
-                        addVortex(greenVortices, startingTiles[i][j], new Coordinate(x, y));
-                    } else if (startingTiles[i][j].getColor() == Color.ORANGE) {
-                        addVortex(orangeVortices, startingTiles[i][j], new Coordinate(x, y));
-                    }
-                }
+
+            }
+        }
+        // handle tile type specifics AFTER all tiles are placed
+        for (int i = 0; i < startingTiles.length; i++) {
+            for (int j = 0; j < startingTiles[i].length; j++) {
+                int x = (int) (i + (double) (numRows / 2));
+                int y = (int) (j + (double) (numRows / 2));
+                handleTileTypeSpecifics(startingTiles[i][j], new Coordinate(x, y));
             }
         }
         printEscalators();
     }
 
-    private void addVortex(List<BoardVortex> vortexList, Tile tile, Coordinate position){
+    private void handleTileTypeSpecifics(Tile tile, Coordinate position) {
+        if(tile.hasEscalator()){
+            updateEscalator(tile, position);
+        }
+        switch (tile.getType()) {
+            case VORTEX -> addVortex(tile.getColor(), tile, position);
+            case TIMER -> generalGoalManager.addTimerToAllPawns(position);
+            case GOAL_ITEM -> generalGoalManager.getPawnGoalManager(tile.getColor()).setItem(position);
+            case GOAL_EXIT -> generalGoalManager.getPawnGoalManager(tile.getColor()).setExit(position);
+            case DISCOVERY -> {
+                // only add discovery if it is not surrounded from all 4 sides
+                if (!(isTileAt(position.move(1, 0)) && isTileAt(position.move(-1, 0)) && isTileAt(position.move(0, 1)) && isTileAt(position.move(0, -1))))
+                 {
+                    generalGoalManager.getPawnGoalManager(tile.getColor()).addDiscovery(position);
+                 }
+            }
+            default -> {
+            }
+        }
+    }
+
+    private void checkForBlockedDiscoveries(Coordinate leftTopCorner){
+        List<Coordinate> possibleEntries = getFourPossibleAdjacentEntryTiles(leftTopCorner);
+        for (Coordinate entry : possibleEntries) {
+            // check if there is a discovery tile at this position
+            Tile tile = getTileAt(entry.getX(), entry.getY());
+            if(tile != null && tile.getType() == TileType.DISCOVERY){
+                // no need to check if it is now blocked from all 4 sides - if it exists, it is surrounded
+                // remove from generalGoalManager
+                generalGoalManager.getPawnGoalManager(tile.getColor()).removeDiscovery(entry);
+            }
+        }
+    }
+
+    private void addVortex(Color color, Tile tile, Coordinate position){
+        List<BoardVortex> vortexList;
+        switch (color) {
+            case YELLOW: vortexList = yellowVortices; break;
+            case PURPLE: vortexList = purpleVortices; break;
+            case GREEN: vortexList = greenVortices; break;
+            case ORANGE: vortexList = orangeVortices; break;
+            default: return;
+        }
         vortexList.add(new BoardVortex(position, tile.getCardId(), tile.getColor()));
     }
 
@@ -94,6 +134,12 @@ public class Board {
     }
 
     public boolean addCardToBoard(Card newCard, Coordinate coordinate) {
+        // remove the discovery tile from goals
+        Color discoveryColor = tiles[coordinate.getX()][coordinate.getY()].getColor();
+
+        // not needed anymore because I check for all 4 adjacent entry tiles later
+        //generalGoalManager.getPawnGoalManager(discoveryColor).removeDiscovery(coordinate);
+
         // calculate the newCard so that the START is on the bottom left corner of the coordinate
         Tile[][] newCardTiles = newCard.getTiles();
 
@@ -143,26 +189,18 @@ public class Board {
         for (int i = 0; i < rotatedTiles.length; i++) {
             for (int j = 0; j < rotatedTiles[i].length; j++) {
                 tiles[corner.getX() + i][corner.getY() + j] = rotatedTiles[i][j];
-                Coordinate c = new Coordinate(corner.getX() + i, corner.getY() + j);
-                if(rotatedTiles[i][j].hasEscalator()){
-                    updateEscalator(rotatedTiles[i][j], c);
-                }
-                if(rotatedTiles[i][j].getType() == TileType.VORTEX){
-                    if(rotatedTiles[i][j].getColor() == Color.YELLOW){
-                        addVortex(yellowVortices, rotatedTiles[i][j], c);
-                    }
-                    else if(rotatedTiles[i][j].getColor() == Color.PURPLE){
-                        addVortex(purpleVortices, rotatedTiles[i][j], c);
-                    }
-                    else if(rotatedTiles[i][j].getColor() == Color.GREEN){
-                        addVortex(greenVortices, rotatedTiles[i][j], c);
-                    }
-                    else if(rotatedTiles[i][j].getColor() == Color.ORANGE){
-                        addVortex(orangeVortices, rotatedTiles[i][j], c);
-                    }
-                }
             }
         }
+        // run after adding all tiles
+        for (int i = 0; i < rotatedTiles.length; i++) {
+            for (int j = 0; j < rotatedTiles[i].length; j++) {
+                Coordinate c = new Coordinate(corner.getX() + i, corner.getY() + j);
+                handleTileTypeSpecifics(rotatedTiles[i][j], c);
+            }
+        }
+
+        checkForBlockedDiscoveries(corner);
+
         return true;
     }
 
@@ -249,6 +287,15 @@ public class Board {
         return null; // should not reach here
     }
 
+    public List<Coordinate> getFourPossibleAdjacentEntryTiles(Coordinate leftTopCorner){
+        List<Coordinate> possibleEntries = new java.util.ArrayList<>();
+        possibleEntries.add(new Coordinate(leftTopCorner.getX()+1, leftTopCorner.getY()-1)); // left
+        possibleEntries.add(new Coordinate(leftTopCorner.getX()+2, leftTopCorner.getY()+4)); // right
+        possibleEntries.add(new Coordinate(leftTopCorner.getX()-1, leftTopCorner.getY()+2)); // top
+        possibleEntries.add(new Coordinate(leftTopCorner.getX()+4, leftTopCorner.getY()+1)); // bottom
+        return possibleEntries;
+    }
+
     public void printEscalators(){
         for (BoardEscalator escalator : escalators) {
             System.out.println("Escalator ID: " + escalator.getId() + " from " + escalator.getStart().getX() + "," + escalator.getStart().getY() +
@@ -295,5 +342,9 @@ public class Board {
 
     public Pawn movePawn(Color pawnColor, Action action) {
         return pawnManager.movePawn(pawnColor, action);
+    }
+
+    public void removeTimerFromGoals(Coordinate timer) {
+        generalGoalManager.removeTimerFromAllPawns(timer);
     }
 }

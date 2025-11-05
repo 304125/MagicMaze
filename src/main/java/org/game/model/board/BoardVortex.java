@@ -1,4 +1,7 @@
-package org.game.model;
+package org.game.model.board;
+
+import org.game.model.Color;
+import org.game.model.Coordinate;
 
 public class BoardVortex {
     private Coordinate position;
