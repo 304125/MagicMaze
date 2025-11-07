@@ -19,16 +19,16 @@ public class Pawn {
     }
 
     public void moveNorth() {
-        coordinate.move(-1, 0);
+        coordinate = coordinate.move(-1, 0);
     }
     public void moveSouth() {
-        coordinate.move(1, 0);
+        coordinate = coordinate.move(1, 0);
     }
     public void moveEast() {
-        coordinate.move(0, 1);
+        coordinate = coordinate.move(0, 1);
     }
     public void moveWest() {
-        coordinate.move(0, -1);
+        coordinate = coordinate.move(0, -1);
     }
 
     public void moveTo(Coordinate coordinate) {

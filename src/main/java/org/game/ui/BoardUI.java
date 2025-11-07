@@ -1,13 +1,6 @@
 package org.game.ui;
 
-import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
-import org.apache.batik.bridge.BridgeContext;
-import org.apache.batik.bridge.GVTBuilder;
-import org.apache.batik.bridge.UserAgentAdapter;
-import org.apache.batik.gvt.GraphicsNode;
-import org.apache.batik.util.XMLResourceDescriptor;
 import org.game.model.*;
-import org.game.model.Action;
 import org.game.model.Color;
 import org.game.model.board.Board;
 import org.game.model.board.BoardEscalator;
@@ -19,66 +12,47 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 public class BoardUI extends JFrame {
-    private final Game game;
     private static final int TILE_SIZE = 30;
-    private JPanel[][] tilePanels;
+    private final JPanel[][] tilePanels;
     private LinePanel linePanel;
-    private Board board;
+    private final Board board;
     private Map<TileType, ImageIcon> tileTypeImages;
-    private JPanel gridPanel;
+    private final JPanel gridPanel;
 
-    public BoardUI(Game game) {
-        this.game = game;
+    private final int numberOfRows;
+    private final int numberOfCols;
+
+    public BoardUI(Board board) {
         setTitle("Magic Maze Board");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        this.board = game.getBoard(); // Initialize the board
-        int rows = board.getNumRows();
-        int cols = board.getNumCols();
-        tilePanels = new JPanel[rows][cols];
+        this.board = board;
+        numberOfRows = board.getNumRows();
+        numberOfCols = board.getNumCols();
+        tilePanels = new JPanel[numberOfRows][numberOfCols];
 
-        // Load images for each TileType
-        tileTypeImages = new HashMap<>();
-        BufferedImage vortexImage = null;
-        BufferedImage discoverImage = null;
-        BufferedImage exitImage = null;
-        BufferedImage itemImage = null;
-        try {
-            vortexImage = ImageIO.read(getClass().getClassLoader().getResourceAsStream("images/vortex.png"));
-            discoverImage = ImageIO.read(getClass().getClassLoader().getResourceAsStream("images/discover.png"));
-            exitImage = ImageIO.read(getClass().getClassLoader().getResourceAsStream("images/exit.png"));
-            itemImage = ImageIO.read(getClass().getClassLoader().getResourceAsStream("images/item.png"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        tileTypeImages.put(TileType.VORTEX, new ImageIcon(vortexImage));
-        tileTypeImages.put(TileType.DISCOVERY, new ImageIcon(discoverImage));
-        tileTypeImages.put(TileType.GOAL_EXIT, new ImageIcon(exitImage));
-        tileTypeImages.put(TileType.GOAL_ITEM, new ImageIcon(itemImage));
-
+        loadImages();
 
         gridPanel = new JPanel();
-        gridPanel.setLayout(new GridLayout(rows+1, cols));
+        gridPanel.setLayout(new GridLayout(numberOfRows+1, numberOfCols));
 
         // set content of the first row to be the top border of the board, showing timer
-        for (int j = 0; j < cols; j++) {
+        for (int j = 0; j < numberOfCols; j++) {
             JPanel tilePanel = new JPanel();
             tilePanel.setPreferredSize(new Dimension(TILE_SIZE, TILE_SIZE));
-            if(j == cols / 2){
+            if(j == numberOfCols / 2){
                 // fetch game.getTimer().getTimeLeftInTimer() every second and display it
-                JLabel timerLabel = new JLabel(""+game.getBoard().getTimer().getTimeLeftInTimer());
+                JLabel timerLabel = new JLabel(""+board.getTimer().getTimeLeftInTimer());
                 timerLabel.setFont(new Font("Arial", Font.BOLD, 12));
                 tilePanel.setLayout(new BorderLayout());
                 tilePanel.add(timerLabel, BorderLayout.CENTER);
                 // update timer every second
-                new Timer(1000, e -> timerLabel.setText(""+game.getBoard().getTimer().getTimeLeftInTimer())).start();
+                new Timer(1000, e -> timerLabel.setText(""+board.getTimer().getTimeLeftInTimer())).start();
                 tilePanel.setBackground(java.awt.Color.LIGHT_GRAY);
 
             }
@@ -90,16 +64,13 @@ public class BoardUI extends JFrame {
         }
 
         // Initialize the board and find the START position
-        for (int i = 1; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
+        for (int i = 1; i < numberOfRows; i++) {
+            for (int j = 0; j < numberOfCols; j++) {
                 Tile tile = board.getTiles()[i][j];
                 JPanel tilePanel = new JPanel();
                 tilePanel.setPreferredSize(new Dimension(TILE_SIZE, TILE_SIZE));
                 if(tile == null){
                     tilePanel.setBackground(java.awt.Color.LIGHT_GRAY);
-                    tilePanels[i][j] = tilePanel;
-                    gridPanel.add(tilePanel);
-                    continue;
                 }
                 else{
                     System.out.println("Rendering tile at: (" + i + ", " + j + ") of type " + tile.getType());
@@ -133,9 +104,9 @@ public class BoardUI extends JFrame {
                     }
 
                     tilePanel.setBorder(createTileBorder(tile));
-                    tilePanels[i][j] = tilePanel;
-                    gridPanel.add(tilePanel);
                 }
+                tilePanels[i][j] = tilePanel;
+                gridPanel.add(tilePanel);
             }
         }
 
@@ -156,73 +127,29 @@ public class BoardUI extends JFrame {
 
         drawEscalators();
 
-        new Thread(() -> {
-            try (Scanner scanner = new Scanner(System.in)) {
-                while (true) {
-                    System.out.print("Enter color of pawn (y: yellow, o: orange, p: purple, g: green) and direction (n: north, s: south, w: west, e: east) or action (d: discover, v: vortex, x: escalator):");
-                    String input = scanner.nextLine().trim().toLowerCase();
-                    // split input into color and direction
-                    if (input.length() != 2 && input.length() != 3 && input.length() != 4) {
-                        System.out.println("Invalid input. Please provide both color and direction.");
-                        continue;
-                    }
-                    String colorString = String.valueOf(input.charAt(0));
-                    String actionString = String.valueOf(input.charAt(1));
-                    int vortexNumber = 0;
-                    try {
-                        if (input.length() == 3) {
-                            vortexNumber = Character.getNumericValue(input.charAt(2));
-                        } else if (input.length() == 4) {
-                            vortexNumber = Integer.parseInt(input.substring(2, 4));
-                        }
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid vortex number. Please enter a valid number.");
-                        continue;
-                    }
-
-                    Color pawnColor = switch (colorString) {
-                        case "y" -> Color.YELLOW;
-                        case "o" -> Color.ORANGE;
-                        case "p" -> Color.PURPLE;
-                        case "g" -> Color.GREEN;
-                        default -> null;
-                    };
-                    Action action = switch (actionString) {
-                        case "n" -> Action.MOVE_NORTH;
-                        case "s" -> Action.MOVE_SOUTH;
-                        case "w" -> Action.MOVE_WEST;
-                        case "e" -> Action.MOVE_EAST;
-                        case "d" -> Action.DISCOVER;
-                        case "v" -> Action.VORTEX;
-                        case "x" -> Action.ESCALATOR;
-                        default -> null;
-                    };
-
-                    //
-                    if ((vortexNumber != 0 && action != Action.VORTEX) || vortexNumber == 0 && action == Action.VORTEX) {
-                        System.out.println("Invalid input. Vortex action requires a number (e.g., 'yv1' for yellow vortex 1).");
-                        continue;
-                    }
-
-                    if (action != null && pawnColor != null && vortexNumber == 0) {
-                        movePawn(pawnColor, action);
-                    }
-                    // vortexNumber != 0
-                    else if (action == Action.VORTEX && pawnColor != null){
-                        vortexPawn(pawnColor, vortexNumber);
-                    }
-                    else {
-                        System.out.println("Invalid input. Please provide both color and direction in correct format.");
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
-
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+    }
+
+    private void loadImages() {
+        // Load images for each TileType
+        tileTypeImages = new HashMap<>();
+        loadIndividualImage("images/vortex.png", TileType.VORTEX);
+        loadIndividualImage("images/discover.png", TileType.DISCOVERY);
+        loadIndividualImage("images/exit.png", TileType.GOAL_EXIT);
+        loadIndividualImage("images/item.png", TileType.GOAL_ITEM);
+    }
+
+    private void loadIndividualImage(String path, TileType type) {
+        BufferedImage image;
+        try{
+            image = ImageIO.read(getClass().getClassLoader().getResourceAsStream(path));
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        tileTypeImages.put(type, new ImageIcon(image));
     }
 
     private void drawEscalators() {
@@ -235,7 +162,7 @@ public class BoardUI extends JFrame {
         }
     }
 
-    private void highlightPawn(Pawn pawn) {
+    public void highlightPawn(Pawn pawn) {
         // Highlight the pawn's position
         JPanel pawnTile = getTilePanelAt(pawn.getCoordinate());
 
@@ -263,7 +190,7 @@ public class BoardUI extends JFrame {
         repaint();
     }
 
-    private void unhighlightPawn(Pawn pawn){
+    public void unhighlightPawn(Pawn pawn){
         System.out.println("Un-highlighting pawn at: " + pawn.getCoordinate());
         // get children of tilePanels component at x and y
 
@@ -277,17 +204,7 @@ public class BoardUI extends JFrame {
 
         // re-print the vortex number if it is a vortex
         Tile tile = board.getTileAt(pawn.getCoordinate());
-        if(tile.getType() == TileType.VORTEX){
-            // Add cardId as a JLabel on top of the tile
-            JLabel cardIdLabel = new JLabel(String.valueOf(tile.getCardId()));
-            cardIdLabel.setFont(new Font("Arial", Font.BOLD, 12));
-            cardIdLabel.setForeground(java.awt.Color.BLACK);
-            cardIdLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            cardIdLabel.setVerticalAlignment(SwingConstants.CENTER);
-
-            pawnTile.setLayout(new BorderLayout());
-            pawnTile.add(cardIdLabel, BorderLayout.CENTER);
-        }
+        visualizeVortexTile(tile, pawnTile);
 
         //tilePanels[pawn.getX()][pawn.getY()].removeAll();
         getTilePanelAt(pawn.getCoordinate()).setLayout(new GridBagLayout());
@@ -295,8 +212,6 @@ public class BoardUI extends JFrame {
         getTilePanelAt(pawn.getCoordinate()).repaint();
         revalidate();
         repaint();
-
-
     }
 
     private java.awt.Color getColorForTileType(TileType type, Tile tile) {
@@ -341,75 +256,17 @@ public class BoardUI extends JFrame {
         return BorderFactory.createMatteBorder(top, left, bottom, right, java.awt.Color.decode(Color.BROWN.getHexCode()));
     }
 
-    private void movePawn(Color pawnColor, Action action) {
-        Pawn previousPawn = new Pawn(board.getPawnByColor(pawnColor));
-        Pawn updatedPawn;
-        if(action == Action.MOVE_EAST || action == Action.MOVE_WEST || action == Action.MOVE_NORTH || action == Action.MOVE_SOUTH){
-            updatedPawn = board.movePawn(pawnColor, action);
-            if(board.isPawnAtTimerTile(updatedPawn)){
-                // change color of timer tile to dark red
-                Tile timerTile = board.getTileAt(updatedPawn.getCoordinate());
-                JPanel timerTilePanel = getTilePanelAt(updatedPawn.getCoordinate());
-                java.awt.Color bgColor = getColorForTileType(timerTile.getType(), timerTile);
-                timerTilePanel.setBackground(bgColor);
-            }
-        }
-        else if(action == Action.ESCALATOR){
-            updatedPawn = board.useEscalator(pawnColor);
-            if(updatedPawn.equals(previousPawn)){
-                System.out.println("No escalator to use for pawn " + pawnColor);
-            }
-        }
-        else if(action == Action.DISCOVER){
-            updatedPawn = previousPawn;
-            // check if the pawn is standing on discovery tile
-            Tile currentTile = board.getTileAt(updatedPawn.getCoordinate());
-            if(currentTile.getType() == TileType.DISCOVERY && pawnColor == currentTile.getColor()){
-                Coordinate corner = board.getLeftTopCornerOfNewCard(updatedPawn.getCoordinate());
-                boolean discovered = game.discoverCard(updatedPawn.getCoordinate());
-                // re-render the board
-                if(discovered){
-                    renderDiscoveredTiles(corner);
-                }
-            }
-        }
-        else{
-            System.out.println("Unknown action");
-            updatedPawn = previousPawn;
-            return;
-        }
-
-        board.printAllPawns();
-
-        unhighlightPawn(previousPawn);
-        highlightPawn(updatedPawn);
-    }
-
-    private void vortexPawn(Color pawnColor, int vortexNumber) {
-        Pawn previousPawn = new Pawn(board.getPawnByColor(pawnColor));
-        Pawn updatedPawn = board.useVortex(pawnColor, vortexNumber);
-        if(updatedPawn.equals(previousPawn)){
-            System.out.println("No vortex to use for pawn " + pawnColor + " with number " + vortexNumber);
-            return;
-        }
-
-        board.printAllPawns();
-
-        unhighlightPawn(previousPawn);
-        highlightPawn(updatedPawn);
-    }
-
-    private void renderDiscoveredTiles(Coordinate corner) {
+    public void renderDiscoveredTiles(Coordinate corner) {
         int startX = corner.getX();
         int startY = corner.getY();
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 int boardX = startX + i;
                 int boardY = startY + j;
-                if (boardX >= 0 && boardX < board.getNumRows() && boardY >= 0 && boardY < board.getNumCols()) {
+                if (boardX >= 0 && boardX < numberOfRows && boardY >= 0 && boardY < numberOfCols) {
                     Tile tile = board.getTiles()[boardX][boardY];
                     if (tile != null) {
-                        JPanel tilePanel = tilePanels[boardX][boardY];
+                        JPanel tilePanel;
                         java.awt.Color bgColor;
                         if(tile.getColor() != Color.NONE){
                             bgColor = getColorForTile(tile);
@@ -431,23 +288,13 @@ public class BoardUI extends JFrame {
                             tilePanel.setPreferredSize(new Dimension(TILE_SIZE, TILE_SIZE));
                         }
 
-                        if(tile.getType() == TileType.VORTEX){
-                            // Add cardId as a JLabel on top of the tile
-                            JLabel cardIdLabel = new JLabel(String.valueOf(tile.getCardId()));
-                            cardIdLabel.setFont(new Font("Arial", Font.BOLD, 12));
-                            cardIdLabel.setForeground(java.awt.Color.BLACK);
-                            cardIdLabel.setHorizontalAlignment(SwingConstants.CENTER);
-                            cardIdLabel.setVerticalAlignment(SwingConstants.CENTER);
-
-                            tilePanel.setLayout(new BorderLayout());
-                            tilePanel.add(cardIdLabel, BorderLayout.CENTER);
-                        }
+                        visualizeVortexTile(tile, tilePanel);
 
                         tilePanel.setBorder(createTileBorder(tile));
                         tilePanels[boardX][boardY] = tilePanel;
                         // replace the panel in the grid layout
-                        gridPanel.remove(boardX * board.getNumCols() + boardY);
-                        gridPanel.add(tilePanel, boardX * board.getNumCols() + boardY);
+                        gridPanel.remove(boardX * numberOfCols + boardY);
+                        gridPanel.add(tilePanel, boardX * numberOfCols + boardY);
                     }
                 }
             }
@@ -457,35 +304,17 @@ public class BoardUI extends JFrame {
         repaint();
     }
 
+    private void visualizeVortexTile(Tile tile, JPanel tilePanel) {
+        if(tile.getType() == TileType.VORTEX){
+            // Add cardId as a JLabel on top of the tile
+            JLabel cardIdLabel = new JLabel(String.valueOf(tile.getCardId()));
+            cardIdLabel.setFont(new Font("Arial", Font.BOLD, 12));
+            cardIdLabel.setForeground(java.awt.Color.BLACK);
+            cardIdLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            cardIdLabel.setVerticalAlignment(SwingConstants.CENTER);
 
-    private BufferedImage renderSVGToBufferedImage(String svgPath, int width, int height) {
-        try {
-            String parser = XMLResourceDescriptor.getXMLParserClassName();
-            SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(parser);
-            InputStream svgInputStream = getClass().getClassLoader().getResourceAsStream(svgPath);
-            if (svgInputStream == null) {
-                throw new RuntimeException("SVG file not found: " + svgPath);
-            }
-
-            var document = factory.createDocument(svgPath, svgInputStream);
-            UserAgentAdapter userAgent = new UserAgentAdapter();
-            BridgeContext bridgeContext = new BridgeContext(userAgent);
-            bridgeContext.setDynamicState(BridgeContext.STATIC);
-            GVTBuilder builder = new GVTBuilder();
-            GraphicsNode graphicsNode = builder.build(bridgeContext, document);
-
-            BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2d = bufferedImage.createGraphics();
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-            g2d.scale((double) width / graphicsNode.getPrimitiveBounds().getWidth(),
-                    (double) height / graphicsNode.getPrimitiveBounds().getHeight());
-            graphicsNode.paint(g2d);
-            g2d.dispose();
-
-            return bufferedImage;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to render SVG: " + svgPath, e);
+            tilePanel.setLayout(new BorderLayout());
+            tilePanel.add(cardIdLabel, BorderLayout.CENTER);
         }
     }
 
@@ -517,10 +346,11 @@ public class BoardUI extends JFrame {
         return tilePanels[coordinate.getX()][coordinate.getY()];
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            Game game = new Game();
-            new BoardUI(game);
-        });
+    public void changeTimerColorToDark(Coordinate coordinate){
+        // change color of timer tile to dark red
+        Tile timerTile = board.getTileAt(coordinate);
+        JPanel timerTilePanel = getTilePanelAt(coordinate);
+        java.awt.Color bgColor = getColorForTileType(timerTile.getType(), timerTile);
+        timerTilePanel.setBackground(bgColor);
     }
 }
