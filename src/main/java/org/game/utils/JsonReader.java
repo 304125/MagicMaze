@@ -3,9 +3,9 @@ package org.game.utils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.game.model.*;
+import org.game.model.AI.AIPlayerType;
 import org.game.model.AI.OneHeroPlayer;
 import org.game.model.board.Board;
-import org.game.model.board.GeneralGoalManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +25,7 @@ public class JsonReader {
 
             List<Map<String, Object>> tiles = objectMapper.readValue(
                     inputStream,
-                    new TypeReference<List<Map<String, Object>>>() {}
+                    new TypeReference<>() {}
             );
 
             // loop through all tiles, save them to a list of cards
@@ -51,7 +51,7 @@ public class JsonReader {
     }
 
     private Card createCardFromJson(int id, List<List<String>> layout, List<List<String>> color, List<List<Boolean>> walls_up, List<List<Boolean>> walls_down, List<List<Boolean>> walls_left, List<List<Boolean>> walls_right, List<List<String>> escalators) {
-        Tile[][] tiles = new Tile[layout.size()][layout.get(0).size()];
+        Tile[][] tiles = new Tile[layout.size()][layout.getFirst().size()];
         for (int i = 0; i < layout.size(); i++) {
             List<Tile> row = new ArrayList<>();
             for (int j = 0; j < layout.get(i).size(); j++) {
@@ -75,12 +75,11 @@ public class JsonReader {
             tiles[i] = row.toArray(new Tile[0]);
         }
 
-        Card card = new Card(id, tiles);
-        return card;
+        return new Card(id, tiles);
     }
 
-    public List<Player> loadPlayersFromJson(int numPlayers, int numAiPlayers, Board board) {
-        int aiPlayersLeft = numAiPlayers;
+    public List<Player> loadPlayersFromJson(int numPlayers, List<AIPlayerType> aiPlayerTypes, Board board) {
+        int aiPlayersLeft = aiPlayerTypes.size();
         ObjectMapper objectMapper = new ObjectMapper();
         String filePath = "actions.json";
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath)) {
@@ -90,7 +89,7 @@ public class JsonReader {
 
             List<Map<String, Object>> playersData = objectMapper.readValue(
                     inputStream,
-                    new TypeReference<List<Map<String, Object>>>() {}
+                    new TypeReference<>() {}
             );
 
             List<Player> players = new ArrayList<>();
@@ -106,7 +105,12 @@ public class JsonReader {
                             actions.add(Action.valueOf(actionString));
                         }
                         if(aiPlayersLeft > 0){
-                            players.add(new OneHeroPlayer(actions, "AI player: One Hero", board, GeneralGoalManager.getInstance()));
+                            // add the next in the aiPlayerTypes list
+                            AIPlayerType playerType =  aiPlayerTypes.get(aiPlayerTypes.size() - aiPlayersLeft);
+                            switch (playerType) {
+                                case ONE_HERO -> players.add(new OneHeroPlayer(actions, "AI player: One Hero", board));
+                                // add more AI player types here as needed
+                            }
                             aiPlayersLeft--;
                         }
                         else{

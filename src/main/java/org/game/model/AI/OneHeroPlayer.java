@@ -6,24 +6,25 @@ import org.game.model.board.Board;
 import org.game.model.Pawn;
 import org.game.model.board.GeneralGoalManager;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class OneHeroPlayer extends AIPlayer implements PawnMoveListener{
+public class OneHeroPlayer extends AIPlayer{
     private Pawn lastMovedPawn;
     private ActionTree actionTree;
-    private int maximumChunkSize;
+    private final int maximumChunkSize;
     private final GeneralGoalManager generalGoalManager;
     PathFinder pathFinder;
 
-    public OneHeroPlayer(List<Action> actions, String name, Board board, GeneralGoalManager generalGoalManager) {
+    public OneHeroPlayer(List<Action> actions, String name, Board board) {
         super(actions, name, board);
         lastMovedPawn = board.getRandomPawn();
         actionTree = new ActionTree();
         maximumChunkSize = ChunkGenerator.generateChunkSize();
         System.out.println("OneHeroPlayer initialized with maximum chunk size: " + maximumChunkSize);
-        this.generalGoalManager = generalGoalManager;
+        this.generalGoalManager = GeneralGoalManager.getInstance();
         this.pathFinder = new PathFinder(board.getTiles());
         buildActionTree();
 
@@ -47,7 +48,7 @@ public class OneHeroPlayer extends AIPlayer implements PawnMoveListener{
         }
 
         // sort goalCoordinates by estimated distance from distanceMap
-        goalCoordinates.sort((c1, c2) -> distanceMap.get(c1) - distanceMap.get(c2));
+        goalCoordinates.sort(Comparator.comparingInt(distanceMap::get));
 
         // starting from the closest goal, find the shortest path
         for (Coordinate goal : goalCoordinates) {

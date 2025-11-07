@@ -1,5 +1,7 @@
 package org.game.model;
 
+import org.game.model.AI.AIPlayer;
+import org.game.model.AI.AIPlayerType;
 import org.game.model.board.Board;
 import org.game.utils.JsonReader;
 
@@ -9,17 +11,14 @@ public class Game {
     private Board board;
     private StackOfCards unplayedCards;
     private final JsonReader jsonReader = new JsonReader();
-    private int startingCardId = 1;
     private Card startingCard;
     private final int boardMaxSize = 23;
-    private final int numberOfPlayers = 4;
-    private final int numberOfAiPlayers = 4;
     private List<Player> players;
 
-    public Game() {
+    public Game(int numberOfPlayers, List<AIPlayerType> aiPlayerTypes) {
         initializeCards();
         initializeBoard();
-        initializePlayers();
+        initializePlayers(numberOfPlayers, aiPlayerTypes);
         printPlayers();
     }
 
@@ -28,6 +27,7 @@ public class Game {
         // find the starting card with id startingId
         Card startingCard = null;
         for (Card card : allCards) {
+            int startingCardId = 1;
             if (card.getId() == startingCardId) {
                 startingCard = card;
                 break;
@@ -43,8 +43,9 @@ public class Game {
         this.unplayedCards = new StackOfCards(allCards);
     }
 
-    private void initializePlayers(){
-        players = jsonReader.loadPlayersFromJson(numberOfPlayers, numberOfAiPlayers, this.board);
+    private void initializePlayers(int numberOfPlayers, List<AIPlayerType> aiPlayerTypes){
+         this.
+        players = jsonReader.loadPlayersFromJson(numberOfPlayers, aiPlayerTypes, this.board);
     }
 
     private void printPlayers(){
@@ -62,6 +63,12 @@ public class Game {
         this.board = new Board(boardMaxSize);
         board.initializeStartingTile(this.startingCard);
         board.initializeStartingPawns(initialPawns);
+        // add every AI player to the board's pawn manager as pawn move listener
+        for(Player player : players){
+            if(player instanceof AIPlayer aiPlayer){
+                board.getPawnManager().addPawnMoveListener(aiPlayer);
+            }
+        }
         board.testPathFinder();
     }
 
@@ -89,10 +96,6 @@ public class Game {
                 new Pawn(new Coordinate(startingPositions.get(3)[0], startingPositions.get(3)[1]), Color.ORANGE)
         );
         return pawns;
-    }
-
-    public int getBoardMaxSize() {
-        return boardMaxSize;
     }
 
     public boolean discoverCard(Coordinate coordinate) {

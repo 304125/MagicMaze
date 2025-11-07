@@ -31,7 +31,7 @@ public class PathFinder {
             String currentKey = current.getX() + "," + current.getY();
 
             // Goal check
-            if (current.getX() == coordinateEnd.getX() && current.getY() == coordinateEnd.getY()) {
+            if (current.getX() == coordinateEnd.x() && current.getY() == coordinateEnd.y()) {
                 reconstructPath(searchPath, current);
                 return searchPath; // Return the the shortest path from start to goal
             }
@@ -47,7 +47,7 @@ public class PathFinder {
                 }
 
                 if (isValid(coordinateOtherSideOfEscalator, rows, cols, grid) &&
-                        !closedSet.contains(coordinateOtherSideOfEscalator.getX() + "," + coordinateOtherSideOfEscalator.getY())) {
+                        !closedSet.contains(coordinateOtherSideOfEscalator.x() + "," + coordinateOtherSideOfEscalator.y())) {
                     int newG = current.g + 1; // Cost to move to the escalator destination
                     int newH = heuristicManhattan(coordinateOtherSideOfEscalator, coordinateEnd);
                     Node escalatorNode = new Node(coordinateOtherSideOfEscalator, newG, newH, current, Action.ESCALATOR);
@@ -60,8 +60,8 @@ public class PathFinder {
                 Coordinate coordinateNew = new Coordinate(current.getX() + action.dx, current.getY() + action.dy);
 
                 if (isValid(coordinateNew, rows, cols, grid) &&
-                        !closedSet.contains(coordinateNew.getX() + "," + coordinateNew.getY()) &&
-                        hasNoWall(grid[current.getX()][current.getY()], grid[coordinateNew.getX()][coordinateNew.getY()], action)) {
+                        !closedSet.contains(coordinateNew.x() + "," + coordinateNew.y()) &&
+                        hasNoWall(grid[current.getX()][current.getY()], grid[coordinateNew.x()][coordinateNew.y()], action)) {
                     int newG = current.g + 1; // Cost to move to the neighbor
                     int newH = findDistance(coordinateNew, coordinateEnd);
                     Node neighbor = new Node(coordinateNew, newG, newH, current, action);
@@ -75,22 +75,17 @@ public class PathFinder {
     }
 
     private boolean isValid(Coordinate coordinate, int rows, int cols, Tile[][] grid) {
-        return coordinate.getX() >= 0 && coordinate.getX() < rows && coordinate.getY() >= 0 && coordinate.getY() < cols && grid[coordinate.getX()][coordinate.getY()] != null;
+        return coordinate.x() >= 0 && coordinate.x() < rows && coordinate.y() >= 0 && coordinate.y() < cols && grid[coordinate.x()][coordinate.y()] != null;
     }
 
     private boolean hasNoWall(Tile fromTile, Tile toTile, Action action) {
-        switch (action) {
-            case MOVE_NORTH:
-                return !fromTile.hasWallUp() && !toTile.hasWallDown();
-            case MOVE_SOUTH:
-                return !fromTile.hasWallDown() && !toTile.hasWallUp();
-            case MOVE_WEST:
-                return !fromTile.hasWallLeft() && !toTile.hasWallRight();
-            case MOVE_EAST:
-                return !fromTile.hasWallRight() && !toTile.hasWallLeft();
-            default:
-                return false;
-        }
+        return switch (action) {
+            case MOVE_NORTH -> !fromTile.hasWallUp() && !toTile.hasWallDown();
+            case MOVE_SOUTH -> !fromTile.hasWallDown() && !toTile.hasWallUp();
+            case MOVE_WEST -> !fromTile.hasWallLeft() && !toTile.hasWallRight();
+            case MOVE_EAST -> !fromTile.hasWallRight() && !toTile.hasWallLeft();
+            default -> false;
+        };
     }
 
     public int findDistance(Coordinate coordinateA, Coordinate coordinateB) {
@@ -98,7 +93,7 @@ public class PathFinder {
     }
 
     private int heuristicManhattan(Coordinate coordinateA, Coordinate coordinateB) {
-        return Math.abs(coordinateA.getX() - coordinateB.getX()) + Math.abs(coordinateA.getY() - coordinateB.getY());
+        return Math.abs(coordinateA.x() - coordinateB.x()) + Math.abs(coordinateA.y() - coordinateB.y());
     }
 
     private void reconstructPath(SearchPath searchTree, Node goalNode) {
@@ -131,10 +126,10 @@ public class PathFinder {
         }
 
         public int getX() {
-            return coordinate.getX();
+            return coordinate.x();
         }
         public int getY() {
-            return coordinate.getY();
+            return coordinate.y();
         }
     }
 

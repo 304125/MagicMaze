@@ -6,8 +6,8 @@ import org.game.model.Player;
 
 import java.util.List;
 
-public abstract class AIPlayer extends Player {
-    private Board board;
+public abstract class AIPlayer extends Player  implements PawnMoveListener{
+    private final Board board;
 
     public AIPlayer(List<Action> actions, String name, Board board) {
         super(actions, name);

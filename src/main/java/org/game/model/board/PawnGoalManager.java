@@ -24,22 +24,22 @@ public class PawnGoalManager {
 
     public void addTimer(Coordinate timer) {
         this.timers.add(timer);
-        System.out.println("Timer for pawn " + pawnColor + " added at (" + timer.getX() + "," + timer.getY() + ")");
+        System.out.println("Timer for pawn " + pawnColor + " added at (" + timer.x() + "," + timer.y() + ")");
     }
 
     public void addDiscovery(Coordinate discovery) {
         this.discoveries.add(discovery);
-        System.out.println("Discovery for pawn " + pawnColor + " added at (" + discovery.getX() + "," + discovery.getY() + ")");
+        System.out.println("Discovery for pawn " + pawnColor + " added at (" + discovery.x() + "," + discovery.y() + ")");
     }
 
     public void setExit(Coordinate exit) {
         this.exit = exit;
-        System.out.println("Exit for pawn " + pawnColor + " set at (" + exit.getX() + "," + exit.getY() + ")");
+        System.out.println("Exit for pawn " + pawnColor + " set at (" + exit.x() + "," + exit.y() + ")");
     }
 
     public void setItem(Coordinate item) {
         this.item = item;
-        System.out.println("Item for pawn " + pawnColor + " set at (" + item.getX() + "," + item.getY() + ")");
+        System.out.println("Item for pawn " + pawnColor + " set at (" + item.x() + "," + item.y() + ")");
     }
 
     public List<Coordinate> getTimers() {
@@ -68,7 +68,7 @@ public class PawnGoalManager {
 
     public void removeDiscovery(Coordinate discovery) {
         this.discoveries.remove(discovery);
-        System.out.println("Discovery at (" + discovery.getX() + "," + discovery.getY() + ") removed for pawn " + pawnColor);
+        System.out.println("Discovery at (" + discovery.x() + "," + discovery.y() + ") removed for pawn " + pawnColor);
     }
 
     public List<Coordinate> getAllGoals(){

@@ -20,34 +20,14 @@ public class SearchPath {
         return nodes.size();
     }
 
-    public static class Node {
-        private final int x, y;
-        private final Object action;
-
-        public Node(int x, int y, Object action) {
-            this.x = x;
-            this.y = y;
-            this.action = action;
-        }
-
-        public int getX() {
-            return x;
-        }
-
-        public int getY() {
-            return y;
-        }
-
-        public Object getAction() {
-            return action;
-        }
+    public record Node(int x, int y, Object action) {
     }
 
     public List<Action> getActions() {
         List<Action> actions = new ArrayList<>();
         for (Node node : nodes) {
-            if (node.getAction() instanceof Action) {
-                actions.add((Action) node.getAction());
+            if (node.action() instanceof Action) {
+                actions.add((Action) node.action());
             }
         }
         return actions;

@@ -24,18 +24,18 @@ public class PawnManager {
 
         // find the vortex with the given cardId
         for (BoardVortex vortex : vortexList) {
-            if (vortex.getCardId() == vortexNumber) {
-                Coordinate destination = vortex.getPosition();
+            if (vortex.cardId() == vortexNumber) {
+                Coordinate destination = vortex.position();
                 // check if the destination is occupied
-                if(board.getTileAt(new Coordinate(destination.getX(), destination.getY())).isOccupied()){
+                if(board.getTileAt(new Coordinate(destination.x(), destination.y())).isOccupied()){
                     System.out.println("Error: Vortex destination is occupied");
                     return pawn;
                 }
-                System.out.println("Pawn " + pawnColor + " used vortex " + vortexNumber + " to (" + destination.getX() + "," + destination.getY() + ")");
+                System.out.println("Pawn " + pawnColor + " used vortex " + vortexNumber + " to (" + destination.x() + "," + destination.y() + ")");
 
                 // set previous tile not occupied, move pawn to destination, set new tile to occupied
                 board.getTileAt(pawn.getCoordinate()).setOccupied(false);
-                pawn.moveTo(new Coordinate(destination.getX(), destination.getY()));
+                pawn.moveTo(new Coordinate(destination.x(), destination.y()));
                 board.getTileAt(pawn.getCoordinate()).setOccupied(true);
 
                 updateLastMovedPawn(pawn, Action.VORTEX);
@@ -55,16 +55,16 @@ public class PawnManager {
             System.out.println("Error: No escalator found at current position");
             return pawn;
         }
-        if(board.getTileAt(new Coordinate(destination.getX(), destination.getY())).isOccupied()){
+        if(board.getTileAt(new Coordinate(destination.x(), destination.y())).isOccupied()){
             System.out.println("Error: Escalator destination is occupied");
             return pawn;
         }
         else{
-            System.out.println("Pawn " + pawnColor + " used an escalator to (" + destination.getX() + "," + destination.getY() + ")");
+            System.out.println("Pawn " + pawnColor + " used an escalator to (" + destination.x() + "," + destination.y() + ")");
 
             // set previous tile not occupied, move pawn to destination, set new tile to occupied
             board.getTileAt(pawn.getCoordinate()).setOccupied(false);
-            pawn.moveTo(new Coordinate(destination.getX(), destination.getY()));
+            pawn.moveTo(new Coordinate(destination.x(), destination.y()));
             board.getTileAt(pawn.getCoordinate()).setOccupied(true);
 
             updateLastMovedPawn(pawn, Action.ESCALATOR);
@@ -73,7 +73,7 @@ public class PawnManager {
     }
 
     public static Coordinate getOtherSideOfEscalator(Coordinate currentCoordinate){
-        Tile currentTile = board.getTileAt(new Coordinate(currentCoordinate.getX(), currentCoordinate.getY()));
+        Tile currentTile = board.getTileAt(new Coordinate(currentCoordinate.x(), currentCoordinate.y()));
 
         // find the currentTile in escalators
         for (BoardEscalator escalator : board.getEscalators()) {

@@ -20,7 +20,7 @@ public class Board {
     private final Timer timer;
     private final PawnManager pawnManager;
     private final PathFinder pathFinder;
-    private GeneralGoalManager generalGoalManager;
+    private final GeneralGoalManager generalGoalManager;
 
 
     public Board(int maxSize) {
@@ -35,7 +35,6 @@ public class Board {
 
     public void testPathFinder(){
         // locate one of the pawns
-        Pawn pawn = getRandomPawn();
         Coordinate from = new Coordinate(13, 11);
         Coordinate to = new Coordinate(13, 14);
         System.out.println("Finding path from "+ from +" to "+ to);
@@ -43,7 +42,7 @@ public class Board {
         if (path != null) {
             System.out.println("Path found:");
             for (SearchPath.Node node : path.getNodes()) {
-                System.out.println("Step to (" + node.getX() + ", " + node.getY() + ") using " + node.getAction());
+                System.out.println("Step to (" + node.x() + ", " + node.y() + ") using " + node.action());
             }
         } else {
             System.out.println("No path found.");
@@ -102,7 +101,7 @@ public class Board {
         List<Coordinate> possibleEntries = getFourPossibleAdjacentEntryTiles(leftTopCorner);
         for (Coordinate entry : possibleEntries) {
             // check if there is a discovery tile at this position
-            Tile tile = getTileAt(new Coordinate(entry.getX(), entry.getY()));
+            Tile tile = getTileAt(new Coordinate(entry.x(), entry.y()));
             if(tile != null && tile.getType() == TileType.DISCOVERY){
                 // no need to check if it is now blocked from all 4 sides - if it exists, it is surrounded
                 // remove from generalGoalManager
@@ -127,18 +126,14 @@ public class Board {
         this.pawns = initialPawns;
         // for each pawn, set their position at occupied in the corresponding tile
         for (Pawn pawn : initialPawns) {
-            int x = pawn.getCoordinate().getX();
-            int y = pawn.getCoordinate().getY();
+            int x = pawn.getCoordinate().x();
+            int y = pawn.getCoordinate().y();
             tiles[x][y].setOccupied(true);
         }
     }
 
     public boolean addCardToBoard(Card newCard, Coordinate coordinate) {
         // remove the discovery tile from goals
-        Color discoveryColor = tiles[coordinate.getX()][coordinate.getY()].getColor();
-
-        // not needed anymore because I check for all 4 adjacent entry tiles later
-        //generalGoalManager.getPawnGoalManager(discoveryColor).removeDiscovery(coordinate);
 
         // calculate the newCard so that the START is on the bottom left corner of the coordinate
         Tile[][] newCardTiles = newCard.getTiles();
@@ -187,14 +182,12 @@ public class Board {
         Tile[][] rotatedTiles = rotatedCard.getTiles();
         // add the new tiles to the board at the correct position
         for (int i = 0; i < rotatedTiles.length; i++) {
-            for (int j = 0; j < rotatedTiles[i].length; j++) {
-                tiles[corner.getX() + i][corner.getY() + j] = rotatedTiles[i][j];
-            }
+            System.arraycopy(rotatedTiles[i], 0, tiles[corner.x() + i], corner.y(), rotatedTiles[i].length);
         }
         // run after adding all tiles
         for (int i = 0; i < rotatedTiles.length; i++) {
             for (int j = 0; j < rotatedTiles[i].length; j++) {
-                Coordinate c = new Coordinate(corner.getX() + i, corner.getY() + j);
+                Coordinate c = new Coordinate(corner.x() + i, corner.y() + j);
                 handleTileTypeSpecifics(rotatedTiles[i][j], c);
             }
         }
@@ -222,11 +215,7 @@ public class Board {
     }
 
     public boolean isTileAt(Coordinate position) {
-        if (tiles[position.getX()][position.getY()] != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return tiles[position.x()][position.y()] != null;
     }
 
     public int getNumRows() {
@@ -257,16 +246,16 @@ public class Board {
     }
 
     public Tile getTileAt(Coordinate coordinate) {
-        if (tiles[coordinate.getX()][coordinate.getY()] != null) {
-            return tiles[coordinate.getX()][coordinate.getY()];
+        if (tiles[coordinate.x()][coordinate.y()] != null) {
+            return tiles[coordinate.x()][coordinate.y()];
         } else {
             return null;
         }
     }
 
     public Coordinate getLeftTopCornerOfNewCard(Coordinate position) {
-        int startX = position.getX();
-        int startY = position.getY();
+        int startX = position.x();
+        int startY = position.y();
 
         // no tile to the right
         if(!isTileAt(position.move(0, 1))){
@@ -289,17 +278,17 @@ public class Board {
 
     public List<Coordinate> getFourPossibleAdjacentEntryTiles(Coordinate leftTopCorner){
         List<Coordinate> possibleEntries = new java.util.ArrayList<>();
-        possibleEntries.add(new Coordinate(leftTopCorner.getX()+1, leftTopCorner.getY()-1)); // left
-        possibleEntries.add(new Coordinate(leftTopCorner.getX()+2, leftTopCorner.getY()+4)); // right
-        possibleEntries.add(new Coordinate(leftTopCorner.getX()-1, leftTopCorner.getY()+2)); // top
-        possibleEntries.add(new Coordinate(leftTopCorner.getX()+4, leftTopCorner.getY()+1)); // bottom
+        possibleEntries.add(new Coordinate(leftTopCorner.x()+1, leftTopCorner.y()-1)); // left
+        possibleEntries.add(new Coordinate(leftTopCorner.x()+2, leftTopCorner.y()+4)); // right
+        possibleEntries.add(new Coordinate(leftTopCorner.x()-1, leftTopCorner.y()+2)); // top
+        possibleEntries.add(new Coordinate(leftTopCorner.x()+4, leftTopCorner.y()+1)); // bottom
         return possibleEntries;
     }
 
     public void printEscalators(){
         for (BoardEscalator escalator : escalators) {
-            System.out.println("Escalator ID: " + escalator.getId() + " from " + escalator.getStart().getX() + "," + escalator.getStart().getY() +
-                    " to " + (escalator.getEnd() != null ? escalator.getEnd().getX() + "," + escalator.getEnd().getY() : "not set"));
+            System.out.println("Escalator ID: " + escalator.getId() + " from " + escalator.getStart().x() + "," + escalator.getStart().y() +
+                    " to " + (escalator.getEnd() != null ? escalator.getEnd().x() + "," + escalator.getEnd().y() : "not set"));
         }
     }
 
@@ -312,7 +301,7 @@ public class Board {
     }
 
     public boolean isPawnAtTimerTile(Pawn pawn){
-        Tile tile = tiles[pawn.getCoordinate().getX()][pawn.getCoordinate().getY()];
+        Tile tile = tiles[pawn.getCoordinate().x()][pawn.getCoordinate().y()];
         return tile.getType() == TileType.TIMER;
     }
 
@@ -323,13 +312,13 @@ public class Board {
     }
 
     public List<BoardVortex> getVortexListByColor(Color color) {
-        switch (color) {
-            case YELLOW: return yellowVortices;
-            case PURPLE: return purpleVortices;
-            case GREEN: return greenVortices;
-            case ORANGE: return orangeVortices;
-            default: return new java.util.ArrayList<>();
-        }
+        return switch (color) {
+            case YELLOW -> yellowVortices;
+            case PURPLE -> purpleVortices;
+            case GREEN -> greenVortices;
+            case ORANGE -> orangeVortices;
+            default -> new java.util.ArrayList<>();
+        };
     }
 
     public Pawn useVortex(Color pawnColor, int vortexNumber){
@@ -346,5 +335,9 @@ public class Board {
 
     public void removeTimerFromGoals(Coordinate timer) {
         generalGoalManager.removeTimerFromAllPawns(timer);
+    }
+
+    public PawnManager getPawnManager() {
+        return pawnManager;
     }
 }

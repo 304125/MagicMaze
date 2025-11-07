@@ -1,7 +1,7 @@
 package org.game.model;
 
 public class Card {
-    private int id;
+    private final int id;
     private Tile[][] tiles;
 
     public Card(int id, Tile[][] tiles) {

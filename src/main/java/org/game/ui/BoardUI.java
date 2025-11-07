@@ -157,7 +157,7 @@ public class BoardUI extends JFrame {
             Coordinate start = escalator.getStart();
             Coordinate end = escalator.getEnd();
             if (start != null && end != null) {
-                drawLineBetweenTiles(start.getX(), start.getY(), end.getX(), end.getY());
+                drawLineBetweenTiles(start.x(), start.y(), end.x(), end.y());
             }
         }
     }
@@ -257,8 +257,8 @@ public class BoardUI extends JFrame {
     }
 
     public void renderDiscoveredTiles(Coordinate corner) {
-        int startX = corner.getX();
-        int startY = corner.getY();
+        int startX = corner.x();
+        int startY = corner.y();
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 int boardX = startX + i;
@@ -343,7 +343,7 @@ public class BoardUI extends JFrame {
     }
 
     private JPanel getTilePanelAt(Coordinate coordinate) {
-        return tilePanels[coordinate.getX()][coordinate.getY()];
+        return tilePanels[coordinate.x()][coordinate.y()];
     }
 
     public void changeTimerColorToDark(Coordinate coordinate){
