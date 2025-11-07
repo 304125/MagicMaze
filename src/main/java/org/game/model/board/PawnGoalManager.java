@@ -70,4 +70,17 @@ public class PawnGoalManager {
         this.discoveries.remove(discovery);
         System.out.println("Discovery at (" + discovery.getX() + "," + discovery.getY() + ") removed for pawn " + pawnColor);
     }
+
+    public List<Coordinate> getAllGoals(){
+        List<Coordinate> allGoals = new ArrayList<>();
+        allGoals.addAll(timers);
+        allGoals.addAll(discoveries);
+        if(exit != null){
+            allGoals.add(exit);
+        }
+        if(item != null){
+            allGoals.add(item);
+        }
+        return allGoals;
+    }
 }

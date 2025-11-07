@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.game.model.*;
 import org.game.model.AI.OneHeroPlayer;
 import org.game.model.board.Board;
+import org.game.model.board.GeneralGoalManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -105,11 +106,11 @@ public class JsonReader {
                             actions.add(Action.valueOf(actionString));
                         }
                         if(aiPlayersLeft > 0){
-                            players.add(new OneHeroPlayer(actions, board));
+                            players.add(new OneHeroPlayer(actions, "AI player: One Hero", board, GeneralGoalManager.getInstance()));
                             aiPlayersLeft--;
                         }
                         else{
-                            players.add(new Player(actions));
+                            players.add(new Player(actions, "Human player"));
                         }
                     }
                     break; // exit the loop once we've found the matching number of players

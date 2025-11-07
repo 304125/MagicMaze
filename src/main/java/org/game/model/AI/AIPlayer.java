@@ -9,11 +9,13 @@ import java.util.List;
 public abstract class AIPlayer extends Player {
     private Board board;
 
-    public AIPlayer(List<Action> actions, Board board) {
-        super(actions);
+    public AIPlayer(List<Action> actions, String name, Board board) {
+        super(actions, name);
         this.board = board;
         System.out.println("I am AI, beep boop.");
     }
 
-
+    public Board getBoard() {
+        return board;
+    }
 }

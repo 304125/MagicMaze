@@ -83,10 +83,10 @@ public class Game {
         // shuffle the list in a random way
         java.util.Collections.shuffle(startingPositions);
         pawns = List.of(
-                new Pawn(startingPositions.get(0)[0], startingPositions.get(0)[1], Color.YELLOW),
-                new Pawn(startingPositions.get(1)[0], startingPositions.get(1)[1], Color.GREEN),
-                new Pawn(startingPositions.get(2)[0], startingPositions.get(2)[1], Color.PURPLE),
-                new Pawn(startingPositions.get(3)[0], startingPositions.get(3)[1], Color.ORANGE)
+                new Pawn(new Coordinate(startingPositions.get(0)[0], startingPositions.get(0)[1]), Color.YELLOW),
+                new Pawn(new Coordinate(startingPositions.get(1)[0], startingPositions.get(1)[1]), Color.GREEN),
+                new Pawn(new Coordinate(startingPositions.get(2)[0], startingPositions.get(2)[1]), Color.PURPLE),
+                new Pawn(new Coordinate(startingPositions.get(3)[0], startingPositions.get(3)[1]), Color.ORANGE)
         );
         return pawns;
     }

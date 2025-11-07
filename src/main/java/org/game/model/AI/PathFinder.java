@@ -4,10 +4,7 @@ import org.game.model.Coordinate;
 import org.game.model.board.PawnManager;
 import org.game.model.Tile;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
 
 public class PathFinder {
     private final Tile[][] grid;
@@ -26,7 +23,7 @@ public class PathFinder {
         SearchPath searchPath = new SearchPath();
 
         // Start node
-        Node startNode = new Node(coordinateStart, 0, heuristicManhattan(coordinateStart, coordinateEnd), null, null);
+        Node startNode = new Node(coordinateStart, 0, findDistance(coordinateStart, coordinateEnd), null, null);
         openSet.add(startNode);
 
         while (!openSet.isEmpty()) {
@@ -36,7 +33,7 @@ public class PathFinder {
             // Goal check
             if (current.getX() == coordinateEnd.getX() && current.getY() == coordinateEnd.getY()) {
                 reconstructPath(searchPath, current);
-                return searchPath; // Return the cost of the shortest path
+                return searchPath; // Return the the shortest path from start to goal
             }
 
             closedSet.add(currentKey);
@@ -66,7 +63,7 @@ public class PathFinder {
                         !closedSet.contains(coordinateNew.getX() + "," + coordinateNew.getY()) &&
                         hasNoWall(grid[current.getX()][current.getY()], grid[coordinateNew.getX()][coordinateNew.getY()], action)) {
                     int newG = current.g + 1; // Cost to move to the neighbor
-                    int newH = heuristicManhattan(coordinateNew, coordinateEnd);
+                    int newH = findDistance(coordinateNew, coordinateEnd);
                     Node neighbor = new Node(coordinateNew, newG, newH, current, action);
 
                     openSet.add(neighbor);
@@ -96,7 +93,11 @@ public class PathFinder {
         }
     }
 
-    public int heuristicManhattan(Coordinate coordinateA, Coordinate coordinateB) {
+    public int findDistance(Coordinate coordinateA, Coordinate coordinateB) {
+        return heuristicManhattan(coordinateA, coordinateB);
+    }
+
+    private int heuristicManhattan(Coordinate coordinateA, Coordinate coordinateB) {
         return Math.abs(coordinateA.getX() - coordinateB.getX()) + Math.abs(coordinateA.getY() - coordinateB.getY());
     }
 
@@ -106,6 +107,13 @@ public class PathFinder {
             searchTree.addNode(current.getX(), current.getY(), current.action);
             current = current.parent;
         }
+        // Reverse the path to get from start to goal
+        reversePath(searchTree);
+    }
+
+    private void reversePath(SearchPath searchTree) {
+        List<SearchPath.Node> nodes = searchTree.getNodes();
+        Collections.reverse(nodes);
     }
 
     private static class Node {

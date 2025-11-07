@@ -1,46 +1,38 @@
 package org.game.model;
 
 public class Pawn {
-    private int x; // Row position
-    private int y; // Column position
+    private Coordinate coordinate;
     private final Color color;
 
-    public Pawn(int startX, int startY, Color color) {
-        this.x = startX;
-        this.y = startY;
+    public Pawn(Coordinate coordinate, Color color) {
+        this.coordinate = coordinate;
         this.color = color;
     }
 
     public Pawn(Pawn pawn){
-        this.x = pawn.x;
-        this.y = pawn.y;
+        this.coordinate = pawn.getCoordinate();
         this.color = pawn.color;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
+    public Coordinate getCoordinate() {
+        return coordinate;
     }
 
     public void moveNorth() {
-        x--;
+        coordinate.move(-1, 0);
     }
     public void moveSouth() {
-        x++;
+        coordinate.move(1, 0);
     }
     public void moveEast() {
-        y++;
+        coordinate.move(0, 1);
     }
     public void moveWest() {
-        y--;
+        coordinate.move(0, -1);
     }
 
-    public void moveTo(int newX, int newY) {
-        this.x = newX;
-        this.y = newY;
+    public void moveTo(Coordinate coordinate) {
+        this.coordinate = coordinate;
     }
 
     public Color getColor() {

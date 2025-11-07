@@ -30,7 +30,7 @@ public class Board {
         this.timer = new Timer();
         this.pawnManager = new PawnManager(this);
         this.pathFinder = new PathFinder(tiles);
-        this.generalGoalManager = new GeneralGoalManager();
+        this.generalGoalManager = GeneralGoalManager.getInstance();
     }
 
     public void testPathFinder(){
@@ -102,7 +102,7 @@ public class Board {
         List<Coordinate> possibleEntries = getFourPossibleAdjacentEntryTiles(leftTopCorner);
         for (Coordinate entry : possibleEntries) {
             // check if there is a discovery tile at this position
-            Tile tile = getTileAt(entry.getX(), entry.getY());
+            Tile tile = getTileAt(new Coordinate(entry.getX(), entry.getY()));
             if(tile != null && tile.getType() == TileType.DISCOVERY){
                 // no need to check if it is now blocked from all 4 sides - if it exists, it is surrounded
                 // remove from generalGoalManager
@@ -127,8 +127,8 @@ public class Board {
         this.pawns = initialPawns;
         // for each pawn, set their position at occupied in the corresponding tile
         for (Pawn pawn : initialPawns) {
-            int x = pawn.getX();
-            int y = pawn.getY();
+            int x = pawn.getCoordinate().getX();
+            int y = pawn.getCoordinate().getY();
             tiles[x][y].setOccupied(true);
         }
     }
@@ -252,13 +252,13 @@ public class Board {
 
     public void printAllPawns(){
         for (Pawn pawn : pawns) {
-            System.out.println("Pawn color: " + pawn.getColor() + " at position (" + pawn.getX() + ", " + pawn.getY() + ")");
+            System.out.println("Pawn color: " + pawn.getColor() + " at position " + pawn.getCoordinate());
         }
     }
 
-    public Tile getTileAt(int x, int y) {
-        if (tiles[x][y] != null) {
-            return tiles[x][y];
+    public Tile getTileAt(Coordinate coordinate) {
+        if (tiles[coordinate.getX()][coordinate.getY()] != null) {
+            return tiles[coordinate.getX()][coordinate.getY()];
         } else {
             return null;
         }
@@ -312,7 +312,7 @@ public class Board {
     }
 
     public boolean isPawnAtTimerTile(Pawn pawn){
-        Tile tile = tiles[pawn.getX()][pawn.getY()];
+        Tile tile = tiles[pawn.getCoordinate().getX()][pawn.getCoordinate().getY()];
         return tile.getType() == TileType.TIMER;
     }
 

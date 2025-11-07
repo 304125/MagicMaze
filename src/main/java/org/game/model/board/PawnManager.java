@@ -1,14 +1,21 @@
 package org.game.model.board;
 
 import org.game.model.*;
+import org.game.model.AI.PawnMoveListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PawnManager {
     private static Board board;
+    private final List<PawnMoveListener> listeners = new ArrayList<>();
 
     public PawnManager(Board board) {
         PawnManager.board = board;
+    }
+
+    public void addPawnMoveListener(PawnMoveListener listener) {
+        listeners.add(listener);
     }
 
     public Pawn useVortex(Color pawnColor, int vortexNumber){
@@ -20,16 +27,19 @@ public class PawnManager {
             if (vortex.getCardId() == vortexNumber) {
                 Coordinate destination = vortex.getPosition();
                 // check if the destination is occupied
-                if(board.getTileAt(destination.getX(), destination.getY()).isOccupied()){
+                if(board.getTileAt(new Coordinate(destination.getX(), destination.getY())).isOccupied()){
                     System.out.println("Error: Vortex destination is occupied");
                     return pawn;
                 }
                 System.out.println("Pawn " + pawnColor + " used vortex " + vortexNumber + " to (" + destination.getX() + "," + destination.getY() + ")");
 
                 // set previous tile not occupied, move pawn to destination, set new tile to occupied
-                board.getTileAt(pawn.getX(), pawn.getY()).setOccupied(false);
-                pawn.moveTo(destination.getX(), destination.getY());
-                board.getTileAt(pawn.getX(), pawn.getY()).setOccupied(true);
+                board.getTileAt(pawn.getCoordinate()).setOccupied(false);
+                pawn.moveTo(new Coordinate(destination.getX(), destination.getY()));
+                board.getTileAt(pawn.getCoordinate()).setOccupied(true);
+
+                updateLastMovedPawn(pawn, Action.VORTEX);
+
                 return pawn;
             }
         }
@@ -38,14 +48,14 @@ public class PawnManager {
 
     public Pawn useEscalator(Color pawnColor){
         Pawn pawn = board.getPawnByColor(pawnColor);
-        Tile currentTile = board.getTileAt(pawn.getX(), pawn.getY());
+        Tile currentTile = board.getTileAt(pawn.getCoordinate());
 
-        Coordinate destination = getOtherSideOfEscalator(new Coordinate(pawn.getX(), pawn.getY()));
+        Coordinate destination = getOtherSideOfEscalator(pawn.getCoordinate());
         if(destination == null){
             System.out.println("Error: No escalator found at current position");
             return pawn;
         }
-        if(board.getTileAt(destination.getX(), destination.getY()).isOccupied()){
+        if(board.getTileAt(new Coordinate(destination.getX(), destination.getY())).isOccupied()){
             System.out.println("Error: Escalator destination is occupied");
             return pawn;
         }
@@ -53,15 +63,17 @@ public class PawnManager {
             System.out.println("Pawn " + pawnColor + " used an escalator to (" + destination.getX() + "," + destination.getY() + ")");
 
             // set previous tile not occupied, move pawn to destination, set new tile to occupied
-            board.getTileAt(pawn.getX(), pawn.getY()).setOccupied(false);
-            pawn.moveTo(destination.getX(), destination.getY());
-            board.getTileAt(pawn.getX(), pawn.getY()).setOccupied(true);
+            board.getTileAt(pawn.getCoordinate()).setOccupied(false);
+            pawn.moveTo(new Coordinate(destination.getX(), destination.getY()));
+            board.getTileAt(pawn.getCoordinate()).setOccupied(true);
+
+            updateLastMovedPawn(pawn, Action.ESCALATOR);
         }
         return pawn;
     }
 
     public static Coordinate getOtherSideOfEscalator(Coordinate currentCoordinate){
-        Tile currentTile = board.getTileAt(currentCoordinate.getX(), currentCoordinate.getY());
+        Tile currentTile = board.getTileAt(new Coordinate(currentCoordinate.getX(), currentCoordinate.getY()));
 
         // find the currentTile in escalators
         for (BoardEscalator escalator : board.getEscalators()) {
@@ -90,33 +102,33 @@ public class PawnManager {
 
     public Pawn movePawn(Color pawnColor, Action action) {
         Pawn pawn = board.getPawnByColor(pawnColor);
-        Tile currentTile = board.getTileAt(pawn.getX(), pawn.getY());
+        Tile currentTile = board.getTileAt(pawn.getCoordinate());
         boolean moved = false;
 
         switch (action) {
             case MOVE_NORTH:
-                if (!currentTile.hasWallUp() && board.getTileAt(pawn.getX() - 1, pawn.getY()) != null && !board.getTileAt(pawn.getX() - 1, pawn.getY()).isOccupied()) {
+                if (!currentTile.hasWallUp() && board.getTileAt(pawn.getCoordinate().move(-1, 0)) != null && !board.getTileAt(pawn.getCoordinate().move(-1, 0)).isOccupied()) {
                     pawn.moveNorth();
                     System.out.println("Moved "+ pawnColor +" north");
                     moved = true;
                 }
                 break;
             case MOVE_SOUTH:
-                if( !currentTile.hasWallDown() && board.getTileAt(pawn.getX() + 1, pawn.getY()) != null && !board.getTileAt(pawn.getX() + 1, pawn.getY()).isOccupied()) {
+                if( !currentTile.hasWallDown() && board.getTileAt(pawn.getCoordinate().move(1, 0)) != null && !board.getTileAt(pawn.getCoordinate().move(1, 0)).isOccupied()) {
                     pawn.moveSouth();
                     System.out.println("Moved "+ pawnColor +" south");
                     moved = true;
                 }
                 break;
             case MOVE_WEST:
-                if (!currentTile.hasWallLeft() && board.getTileAt(pawn.getX(), pawn.getY() - 1) != null && !board.getTileAt(pawn.getX(), pawn.getY() - 1).isOccupied()) {
+                if (!currentTile.hasWallLeft() && board.getTileAt(pawn.getCoordinate().move(0, -1)) != null && !board.getTileAt(pawn.getCoordinate().move(0, -1)).isOccupied()) {
                     pawn.moveWest();
                     System.out.println("Moved "+ pawnColor +" west");
                     moved = true;
                 }
                 break;
             case MOVE_EAST:
-                if( !currentTile.hasWallRight() && board.getTileAt(pawn.getX(), pawn.getY() + 1) != null && !board.getTileAt(pawn.getX(), pawn.getY() + 1).isOccupied()) {
+                if( !currentTile.hasWallRight() && board.getTileAt(pawn.getCoordinate().move(0, 1)) != null && !board.getTileAt(pawn.getCoordinate().move(0, 1)).isOccupied()) {
                     pawn.moveEast();
                     System.out.println("Moved "+ pawnColor +" east");
                     moved = true;
@@ -126,34 +138,44 @@ public class PawnManager {
 
         //update occupied
         if(moved){
-            board.getTileAt(pawn.getX(), pawn.getY()).setOccupied(true);
+            board.getTileAt(pawn.getCoordinate()).setOccupied(true);
+
+            updateLastMovedPawn(pawn, action);
+
             // set the previous tile to not occupied
             switch (action) {
                 case MOVE_NORTH:
-                    board.getTileAt(pawn.getX() + 1, pawn.getY()).setOccupied(false);
+                    board.getTileAt(pawn.getCoordinate().move(1, 0)).setOccupied(false);
                     break;
                 case MOVE_SOUTH:
-                    board.getTileAt(pawn.getX() - 1, pawn.getY()).setOccupied(false);
+                    board.getTileAt(pawn.getCoordinate().move(-1, 0)).setOccupied(false);
                     break;
                 case MOVE_WEST:
-                    board.getTileAt(pawn.getX(), pawn.getY() + 1).setOccupied(false);
+                    board.getTileAt(pawn.getCoordinate().move(0, 1)).setOccupied(false);
                     break;
                 case MOVE_EAST:
-                    board.getTileAt(pawn.getX(), pawn.getY() - 1).setOccupied(false);
+                    board.getTileAt(pawn.getCoordinate().move(0, -1)).setOccupied(false);
                     break;
             }
         }
 
         // check if the pawn has moved onto a Timer tile
-        Tile newTile = board.getTileAt(pawn.getX(), pawn.getY());
+        Tile newTile = board.getTileAt(pawn.getCoordinate());
         if(moved && newTile.getType() == TileType.TIMER && !newTile.isUsed()){
             System.out.println("Pawn " + pawnColor + " landed on a Timer tile!");
             board.getTimer().flipTimer();
             newTile.setUsed(true);
             // remove timer from board's active timers
-            board.removeTimerFromGoals(new Coordinate(pawn.getX(), pawn.getY()));
+            board.removeTimerFromGoals(pawn.getCoordinate());
         }
 
         return pawn;
+    }
+
+    private void updateLastMovedPawn(Pawn pawn, Action action){
+        // Notify all listeners about the pawn move
+        for (PawnMoveListener listener : listeners) {
+            listener.onPawnMoved(pawn, action);
+        }
     }
 }

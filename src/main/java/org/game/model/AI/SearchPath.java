@@ -1,5 +1,7 @@
 package org.game.model.AI;
 
+import org.game.model.Action;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,10 @@ public class SearchPath {
 
     public List<Node> getNodes() {
         return nodes;
+    }
+
+    public int length() {
+        return nodes.size();
     }
 
     public static class Node {
@@ -35,5 +41,15 @@ public class SearchPath {
         public Object getAction() {
             return action;
         }
+    }
+
+    public List<Action> getActions() {
+        List<Action> actions = new ArrayList<>();
+        for (Node node : nodes) {
+            if (node.getAction() instanceof Action) {
+                actions.add((Action) node.getAction());
+            }
+        }
+        return actions;
     }
 }

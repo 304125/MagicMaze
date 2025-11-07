@@ -237,7 +237,7 @@ public class BoardUI extends JFrame {
 
     private void highlightPawn(Pawn pawn) {
         // Highlight the pawn's position
-        JPanel pawnTile = tilePanels[pawn.getX()][pawn.getY()];
+        JPanel pawnTile = getTilePanelAt(pawn.getCoordinate());
 
         // if there is a vortex number on the tile, remove it
         if(pawnTile.getComponentCount() > 0){
@@ -248,7 +248,7 @@ public class BoardUI extends JFrame {
             }
         }
 
-        System.out.println("Highlighting pawn at: (" + pawn.getX() + ", " + pawn.getY() + ")");
+        System.out.println("Highlighting pawn at: " + pawn.getCoordinate());
         JLabel pawnIcon = new JLabel();
         pawnIcon.setPreferredSize(new Dimension(TILE_SIZE / 2, TILE_SIZE / 2));
         pawnIcon.setOpaque(true);
@@ -264,10 +264,10 @@ public class BoardUI extends JFrame {
     }
 
     private void unhighlightPawn(Pawn pawn){
-        System.out.println("Un-highlighting pawn at: (" + pawn.getX() + ", " + pawn.getY() + ")");
+        System.out.println("Un-highlighting pawn at: " + pawn.getCoordinate());
         // get children of tilePanels component at x and y
 
-        JPanel pawnTile = tilePanels[pawn.getX()][pawn.getY()];
+        JPanel pawnTile = getTilePanelAt(pawn.getCoordinate());
 
         for (Component child : pawnTile.getComponents()) {
             if (child instanceof JLabel) {
@@ -276,7 +276,7 @@ public class BoardUI extends JFrame {
         }
 
         // re-print the vortex number if it is a vortex
-        Tile tile = board.getTileAt(pawn.getX(), pawn.getY());
+        Tile tile = board.getTileAt(pawn.getCoordinate());
         if(tile.getType() == TileType.VORTEX){
             // Add cardId as a JLabel on top of the tile
             JLabel cardIdLabel = new JLabel(String.valueOf(tile.getCardId()));
@@ -290,9 +290,9 @@ public class BoardUI extends JFrame {
         }
 
         //tilePanels[pawn.getX()][pawn.getY()].removeAll();
-        tilePanels[pawn.getX()][pawn.getY()].setLayout(new GridBagLayout());
-        tilePanels[pawn.getX()][pawn.getY()].revalidate();
-        tilePanels[pawn.getX()][pawn.getY()].repaint();
+        getTilePanelAt(pawn.getCoordinate()).setLayout(new GridBagLayout());
+        getTilePanelAt(pawn.getCoordinate()).revalidate();
+        getTilePanelAt(pawn.getCoordinate()).repaint();
         revalidate();
         repaint();
 
@@ -348,8 +348,8 @@ public class BoardUI extends JFrame {
             updatedPawn = board.movePawn(pawnColor, action);
             if(board.isPawnAtTimerTile(updatedPawn)){
                 // change color of timer tile to dark red
-                Tile timerTile = board.getTileAt(updatedPawn.getX(), updatedPawn.getY());
-                JPanel timerTilePanel = tilePanels[updatedPawn.getX()][updatedPawn.getY()];
+                Tile timerTile = board.getTileAt(updatedPawn.getCoordinate());
+                JPanel timerTilePanel = getTilePanelAt(updatedPawn.getCoordinate());
                 java.awt.Color bgColor = getColorForTileType(timerTile.getType(), timerTile);
                 timerTilePanel.setBackground(bgColor);
             }
@@ -363,10 +363,10 @@ public class BoardUI extends JFrame {
         else if(action == Action.DISCOVER){
             updatedPawn = previousPawn;
             // check if the pawn is standing on discovery tile
-            Tile currentTile = board.getTileAt(updatedPawn.getX(), updatedPawn.getY());
+            Tile currentTile = board.getTileAt(updatedPawn.getCoordinate());
             if(currentTile.getType() == TileType.DISCOVERY && pawnColor == currentTile.getColor()){
-                Coordinate corner = board.getLeftTopCornerOfNewCard(new Coordinate(updatedPawn.getX(), updatedPawn.getY()));
-                boolean discovered = game.discoverCard(new Coordinate(updatedPawn.getX(), updatedPawn.getY()));
+                Coordinate corner = board.getLeftTopCornerOfNewCard(updatedPawn.getCoordinate());
+                boolean discovered = game.discoverCard(updatedPawn.getCoordinate());
                 // re-render the board
                 if(discovered){
                     renderDiscoveredTiles(corner);
@@ -511,6 +511,10 @@ public class BoardUI extends JFrame {
         int endY = y2 * TILE_SIZE + TILE_SIZE / 2;
 
         linePanel.addLine(startX, startY, endX, endY);
+    }
+
+    private JPanel getTilePanelAt(Coordinate coordinate) {
+        return tilePanels[coordinate.getX()][coordinate.getY()];
     }
 
     public static void main(String[] args) {

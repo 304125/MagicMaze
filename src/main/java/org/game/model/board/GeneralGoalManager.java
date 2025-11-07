@@ -5,16 +5,29 @@ import org.game.model.Coordinate;
 
 import java.util.List;
 
+// singleton
 public class GeneralGoalManager {
+    private static GeneralGoalManager instance; // singleton
     List<PawnGoalManager> pawnGoalManagers;
 
-    public GeneralGoalManager() {
+    private GeneralGoalManager() {
         this.pawnGoalManagers = List.of(
             new PawnGoalManager(Color.ORANGE),
             new PawnGoalManager(Color.GREEN),
             new PawnGoalManager(Color.YELLOW),
             new PawnGoalManager(Color.PURPLE)
         );
+    }
+
+    public static GeneralGoalManager getInstance() {
+        if (instance == null) {
+            synchronized (GeneralGoalManager.class) {
+                if (instance == null) {
+                    instance = new GeneralGoalManager();
+                }
+            }
+        }
+        return instance;
     }
 
     public PawnGoalManager getPawnGoalManager(Color color) {
@@ -34,7 +47,7 @@ public class GeneralGoalManager {
 
     public void removeTimerFromAllPawns(Coordinate timer) {
         for (PawnGoalManager pgm : pawnGoalManagers) {
-            pgm.getTimers().remove(timer);
+            pgm.removeTimer(timer);
         }
     }
 }
