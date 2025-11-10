@@ -46,6 +46,13 @@ public class Game {
     private void initializePlayers(int numberOfPlayers, List<AIPlayerType> aiPlayerTypes){
          this.
         players = jsonReader.loadPlayersFromJson(numberOfPlayers, aiPlayerTypes, this.board);
+
+        // add every AI player to the board's pawn manager as pawn move listener
+        for(Player player : players){
+            if(player instanceof AIPlayer aiPlayer){
+                board.getPawnManager().addPawnMoveListener(aiPlayer);
+            }
+        }
     }
 
     private void printPlayers(){
@@ -63,12 +70,6 @@ public class Game {
         this.board = new Board(boardMaxSize);
         board.initializeStartingTile(this.startingCard);
         board.initializeStartingPawns(initialPawns);
-        // add every AI player to the board's pawn manager as pawn move listener
-        for(Player player : players){
-            if(player instanceof AIPlayer aiPlayer){
-                board.getPawnManager().addPawnMoveListener(aiPlayer);
-            }
-        }
         board.testPathFinder();
     }
 
