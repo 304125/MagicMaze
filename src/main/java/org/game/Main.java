@@ -13,6 +13,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
+            boolean printEverything = false; // Set to true to enable detailed logging
             int numberOfPlayers = 4;
             List<AIPlayerType> aiPlayers = new ArrayList<>();
             aiPlayers.add(AIPlayerType.ONE_HERO);

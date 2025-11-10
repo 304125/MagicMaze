@@ -70,7 +70,7 @@ public class Game {
         this.board = new Board(boardMaxSize);
         board.initializeStartingTile(this.startingCard);
         board.initializeStartingPawns(initialPawns);
-        board.testPathFinder();
+        // board.testPathFinder();
     }
 
     public Board getBoard() {

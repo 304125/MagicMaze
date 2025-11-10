@@ -2,6 +2,7 @@ package org.game.model.board;
 
 import org.game.model.*;
 import org.game.model.AI.PawnMoveListener;
+import org.game.utils.Config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,9 @@ public class PawnManager {
                     System.out.println("Error: Vortex destination is occupied");
                     return pawn;
                 }
-                System.out.println("Pawn " + pawnColor + " used vortex " + vortexNumber + " to (" + destination.x() + "," + destination.y() + ")");
+                if(Config.PRINT_EVERYTHING){
+                    System.out.println("Pawn " + pawnColor + " used vortex " + vortexNumber + " to (" + destination.x() + "," + destination.y() + ")");
+                }
 
                 // set previous tile not occupied, move pawn to destination, set new tile to occupied
                 board.getTileAt(pawn.getCoordinate()).setOccupied(false);
@@ -60,7 +63,9 @@ public class PawnManager {
             return pawn;
         }
         else{
-            System.out.println("Pawn " + pawnColor + " used an escalator to (" + destination.x() + "," + destination.y() + ")");
+            if(Config.PRINT_EVERYTHING) {
+                System.out.println("Pawn " + pawnColor + " used an escalator to (" + destination.x() + "," + destination.y() + ")");
+            }
 
             // set previous tile not occupied, move pawn to destination, set new tile to occupied
             board.getTileAt(pawn.getCoordinate()).setOccupied(false);
@@ -109,28 +114,37 @@ public class PawnManager {
             case MOVE_NORTH:
                 if (!currentTile.hasWallUp() && board.getTileAt(pawn.getCoordinate().move(-1, 0)) != null && !board.getTileAt(pawn.getCoordinate().move(-1, 0)).isOccupied()) {
                     pawn.moveNorth();
-                    System.out.println("Moved "+ pawnColor +" north");
+                    if(Config.PRINT_EVERYTHING){
+                        System.out.println("Moved "+ pawnColor +" north");
+                    }
+
                     moved = true;
                 }
                 break;
             case MOVE_SOUTH:
                 if( !currentTile.hasWallDown() && board.getTileAt(pawn.getCoordinate().move(1, 0)) != null && !board.getTileAt(pawn.getCoordinate().move(1, 0)).isOccupied()) {
                     pawn.moveSouth();
-                    System.out.println("Moved "+ pawnColor +" south");
+                    if(Config.PRINT_EVERYTHING){
+                        System.out.println("Moved "+ pawnColor +" south");
+                    }
                     moved = true;
                 }
                 break;
             case MOVE_WEST:
                 if (!currentTile.hasWallLeft() && board.getTileAt(pawn.getCoordinate().move(0, -1)) != null && !board.getTileAt(pawn.getCoordinate().move(0, -1)).isOccupied()) {
                     pawn.moveWest();
-                    System.out.println("Moved "+ pawnColor +" west");
+                    if(Config.PRINT_EVERYTHING){
+                        System.out.println("Moved "+ pawnColor +" west");
+                    }
                     moved = true;
                 }
                 break;
             case MOVE_EAST:
                 if( !currentTile.hasWallRight() && board.getTileAt(pawn.getCoordinate().move(0, 1)) != null && !board.getTileAt(pawn.getCoordinate().move(0, 1)).isOccupied()) {
                     pawn.moveEast();
-                    System.out.println("Moved "+ pawnColor +" east");
+                    if(Config.PRINT_EVERYTHING){
+                        System.out.println("Moved "+ pawnColor +" east");
+                    }
                     moved = true;
                 }
                 break;
@@ -162,7 +176,9 @@ public class PawnManager {
         // check if the pawn has moved onto a Timer tile
         Tile newTile = board.getTileAt(pawn.getCoordinate());
         if(moved && newTile.getType() == TileType.TIMER && !newTile.isUsed()){
-            System.out.println("Pawn " + pawnColor + " landed on a Timer tile!");
+            if(Config.PRINT_EVERYTHING){
+                System.out.println("Pawn " + pawnColor + " landed on a Timer tile!");
+            }
             board.getTimer().flipTimer();
             newTile.setUsed(true);
             // remove timer from board's active timers

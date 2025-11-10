@@ -4,6 +4,7 @@ import org.game.model.*;
 import org.game.model.Color;
 import org.game.model.board.Board;
 import org.game.model.board.BoardEscalator;
+import org.game.utils.Config;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -73,7 +74,9 @@ public class BoardUI extends JFrame {
                     tilePanel.setBackground(java.awt.Color.LIGHT_GRAY);
                 }
                 else{
-                    System.out.println("Rendering tile at: (" + i + ", " + j + ") of type " + tile.getType());
+                    if(Config.PRINT_EVERYTHING){
+                        System.out.println("Rendering tile at: (" + i + ", " + j + ") of type " + tile.getType());
+                    }
                     java.awt.Color bgColor;
                     if(tile.getColor() != Color.NONE){
                         bgColor = getColorForTile(tile);
@@ -175,7 +178,9 @@ public class BoardUI extends JFrame {
             }
         }
 
-        System.out.println("Highlighting pawn at: " + pawn.getCoordinate());
+        if(Config.PRINT_EVERYTHING){
+            System.out.println("Highlighting pawn at: " + pawn.getCoordinate());
+        }
         JLabel pawnIcon = new JLabel();
         pawnIcon.setPreferredSize(new Dimension(TILE_SIZE / 2, TILE_SIZE / 2));
         pawnIcon.setOpaque(true);
@@ -191,7 +196,9 @@ public class BoardUI extends JFrame {
     }
 
     public void unhighlightPawn(Pawn pawn){
-        System.out.println("Un-highlighting pawn at: " + pawn.getCoordinate());
+        if(Config.PRINT_EVERYTHING){
+            System.out.println("Un-highlighting pawn at: " + pawn.getCoordinate());
+        }
         // get children of tilePanels component at x and y
 
         JPanel pawnTile = getTilePanelAt(pawn.getCoordinate());

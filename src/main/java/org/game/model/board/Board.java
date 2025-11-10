@@ -3,6 +3,7 @@ package org.game.model.board;
 import org.game.model.*;
 import org.game.model.AI.PathFinder;
 import org.game.model.AI.SearchPath;
+import org.game.utils.Config;
 
 import java.util.List;
 
@@ -60,7 +61,9 @@ public class Board {
             for (int j = 0; j < startingTiles[i].length; j++) {
                 int x = (int) (i + (double) (numRows / 2));
                 int y = (int) (j + (double) (numRows / 2));
-                System.out.println("Placing tile at (" + x + ", " + y + ") of type " + startingTiles[i][j].getType());
+                if(Config.PRINT_EVERYTHING){
+                    System.out.println("Placing tile at (" + x + ", " + y + ") of type " + startingTiles[i][j].getType());
+                }
                 tiles[x][y] = startingTiles[i][j];
 
             }
@@ -73,7 +76,7 @@ public class Board {
                 handleTileTypeSpecifics(startingTiles[i][j], new Coordinate(x, y));
             }
         }
-        printEscalators();
+        // printEscalators();
     }
 
     private void handleTileTypeSpecifics(Tile tile, Coordinate position) {

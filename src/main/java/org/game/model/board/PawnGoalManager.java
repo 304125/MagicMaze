@@ -2,6 +2,7 @@ package org.game.model.board;
 
 import org.game.model.Color;
 import org.game.model.Coordinate;
+import org.game.utils.Config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,22 +25,30 @@ public class PawnGoalManager {
 
     public void addTimer(Coordinate timer) {
         this.timers.add(timer);
-        System.out.println("Timer for pawn " + pawnColor + " added at (" + timer.x() + "," + timer.y() + ")");
+        if(Config.PRINT_EVERYTHING){
+            System.out.println("Timer for pawn " + pawnColor + " added at (" + timer.x() + "," + timer.y() + ")");
+        }
     }
 
     public void addDiscovery(Coordinate discovery) {
         this.discoveries.add(discovery);
-        System.out.println("Discovery for pawn " + pawnColor + " added at (" + discovery.x() + "," + discovery.y() + ")");
+        if(Config.PRINT_EVERYTHING){
+            System.out.println("Discovery for pawn " + pawnColor + " added at (" + discovery.x() + "," + discovery.y() + ")");
+        }
     }
 
     public void setExit(Coordinate exit) {
         this.exit = exit;
-        System.out.println("Exit for pawn " + pawnColor + " set at (" + exit.x() + "," + exit.y() + ")");
+        if(Config.PRINT_EVERYTHING){
+            System.out.println("Exit for pawn " + pawnColor + " set at (" + exit.x() + "," + exit.y() + ")");
+        }
     }
 
     public void setItem(Coordinate item) {
         this.item = item;
-        System.out.println("Item for pawn " + pawnColor + " set at (" + item.x() + "," + item.y() + ")");
+        if(Config.PRINT_EVERYTHING){
+            System.out.println("Item for pawn " + pawnColor + " set at (" + item.x() + "," + item.y() + ")");
+        }
     }
 
     public List<Coordinate> getTimers() {
@@ -68,7 +77,9 @@ public class PawnGoalManager {
 
     public void removeDiscovery(Coordinate discovery) {
         this.discoveries.remove(discovery);
-        System.out.println("Discovery at (" + discovery.x() + "," + discovery.y() + ") removed for pawn " + pawnColor);
+        if(Config.PRINT_EVERYTHING){
+            System.out.println("Discovery at (" + discovery.x() + "," + discovery.y() + ") removed for pawn " + pawnColor);
+        }
     }
 
     public List<Coordinate> getAllGoals(){

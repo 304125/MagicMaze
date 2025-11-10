@@ -107,7 +107,8 @@ public class ActionTree {
     }
 
     /** Print the tree */
-    public void printTree() {
+    public void printTree(String playerName) {
+        System.out.println("Action Tree for " + playerName + ":");
         printTree(root, "", "");
     }
 
