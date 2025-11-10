@@ -26,8 +26,28 @@ public class SearchPath {
     public List<Action> getActions() {
         List<Action> actions = new ArrayList<>();
         for (Node node : nodes) {
-            if (node.action() instanceof Action) {
-                actions.add((Action) node.action());
+            Object actionObj = node.action();
+            // if not null, cast to Action
+            if(actionObj != null){
+                PathFinder.Action action = (PathFinder.Action) actionObj;
+                // PathFinder.Action and model.Action are different!
+                switch (action) {
+                    case MOVE_NORTH -> {
+                        actions.add(Action.MOVE_NORTH);
+                    }
+                    case MOVE_SOUTH -> {
+                        actions.add(Action.MOVE_SOUTH);
+                    }
+                    case MOVE_WEST -> {
+                        actions.add(Action.MOVE_WEST);
+                    }
+                    case MOVE_EAST -> {
+                        actions.add(Action.MOVE_EAST);
+                    }
+                    case ESCALATOR -> {
+                        actions.add(Action.ESCALATOR);
+                    }
+                }
             }
         }
         return actions;
