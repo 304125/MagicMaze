@@ -65,7 +65,9 @@ public class ActionDelegator {
     }
 
     private void handlePawns(Pawn previousPawn, Pawn updatedPawn) {
-        board.printAllPawns();
+        if(Config.PRINT_EVERYTHING){
+            board.printAllPawns();
+        }
         boardUI.unhighlightPawn(previousPawn);
         boardUI.highlightPawn(updatedPawn);
     }

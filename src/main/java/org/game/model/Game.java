@@ -3,6 +3,7 @@ package org.game.model;
 import org.game.model.AI.AIPlayer;
 import org.game.model.AI.AIPlayerType;
 import org.game.model.board.Board;
+import org.game.utils.Config;
 import org.game.utils.JsonReader;
 
 import java.util.List;
@@ -19,7 +20,9 @@ public class Game {
         initializeCards();
         initializeBoard();
         initializePlayers(numberOfPlayers, aiPlayerTypes);
-        printPlayers();
+        if(Config.PRINT_EVERYTHING){
+            printPlayers();
+        }
     }
 
     private void initializeCards(){
@@ -101,7 +104,9 @@ public class Game {
 
     public boolean discoverCard(Coordinate coordinate) {
         Card nextCard = unplayedCards.drawCard();
-        System.out.println("Discovered card with ID: " + nextCard.getId());
+        if(Config.PRINT_EVERYTHING){
+            System.out.println("Discovered card with ID: " + nextCard.getId());
+        }
         return board.addCardToBoard(nextCard, coordinate);
     }
 }

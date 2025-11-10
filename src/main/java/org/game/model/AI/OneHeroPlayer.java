@@ -52,7 +52,9 @@ public class OneHeroPlayer extends AIPlayer{
             int estimatedDistance = pathFinder.findDistance(lastMovedPawn.getCoordinate(), goal);
             distanceMap.put(goal, estimatedDistance);
         }
-        System.out.println("Distance map from pawn " + lastMovedPawn.getColor() + " at " + lastMovedPawn.getCoordinate() + ": " + distanceMap);
+        if(Config.PRINT_EVERYTHING){
+            System.out.println("Distance map from pawn " + lastMovedPawn.getColor() + " at " + lastMovedPawn.getCoordinate() + ": " + distanceMap);
+        }
 
         // sort goalCoordinates by estimated distance from distanceMap
         goalCoordinates.sort(Comparator.comparingInt(distanceMap::get));
