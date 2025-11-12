@@ -18,4 +18,8 @@ public class Player {
     public String getName() {
         return name;
     }
+
+    public boolean canPerformAction(Action action) {
+        return actions.contains(action);
+    }
 }

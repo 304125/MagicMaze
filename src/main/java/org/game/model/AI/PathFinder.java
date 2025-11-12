@@ -1,6 +1,7 @@
 package org.game.model.AI;
 
 import org.game.model.Coordinate;
+import org.game.model.TileType;
 import org.game.model.board.PawnManager;
 import org.game.model.Tile;
 
@@ -33,6 +34,8 @@ public class PathFinder {
             // Goal check
             if (current.getX() == coordinateEnd.x() && current.getY() == coordinateEnd.y()) {
                 reconstructPath(searchPath, current);
+                // if the coodrdinateEnd is a Discovery tile, add action to the searchPath
+                handleDiscoveryTile(searchPath, coordinateEnd);
                 return searchPath; // Return the the shortest path from start to goal
             }
 
@@ -111,6 +114,14 @@ public class PathFinder {
         Collections.reverse(nodes);
     }
 
+    private void handleDiscoveryTile(SearchPath searchPath, Coordinate coordinateEnd) {
+        Tile endTile = grid[coordinateEnd.x()][coordinateEnd.y()];
+        if (endTile.getType() == TileType.DISCOVERY) {
+            // Add a null action to indicate discovery
+            searchPath.addNode(coordinateEnd.x(), coordinateEnd.y(), Action.DISCOVERY);
+        }
+    }
+
     private static class Node {
         Coordinate coordinate;
         int g, f;
@@ -138,7 +149,8 @@ public class PathFinder {
         MOVE_SOUTH(1, 0),
         MOVE_WEST(0, -1),
         MOVE_EAST(0, 1),
-        ESCALATOR(1000,1000);
+        ESCALATOR(1000,1000),
+        DISCOVERY(0,0); // special action for discovery tile
 
 
         final int dx, dy;

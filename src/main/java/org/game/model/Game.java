@@ -2,10 +2,13 @@ package org.game.model;
 
 import org.game.model.AI.AIPlayer;
 import org.game.model.AI.AIPlayerType;
+import org.game.model.AI.StateChangeListener;
 import org.game.model.board.Board;
+import org.game.utils.ActionDelegator;
 import org.game.utils.Config;
 import org.game.utils.JsonReader;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
@@ -15,6 +18,7 @@ public class Game {
     private Card startingCard;
     private final int boardMaxSize = 23;
     private List<Player> players;
+    private final List<StateChangeListener> listeners = new ArrayList<>();
 
     public Game(int numberOfPlayers, List<AIPlayerType> aiPlayerTypes) {
         initializeCards();
@@ -53,9 +57,14 @@ public class Game {
         // add every AI player to the board's pawn manager as pawn move listener
         for(Player player : players){
             if(player instanceof AIPlayer aiPlayer){
-                board.getPawnManager().addPawnMoveListener(aiPlayer);
+                board.getPawnManager().addStateChangeListener(aiPlayer);
+                addStateChangeListener(aiPlayer);
             }
         }
+    }
+
+    private void addStateChangeListener(StateChangeListener listener) {
+        listeners.add(listener);
     }
 
     private void printPlayers(){
@@ -94,19 +103,46 @@ public class Game {
         // shuffle the list in a random way
         java.util.Collections.shuffle(startingPositions);
         pawns = List.of(
-                new Pawn(new Coordinate(startingPositions.get(0)[0], startingPositions.get(0)[1]), Color.YELLOW),
-                new Pawn(new Coordinate(startingPositions.get(1)[0], startingPositions.get(1)[1]), Color.GREEN),
-                new Pawn(new Coordinate(startingPositions.get(2)[0], startingPositions.get(2)[1]), Color.PURPLE),
-                new Pawn(new Coordinate(startingPositions.get(3)[0], startingPositions.get(3)[1]), Color.ORANGE)
+                //new Pawn(new Coordinate(startingPositions.get(0)[0], startingPositions.get(0)[1]), Color.YELLOW)
+                new Pawn(new Coordinate(startingPositions.get(1)[0], startingPositions.get(1)[1]), Color.GREEN)
+                //new Pawn(new Coordinate(startingPositions.get(2)[0], startingPositions.get(2)[1]), Color.PURPLE),
+                //new Pawn(new Coordinate(startingPositions.get(3)[0], startingPositions.get(3)[1]), Color.ORANGE)
         );
         return pawns;
     }
 
-    public boolean discoverCard(Coordinate coordinate) {
+    public boolean discoverCard(Pawn pawn) {
         Card nextCard = unplayedCards.drawCard();
         if(Config.PRINT_EVERYTHING){
             System.out.println("Discovered card with ID: " + nextCard.getId());
         }
-        return board.addCardToBoard(nextCard, coordinate);
+        boolean success = board.addCardToBoard(nextCard, pawn.getCoordinate());
+        if(success){
+            updateStateOfGame(pawn);
+        }
+        return success;
+    }
+
+    private void updateStateOfGame(Pawn pawn){
+        // Notify all listeners about the pawn move
+        for (StateChangeListener listener : listeners) {
+            listener.onDiscovered(pawn);
+        }
+    }
+
+    public void giveActionDelegatorToAIPlayers(ActionDelegator actionDelegator){
+        for(Player player : players){
+            if(player instanceof AIPlayer aiPlayer){
+                aiPlayer.setActionDelegator(actionDelegator);
+            }
+        }
+    }
+
+    public void startGame(){
+        for(Player player : players){
+            if(player instanceof AIPlayer aiPlayer){
+                aiPlayer.startGame();
+            }
+        }
     }
 }

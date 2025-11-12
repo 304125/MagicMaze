@@ -2,9 +2,11 @@ package org.game.model.AI;
 
 import org.game.model.Action;
 import org.game.model.Coordinate;
+import org.game.model.Tile;
 import org.game.model.board.Board;
 import org.game.model.Pawn;
 import org.game.model.board.GeneralGoalManager;
+import org.game.utils.ActionDelegator;
 import org.game.utils.Config;
 
 import java.util.Comparator;
@@ -29,10 +31,12 @@ public class OneHeroPlayer extends AIPlayer{
         }
         this.generalGoalManager = GeneralGoalManager.getInstance();
         this.pathFinder = new PathFinder(board.getTiles());
-        buildActionTree();
+    }
 
-        // fist fix it and then use it
-        // startActionExecution();
+    @Override
+    public void startGame(){
+        buildActionTree();
+        startActionExecution();
     }
 
     // builds action tree from scratch
@@ -68,20 +72,22 @@ public class OneHeroPlayer extends AIPlayer{
                     System.out.println("Reached maximum chunk size limit while building action tree. Stopping further path additions.");
                 }
             }
-            actionTree.addRoute(path.getActions());
+            int priority = calculatePriority(goal);
+            actionTree.addRoute(path.getActions(), priority);
             if(Config.PRINT_EVERYTHING){
                 System.out.println("Added path to goal " + goal + " with estimated distance " + distanceMap.get(goal) + " to action tree.");
             }
         }
-        if(Config.PRINT_EVERYTHING){
-            actionTree.printTree(getName());
-        }
+//        if(Config.PRINT_EVERYTHING){
+//        }
+        actionTree.printTree(getName());
     }
 
     @Override
     public void onPawnMoved(Pawn movedPawn, Action action) {
         if(movedPawn.getColor() == lastMovedPawn.getColor()) {
             boolean moved = actionTree.takeAction(action);
+            actionTree.printTree(getName());
             if (!moved) {
                 // re-build tree, the pawn was moved in an unexpected way
                 buildActionTree();
@@ -94,16 +100,64 @@ public class OneHeroPlayer extends AIPlayer{
         }
     }
 
+    @Override
+    public void onDiscovered(Pawn pawn){
+        if(pawn.getColor() == lastMovedPawn.getColor()) {
+            boolean moved = actionTree.takeAction(Action.DISCOVER);
+            if(actionTree.isEmpty()){
+                // re-build tree, all actions used up
+                buildActionTree();
+            }
+
+            actionTree.printTree(getName());
+            if (!moved) {
+                // re-build tree, the pawn was moved in an unexpected way
+                buildActionTree();
+            }
+        }
+        else{
+            lastMovedPawn = pawn;
+            // re-build tree, another pawn was moved
+            buildActionTree();
+        }
+    }
+
+    @Override
     public void startActionExecution() {
         Thread actionExecutionThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    boolean actionTaken = actionTree.takeBestAction();
-                    if (!actionTaken) {
-                        System.out.println("No valid action to take. Rebuilding action tree...");
-                        buildActionTree(); // Rebuild the tree if no action is available
-                    }
                     Thread.sleep(1000); // Wait for 1 second
+                    Action bestAction = actionTree.bestAction();
+                    if(canPerformAction(bestAction)){
+                        //boolean actionTaken = actionTree.takeAction(bestAction);
+                        if (actionTree.isEmpty()) {
+                            System.out.println("No valid action to take. Rebuilding action tree...");
+                            buildActionTree(); // Rebuild the tree if no action is available
+                            Thread.sleep(3000); // Wait for 3 seconds
+                        }
+                        else{
+                            // perform the action
+                            switch (bestAction){
+                                case MOVE_EAST, MOVE_NORTH, MOVE_SOUTH, MOVE_WEST, ESCALATOR -> {
+                                    if(Config.PRINT_EVERYTHING){
+
+                                    }
+                                    System.out.println(getName() + " is performing action: " + bestAction + " with pawn " + lastMovedPawn.getColor());
+                                    getActionDelegator().movePawn(lastMovedPawn.getColor(), bestAction);
+                                }
+                                case DISCOVER -> {
+                                    if(Config.PRINT_EVERYTHING){
+
+                                    }
+                                    System.out.println(getName() + " is performing action: " + bestAction + " with pawn " + lastMovedPawn.getColor());
+                                    getActionDelegator().discover(lastMovedPawn.getColor());
+                                }
+                                // add vortex and discover later when implemented
+                            }
+                        }
+                    }
+
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt(); // Restore interrupted status
                     System.out.println("Action execution thread interrupted. Stopping...");
@@ -113,5 +167,14 @@ public class OneHeroPlayer extends AIPlayer{
 
         actionExecutionThread.setDaemon(true); // Optional: Set as daemon thread
         actionExecutionThread.start();
+    }
+
+    public int calculatePriority(Coordinate goal){
+        Tile goalTile = getBoard().getTileAt(goal);
+        return switch (goalTile.getType()) {
+            case DISCOVERY -> 2;
+            case TIMER -> 1;
+            default -> 0;
+        };
     }
 }

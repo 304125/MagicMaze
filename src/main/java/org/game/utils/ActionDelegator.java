@@ -45,7 +45,7 @@ public class ActionDelegator {
         Tile currentTile = board.getTileAt(pawn.getCoordinate());
         if(currentTile.getType() == TileType.DISCOVERY && pawnColor == currentTile.getColor()){
             Coordinate corner = board.getLeftTopCornerOfNewCard(pawn.getCoordinate());
-            boolean discovered = game.discoverCard(pawn.getCoordinate());
+            boolean discovered = game.discoverCard(pawn);
             // re-render the board
             if(discovered){
                 boardUI.renderDiscoveredTiles(corner);

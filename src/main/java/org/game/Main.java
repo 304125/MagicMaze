@@ -25,6 +25,14 @@ public class Main {
             Game game = new Game(numberOfPlayers, aiPlayers);
             BoardUI boardUI = new BoardUI(game.getBoard());
             ActionDelegator actionDelegator = new ActionDelegator(game, boardUI);
+            game.giveActionDelegatorToAIPlayers(actionDelegator);
+            // sleep for 1 second to let the UI load
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            game.startGame();
             new InputManager(actionDelegator);
         });
     }

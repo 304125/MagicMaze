@@ -47,6 +47,9 @@ public class SearchPath {
                     case ESCALATOR -> {
                         actions.add(Action.ESCALATOR);
                     }
+                    case DISCOVERY -> {
+                        actions.add(Action.DISCOVER);
+                    }
                 }
             }
         }

@@ -29,7 +29,7 @@ public class ActionTree {
     }
 
     /** Add a route of actions top-to-bottom */
-    public void addRoute(List<Action> actions) {
+    public void addRoute(List<Action> actions, int priority) {
         Node current = root;
         for (Action action : actions) {
             ActionEdge edge = current.edges.get(action);
@@ -42,6 +42,8 @@ public class ActionTree {
             // if the edge exists, move down to the child node
             current = edge.childNode;
         }
+        // assign priority to the leaf node
+        current.priority = priority;
     }
 
     /** Assign priorities to all leaves */
@@ -133,5 +135,9 @@ public class ActionTree {
             count += countEdges(edge.childNode);
         }
         return count;
+    }
+
+    public boolean isEmpty(){
+        return root.edges.isEmpty();
     }
 }

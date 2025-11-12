@@ -1,7 +1,7 @@
 package org.game.model.board;
 
 import org.game.model.*;
-import org.game.model.AI.PawnMoveListener;
+import org.game.model.AI.StateChangeListener;
 import org.game.utils.Config;
 
 import java.util.ArrayList;
@@ -9,13 +9,13 @@ import java.util.List;
 
 public class PawnManager {
     private static Board board;
-    private final List<PawnMoveListener> listeners = new ArrayList<>();
+    private final List<StateChangeListener> listeners = new ArrayList<>();
 
     public PawnManager(Board board) {
         PawnManager.board = board;
     }
 
-    public void addPawnMoveListener(PawnMoveListener listener) {
+    public void addStateChangeListener(StateChangeListener listener) {
         listeners.add(listener);
     }
 
@@ -190,7 +190,7 @@ public class PawnManager {
 
     private void updateLastMovedPawn(Pawn pawn, Action action){
         // Notify all listeners about the pawn move
-        for (PawnMoveListener listener : listeners) {
+        for (StateChangeListener listener : listeners) {
             listener.onPawnMoved(pawn, action);
         }
     }
