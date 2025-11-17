@@ -56,7 +56,6 @@ public class PathFinder {
             }
         }
 
-
         while (!openSet.isEmpty()) {
             Node current = openSet.poll();
             String currentKey = current.getX() + "," + current.getY();
@@ -66,7 +65,7 @@ public class PathFinder {
                 reconstructPath(searchPath, current);
                 // if the coodrdinateEnd is a Discovery tile, add action to the searchPath
                 handleDiscoveryTile(searchPath, coordinateEnd);
-                return searchPath; // Return the the shortest path from start to goal
+                return searchPath; // Return the shortest path from start to goal
             }
 
             closedSet.add(currentKey);
