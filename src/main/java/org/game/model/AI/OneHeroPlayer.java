@@ -88,6 +88,10 @@ public class OneHeroPlayer extends AIPlayer{
         if(movedPawn.getColor() == lastMovedPawn.getColor()) {
             boolean moved = actionTree.takeAction(action);
             actionTree.printTree(getName());
+            if(actionTree.isEmpty()){
+                // re-build tree, all actions used up
+                buildActionTree();
+            }
             if (!moved) {
                 // re-build tree, the pawn was moved in an unexpected way
                 buildActionTree();

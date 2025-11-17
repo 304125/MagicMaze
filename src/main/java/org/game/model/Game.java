@@ -16,7 +16,7 @@ public class Game {
     private StackOfCards unplayedCards;
     private final JsonReader jsonReader = new JsonReader();
     private Card startingCard;
-    private final int boardMaxSize = 23;
+    private final int boardMaxSize = 30;
     private List<Player> players;
     private final List<StateChangeListener> listeners = new ArrayList<>();
 
