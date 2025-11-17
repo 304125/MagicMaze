@@ -64,6 +64,11 @@ public class ActionDelegator {
         handlePawns(previousPawn, updatedPawn);
     }
 
+    public void vortexPawn(Color color, Coordinate vortexCoordinate){
+        int vortexNumber = board.getCardIdOfVortex(vortexCoordinate, color);
+        vortexPawn(color, vortexNumber);
+    }
+
     private void handlePawns(Pawn previousPawn, Pawn updatedPawn) {
         if(Config.PRINT_EVERYTHING){
             board.printAllPawns();

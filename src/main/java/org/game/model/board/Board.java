@@ -30,7 +30,7 @@ public class Board {
         this.tiles = new Tile[numRows][numCols];
         this.timer = new Timer();
         this.pawnManager = new PawnManager(this);
-        this.pathFinder = new PathFinder(tiles);
+        this.pathFinder = new PathFinder(tiles, this);
         this.generalGoalManager = GeneralGoalManager.getInstance();
     }
 
@@ -38,8 +38,17 @@ public class Board {
         // locate one of the pawns
         Coordinate from = new Coordinate(13, 11);
         Coordinate to = new Coordinate(13, 14);
-        System.out.println("Finding path from "+ from +" to "+ to);
-        SearchPath path = pathFinder.findShortestPath(from, to);
+        // find pawn at location from
+        Pawn pawn = null;
+        for (Pawn p : pawns) {
+            if (p.getCoordinate().equals(from)) {
+                pawn = p;
+                break;
+            }
+        }
+
+        System.out.println("Finding path from "+ from +" to "+ to + " for pawn " + (pawn != null ? pawn.getColor() : "not found"));
+        SearchPath path = pathFinder.findShortestPath(from, to, pawn.getColor());
         if (path != null) {
             System.out.println("Path found:");
             for (SearchPath.Node node : path.getNodes()) {
@@ -322,6 +331,17 @@ public class Board {
             case ORANGE -> orangeVortices;
             default -> new java.util.ArrayList<>();
         };
+    }
+
+    public int getCardIdOfVortex(Coordinate coordinate, Color color){
+        List<BoardVortex> vortexList = getVortexListByColor(color);
+        for (BoardVortex vortex : vortexList) {
+            if (vortex.position().equals(coordinate)) {
+                return vortex.cardId();
+            }
+        }
+        return -1; // not found
+
     }
 
     public Pawn useVortex(Color pawnColor, int vortexNumber){

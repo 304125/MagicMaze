@@ -50,6 +50,11 @@ public class SearchPath {
                     case DISCOVERY -> {
                         actions.add(Action.DISCOVER);
                     }
+                    case VORTEX -> {
+                        Action vortexAction = Action.VORTEX;
+                        vortexAction.setVortexCoordinate(new org.game.model.Coordinate(node.x, node.y));
+                        actions.add(vortexAction);
+                    }
                 }
             }
         }

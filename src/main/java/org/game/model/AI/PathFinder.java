@@ -1,7 +1,10 @@
 package org.game.model.AI;
 
+import org.game.model.Color;
 import org.game.model.Coordinate;
 import org.game.model.TileType;
+import org.game.model.board.Board;
+import org.game.model.board.BoardVortex;
 import org.game.model.board.PawnManager;
 import org.game.model.Tile;
 
@@ -9,12 +12,14 @@ import java.util.*;
 
 public class PathFinder {
     private final Tile[][] grid;
+    private Board board;
 
-    public PathFinder(Tile[][] grid) {
+    public PathFinder(Tile[][] grid, Board board) {
         this.grid = grid;
+        this.board = board;
     }
 
-    public SearchPath findShortestPath(Coordinate coordinateStart, Coordinate coordinateEnd) {
+    public SearchPath findShortestPath(Coordinate coordinateStart, Coordinate coordinateEnd, Color pawnColor) {
         int rows = grid.length;
         int cols = grid[0].length;
 
@@ -26,6 +31,31 @@ public class PathFinder {
         // Start node
         Node startNode = new Node(coordinateStart, 0, findDistance(coordinateStart, coordinateEnd), null, null);
         openSet.add(startNode);
+
+        // check for all vortexes that could shorten the distance
+        List<BoardVortex> vortexesOfColor = board.getVortexListByColor(pawnColor);
+        List<Coordinate> vortexCoordinates = new ArrayList<>();
+        for (BoardVortex vortex : vortexesOfColor) {
+            vortexCoordinates.add(vortex.position());
+        }
+        // for each vortexCoordinates, if using the vortex would shorten the distance, add it to the openSet
+        for (Coordinate vortexCoordinate : vortexCoordinates) {
+            int distanceToVortex = 1;
+            int distanceFromVortexToEnd = findDistance(vortexCoordinate, coordinateEnd);
+            int directDistance = findDistance(coordinateStart, coordinateEnd);
+            if (distanceToVortex + distanceFromVortexToEnd < directDistance) {
+                // add vortexCoordinate to openSet
+                int newG = distanceToVortex;
+                int newH = distanceFromVortexToEnd;
+                int dx = vortexCoordinate.x() - coordinateStart.x();
+                int dy = vortexCoordinate.y() - coordinateStart.y();
+                Action vortexAction = Action.VORTEX;
+                vortexAction.setDynamicCoordinates(dx, dy);
+                Node vortexNode = new Node(vortexCoordinate, newG, newH, startNode, vortexAction);
+                openSet.add(vortexNode);
+            }
+        }
+
 
         while (!openSet.isEmpty()) {
             Node current = openSet.poll();
@@ -53,7 +83,11 @@ public class PathFinder {
                         !closedSet.contains(coordinateOtherSideOfEscalator.x() + "," + coordinateOtherSideOfEscalator.y())) {
                     int newG = current.g + 1; // Cost to move to the escalator destination
                     int newH = heuristicManhattan(coordinateOtherSideOfEscalator, coordinateEnd);
-                    Node escalatorNode = new Node(coordinateOtherSideOfEscalator, newG, newH, current, Action.ESCALATOR);
+                    int dx = coordinateOtherSideOfEscalator.x() - current.getX();
+                    int dy = coordinateOtherSideOfEscalator.y() - current.getY();
+                    Action escalatorAction = Action.ESCALATOR;
+                    escalatorAction.setDynamicCoordinates(dx, dy);
+                    Node escalatorNode = new Node(coordinateOtherSideOfEscalator, newG, newH, current, escalatorAction);
                     openSet.add(escalatorNode);
                 }
             }
@@ -149,15 +183,33 @@ public class PathFinder {
         MOVE_SOUTH(1, 0),
         MOVE_WEST(0, -1),
         MOVE_EAST(0, 1),
-        ESCALATOR(1000,1000),
-        DISCOVERY(0,0); // special action for discovery tile
+        ESCALATOR(0,0),
+        DISCOVERY(0,0), // special action for discovery tile
+        VORTEX(0,0); // placeholder for vortex action
 
 
-        final int dx, dy;
+        private int dx, dy;
 
         Action(int dx, int dy) {
             this.dx = dx;
             this.dy = dy;
+        }
+
+        public int getDx() {
+            return dx;
+        }
+
+        public int getDy() {
+            return dy;
+        }
+
+        public void setDynamicCoordinates(int dx, int dy) {
+            if (this == ESCALATOR || this == VORTEX) {
+                this.dx = dx;
+                this.dy = dy;
+            } else {
+                throw new UnsupportedOperationException("Cannot set dynamic coordinates for this action type.");
+            }
         }
     }
 }

@@ -7,5 +7,17 @@ public enum Action {
     MOVE_WEST,
     DISCOVER,
     VORTEX,
-    ESCALATOR
+    ESCALATOR;
+
+    private Coordinate vortexCoordinate;
+
+    Action(){}
+
+    public void setVortexCoordinate(Coordinate coordinate){
+        this.vortexCoordinate = coordinate;
+    }
+
+    public Coordinate getVortexCoordinate(){
+        return this.vortexCoordinate;
+    }
 }

@@ -30,7 +30,7 @@ public class OneHeroPlayer extends AIPlayer{
             System.out.println("OneHeroPlayer initialized with maximum chunk size: " + maximumChunkSize);
         }
         this.generalGoalManager = GeneralGoalManager.getInstance();
-        this.pathFinder = new PathFinder(board.getTiles());
+        this.pathFinder = new PathFinder(board.getTiles(), board);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class OneHeroPlayer extends AIPlayer{
 
         // starting from the closest goal, find the shortest path
         for (Coordinate goal : goalCoordinates) {
-            SearchPath path = pathFinder.findShortestPath(lastMovedPawn.getCoordinate(), goal);
+            SearchPath path = pathFinder.findShortestPath(lastMovedPawn.getCoordinate(), goal, lastMovedPawn.getColor());
             currentChunkSize += ChunkGenerator.countChunks(path);
             if(currentChunkSize > maximumChunkSize){
                 if(Config.PRINT_EVERYTHING){
@@ -153,7 +153,13 @@ public class OneHeroPlayer extends AIPlayer{
                                     System.out.println(getName() + " is performing action: " + bestAction + " with pawn " + lastMovedPawn.getColor());
                                     getActionDelegator().discover(lastMovedPawn.getColor());
                                 }
-                                // add vortex and discover later when implemented
+                                case VORTEX -> {
+                                    if(Config.PRINT_EVERYTHING){
+
+                                    }
+                                    System.out.println(getName() + " is performing action: " + bestAction + " with pawn " + lastMovedPawn.getColor());
+                                    getActionDelegator().vortexPawn(lastMovedPawn.getColor(), bestAction.getVortexCoordinate());
+                                }
                             }
                         }
                     }
