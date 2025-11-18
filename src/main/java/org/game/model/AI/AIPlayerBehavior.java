@@ -5,6 +5,7 @@ import org.game.model.Coordinate;
 
 public interface AIPlayerBehavior {
     void startGame();
+    void endGame();
     void startActionExecution();
     int calculatePriority(Coordinate goal);
 }

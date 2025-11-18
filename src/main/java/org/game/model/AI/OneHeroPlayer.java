@@ -20,6 +20,7 @@ public class OneHeroPlayer extends AIPlayer{
     private final int maximumChunkSize;
     private final GeneralGoalManager generalGoalManager;
     PathFinder pathFinder;
+    Thread actionExecutionThread;
 
     public OneHeroPlayer(List<Action> actions, String name, Board board) {
         super(actions, name, board);
@@ -128,7 +129,7 @@ public class OneHeroPlayer extends AIPlayer{
 
     @Override
     public void startActionExecution() {
-        Thread actionExecutionThread = new Thread(() -> {
+        actionExecutionThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     Thread.sleep(1000); // Wait for 1 second
@@ -186,5 +187,9 @@ public class OneHeroPlayer extends AIPlayer{
             case TIMER -> 1;
             default -> 0;
         };
+    }
+
+    public void endGame(){
+        actionExecutionThread.interrupt();
     }
 }

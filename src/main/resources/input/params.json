@@ -1,0 +1,31 @@
+{
+  "games": [
+    {
+      "numberOfPlayers": 4,
+      "aiPlayers": [
+        { "type": "ONE_HERO" },
+        { "type": "ONE_HERO" },
+        { "type": "ONE_HERO" },
+        { "type": "ONE_HERO" }
+      ]
+    },
+    {
+      "numberOfPlayers": 4,
+      "aiPlayers": [
+        { "type": "ONE_HERO" },
+        { "type": "ONE_HERO" },
+        { "type": "ONE_HERO" },
+        { "type": "ONE_HERO" }
+      ]
+    },
+    {
+      "numberOfPlayers": 4,
+      "aiPlayers": [
+        { "type": "ONE_HERO" },
+        { "type": "ONE_HERO" },
+        { "type": "ONE_HERO" },
+        { "type": "ONE_HERO" }
+      ]
+    }
+  ]
+}

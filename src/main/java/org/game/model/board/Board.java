@@ -28,10 +28,11 @@ public class Board {
         numRows = maxSize;
         numCols = maxSize;
         this.tiles = new Tile[numRows][numCols];
-        this.timer = new Timer();
         this.pawnManager = new PawnManager(this);
         this.pathFinder = new PathFinder(tiles, this);
         this.generalGoalManager = GeneralGoalManager.getInstance();
+
+        this.timer = new Timer();
     }
 
     public void testPathFinder(){
@@ -362,5 +363,9 @@ public class Board {
 
     public PawnManager getPawnManager() {
         return pawnManager;
+    }
+
+    public void setTimerFinishCallback(Runnable callback) {
+        timer.setOnTimerFinishCallback(callback);
     }
 }

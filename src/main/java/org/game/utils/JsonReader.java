@@ -17,7 +17,7 @@ public class JsonReader {
 
     public List<Card> loadCardsFromJson() {
         ObjectMapper objectMapper = new ObjectMapper();
-        String filePath = "tiles.json";
+        String filePath = "input/tiles.json";
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath)) {
             if (inputStream == null) {
                 throw new RuntimeException("File not found: " + filePath);
@@ -81,7 +81,7 @@ public class JsonReader {
     public List<Player> loadPlayersFromJson(int numPlayers, List<AIPlayerType> aiPlayerTypes, Board board) {
         int aiPlayersLeft = aiPlayerTypes.size();
         ObjectMapper objectMapper = new ObjectMapper();
-        String filePath = "actions.json";
+        String filePath = "input/actions.json";
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath)) {
             if (inputStream == null) {
                 throw new RuntimeException("File not found: " + filePath);

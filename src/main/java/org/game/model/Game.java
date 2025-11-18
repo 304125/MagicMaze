@@ -145,4 +145,16 @@ public class Game {
             }
         }
     }
+
+    public void setTimerFinishCallback(Runnable callback) {
+        board.setTimerFinishCallback(callback);
+    }
+
+    public void endGame(){
+        for(Player player : players){
+            if(player instanceof AIPlayer aiPlayer){
+                aiPlayer.endGame();
+            }
+        }
+    }
 }
