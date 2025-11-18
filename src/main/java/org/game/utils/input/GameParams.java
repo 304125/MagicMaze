@@ -6,12 +6,12 @@ import java.util.List;
 
 public class GameParams {
     private int numberOfPlayers;
-    private List<AIPlayerConfig> aiPlayers;
+    private List<AIPlayerType> aiPlayers;
 
     public int getNumberOfPlayers() {
         return numberOfPlayers;
     }
-    public List<AIPlayerConfig> getAiPlayers() {
+    public List<AIPlayerType> getAiPlayers() {
         return aiPlayers;
     }
 

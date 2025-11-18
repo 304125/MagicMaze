@@ -6,7 +6,9 @@ import org.game.model.Game;
 import org.game.ui.BoardUI;
 import org.game.utils.ActionDelegator;
 import org.game.utils.InputManager;
+import org.game.utils.input.GameParams;
 import org.game.utils.input.RootParams;
+import org.game.utils.output.ActionWriter;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -19,7 +21,6 @@ import java.util.stream.Collectors;
 public class Main {
     public static void main(String[] args) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-
         InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("input/params.json");
 
         if (inputStream == null){
@@ -28,25 +29,28 @@ public class Main {
 
         RootParams root = mapper.readValue(inputStream, RootParams.class);
 
-        for (var gameParams : root.getGames()){
-            System.out.println("Starting a new game");
-            List<AIPlayerType> aiPlayerTypes = gameParams.getAiPlayers().stream()
-                    .map(cfg -> AIPlayerType.valueOf(cfg.getType()))  // convert string → enum
-                    .collect(Collectors.toList());
-            CountDownLatch latch = new CountDownLatch(1);
-            runOnce(gameParams.getNumberOfPlayers(), aiPlayerTypes, latch);
-            latch.await();
+        if(root.getMode().equals("new")){
+            int gameNumber = 1;
+            for (GameParams gameParams : root.getGames()){
+                System.out.println("Starting a new game");
+                CountDownLatch latch = new CountDownLatch(1);
+                String gameName = root.getGameName() + "_" + gameNumber;
+                runOnce(gameParams, latch, gameName, root.getGameName());
+                latch.await();
+                gameNumber++;
+            }
+            System.out.println("All games finished");
         }
-        System.out.println("All games finished");
     }
 
-    public static void runOnce(int numberOfPlayers, List<AIPlayerType> aiPlayerTypes, CountDownLatch latch) {
+    public static void runOnce(GameParams gameParams, CountDownLatch latch, String gameName, String folderName) throws IOException {
         SwingUtilities.invokeLater(() -> {
             boolean printEverything = false; // Set to true to enable detailed logging
 
-            Game game = new Game(numberOfPlayers, aiPlayerTypes);
+            Game game = new Game(gameParams.getNumberOfPlayers(), gameParams.getAiPlayers());
             BoardUI boardUI = new BoardUI(game.getBoard());
-            ActionDelegator actionDelegator = new ActionDelegator(game, boardUI);
+            ActionWriter actionWriter = new ActionWriter(folderName, gameName, gameParams);
+            ActionDelegator actionDelegator = new ActionDelegator(game, boardUI, actionWriter);
             game.giveActionDelegatorToAIPlayers(actionDelegator);
 
             game.setTimerFinishCallback(() -> {

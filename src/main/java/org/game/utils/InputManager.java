@@ -1,16 +1,20 @@
 package org.game.utils;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.game.model.Action;
 import org.game.model.Color;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class InputManager {
     ActionDelegator actionDelegator;
 
     public InputManager(ActionDelegator actionDelegator) {
-        readInput();
         this.actionDelegator = actionDelegator;
+        readInput();
     }
 
     public void readInput(){

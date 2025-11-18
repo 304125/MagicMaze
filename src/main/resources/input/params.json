@@ -1,31 +1,18 @@
 {
+  "mode": "new",
+  "gameName": "test",
   "games": [
     {
       "numberOfPlayers": 4,
-      "aiPlayers": [
-        { "type": "ONE_HERO" },
-        { "type": "ONE_HERO" },
-        { "type": "ONE_HERO" },
-        { "type": "ONE_HERO" }
-      ]
+      "aiPlayers": ["ONE_HERO", "ONE_HERO", "ONE_HERO", "ONE_HERO"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": [
-        { "type": "ONE_HERO" },
-        { "type": "ONE_HERO" },
-        { "type": "ONE_HERO" },
-        { "type": "ONE_HERO" }
-      ]
+      "aiPlayers": ["ONE_HERO", "ONE_HERO", "ONE_HERO", "ONE_HERO"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": [
-        { "type": "ONE_HERO" },
-        { "type": "ONE_HERO" },
-        { "type": "ONE_HERO" },
-        { "type": "ONE_HERO" }
-      ]
+      "aiPlayers": ["ONE_HERO", "ONE_HERO", "ONE_HERO", "ONE_HERO"]
     }
   ]
 }

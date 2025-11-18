@@ -4,16 +4,19 @@ import org.game.model.*;
 import org.game.model.Action;
 import org.game.model.board.Board;
 import org.game.ui.BoardUI;
+import org.game.utils.output.ActionWriter;
 
 public class ActionDelegator {
     private final Game game;
     private final Board board;
     private final BoardUI boardUI;
+    private final ActionWriter actionWriter;
 
-    public ActionDelegator(Game game, BoardUI boardUI) {
+    public ActionDelegator(Game game, BoardUI boardUI, ActionWriter actionWriter) {
         this.game = game;
         board = game.getBoard();
         this.boardUI = boardUI;
+        this.actionWriter = actionWriter;
     }
 
     public void movePawn(Color pawnColor, Action action) {
