@@ -19,4 +19,13 @@ public class StackOfCards {
         }
         return unplayedCards.removeFirst();
     }
+
+    public Card drawGivenCard(int cardId){
+        for (int i = 0; i < unplayedCards.size(); i++) {
+            if (unplayedCards.get(i).getId() == cardId) {
+                return unplayedCards.remove(i);
+            }
+        }
+        return null;
+    }
 }

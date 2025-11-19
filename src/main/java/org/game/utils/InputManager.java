@@ -67,7 +67,7 @@ public class InputManager {
                     }
 
                     if (action == Action.DISCOVER && pawnColor != null) {
-                        actionDelegator.discover(pawnColor);
+                        actionDelegator.discoverRandomCard(pawnColor);
                     }
                     else
 

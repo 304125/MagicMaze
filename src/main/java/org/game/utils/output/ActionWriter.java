@@ -1,11 +1,14 @@
 package org.game.utils.output;
 
+import org.game.model.Action;
+import org.game.model.Color;
 import org.game.utils.input.GameParams;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.time.Instant;
 
 public class ActionWriter {
     private final String filePath;
@@ -46,5 +49,44 @@ public class ActionWriter {
         } catch (IOException e) {
             throw new RuntimeException("Could not write game record to file: " + filePath, e);
         }
+    }
+
+    public void recordMove(Color pawnColor, Action action){
+        String color = getColor(pawnColor);
+        String actionString = switch (action) {
+            case MOVE_NORTH -> "n";
+            case MOVE_SOUTH -> "s";
+            case MOVE_WEST -> "w";
+            case MOVE_EAST -> "e";
+            case ESCALATOR -> "x";
+            default -> "";
+        };
+        String record = color + actionString;
+        gameRecord.addMove(Instant.now(), record);
+        writeGameRecordToFile();
+    }
+
+    public void recordVortex(Color pawnColor, int vortexNumber){
+        String color = getColor(pawnColor);
+        String record = color + "v" + vortexNumber;
+        gameRecord.addMove(Instant.now(), record);
+        writeGameRecordToFile();
+    }
+
+    public void recordDiscover(Color pawnColor, int cardId){
+        String color = getColor(pawnColor);
+        String record = color + "d" + cardId;
+        gameRecord.addMove(Instant.now(), record);
+        writeGameRecordToFile();
+    }
+
+    private String getColor(Color color){
+        return switch (color) {
+            case YELLOW -> "y";
+            case ORANGE -> "o";
+            case PURPLE -> "p";
+            case GREEN -> "g";
+            default -> "";
+        };
     }
 }

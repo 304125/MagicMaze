@@ -24,6 +24,7 @@ public class ActionDelegator {
         Pawn updatedPawn;
         if(action == Action.MOVE_EAST || action == Action.MOVE_WEST || action == Action.MOVE_NORTH || action == Action.MOVE_SOUTH){
             updatedPawn = board.movePawn(pawnColor, action);
+            actionWriter.recordMove(pawnColor, action);
             if(board.isPawnAtTimerTile(updatedPawn)){
                 boardUI.changeTimerColorToDark(updatedPawn.getCoordinate());
             }
@@ -32,6 +33,9 @@ public class ActionDelegator {
             updatedPawn = board.useEscalator(pawnColor);
             if(updatedPawn.equals(previousPawn)){
                 System.out.println("No escalator to use for pawn " + pawnColor);
+            }
+            else{
+                actionWriter.recordMove(pawnColor, action);
             }
         }
         else{
@@ -42,20 +46,35 @@ public class ActionDelegator {
         handlePawns(previousPawn, updatedPawn);
     }
 
-    public void discover(Color pawnColor) {
+    public void discoverRandomCard(Color pawnColor) {
         Pawn pawn = new Pawn(board.getPawnByColor(pawnColor));
         // check if the pawn is standing on discovery tile
         Tile currentTile = board.getTileAt(pawn.getCoordinate());
         if(currentTile.getType() == TileType.DISCOVERY && pawnColor == currentTile.getColor()){
             Coordinate corner = board.getLeftTopCornerOfNewCard(pawn.getCoordinate());
-            boolean discovered = game.discoverCard(pawn);
+            int discoveredCardId = game.discoverRandomCard(pawn);
             // re-render the board
-            if(discovered){
+            if(discoveredCardId != 0){
                 boardUI.renderDiscoveredTiles(corner);
+                actionWriter.recordDiscover(pawnColor, discoveredCardId);
             }
         }
     }
 
+    public void discoverGivenCard(Color pawnColor, int cardId) {
+        Pawn pawn = new Pawn(board.getPawnByColor(pawnColor));
+        // check if the pawn is standing on discovery tile
+        Tile currentTile = board.getTileAt(pawn.getCoordinate());
+        if(currentTile.getType() == TileType.DISCOVERY && pawnColor == currentTile.getColor()){
+            Coordinate corner = board.getLeftTopCornerOfNewCard(pawn.getCoordinate());
+            int discoveredCardId = game.discoverGivenCard(pawn, cardId);
+            // re-render the board
+            if(discoveredCardId != 0){
+                boardUI.renderDiscoveredTiles(corner);
+                actionWriter.recordDiscover(pawnColor, discoveredCardId);
+            }
+        }
+    }
     public void vortexPawn(Color pawnColor, int vortexNumber) {
         Pawn previousPawn = new Pawn(board.getPawnByColor(pawnColor));
         Pawn updatedPawn = board.useVortex(pawnColor, vortexNumber);
@@ -63,6 +82,7 @@ public class ActionDelegator {
             System.out.println("No vortex to use for pawn " + pawnColor + " with number " + vortexNumber);
             return;
         }
+        actionWriter.recordVortex(pawnColor, vortexNumber);
 
         handlePawns(previousPawn, updatedPawn);
     }

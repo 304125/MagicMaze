@@ -15,6 +15,9 @@ public class ChunkGenerator {
     }
 
     public static int countChunks(SearchPath searchPath){
+        if(searchPath == null){
+            return 0;
+        }
         int nodes = searchPath.length();
         return nodes / 5; // assuming each chunk has 5 nodes
     }

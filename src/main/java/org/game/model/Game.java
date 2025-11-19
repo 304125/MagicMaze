@@ -111,7 +111,7 @@ public class Game {
         return pawns;
     }
 
-    public boolean discoverCard(Pawn pawn) {
+    public int discoverRandomCard(Pawn pawn) {
         Card nextCard = unplayedCards.drawCard();
         if(Config.PRINT_EVERYTHING){
             System.out.println("Discovered card with ID: " + nextCard.getId());
@@ -119,8 +119,28 @@ public class Game {
         boolean success = board.addCardToBoard(nextCard, pawn.getCoordinate());
         if(success){
             updateStateOfGame(pawn);
+            return nextCard.getId();
         }
-        return success;
+        return 0;
+    }
+
+    public int discoverGivenCard(Pawn pawn, int cardId) {
+        Card nextCard = unplayedCards.drawGivenCard(cardId);
+        if(nextCard == null){
+            if(Config.PRINT_EVERYTHING){
+                System.out.println("Card with ID " + cardId + " not found in unplayed cards.");
+            }
+            return 0;
+        }
+        if(Config.PRINT_EVERYTHING){
+            System.out.println("Discovered card with ID: " + nextCard.getId());
+        }
+        boolean success = board.addCardToBoard(nextCard, pawn.getCoordinate());
+        if(success){
+            updateStateOfGame(pawn);
+            return nextCard.getId();
+        }
+        return 0;
     }
 
     private void updateStateOfGame(Pawn pawn){

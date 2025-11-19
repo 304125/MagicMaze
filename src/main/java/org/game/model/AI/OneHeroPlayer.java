@@ -156,7 +156,7 @@ public class OneHeroPlayer extends AIPlayer{
 
                                     }
                                     System.out.println(getName() + " is performing action: " + bestAction + " with pawn " + lastMovedPawn.getColor());
-                                    getActionDelegator().discover(lastMovedPawn.getColor());
+                                    getActionDelegator().discoverRandomCard(lastMovedPawn.getColor());
                                 }
                                 case VORTEX -> {
                                     if(Config.PRINT_EVERYTHING){

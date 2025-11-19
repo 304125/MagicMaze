@@ -107,6 +107,7 @@ public class PathFinder {
             }
         }
 
+        System.out.println("No path found from " + coordinateStart + " to " + coordinateEnd);
         return null; // No path is found
     }
 
