@@ -10,6 +10,7 @@ import org.game.utils.JsonReader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Game {
     private Board board;
@@ -27,6 +28,12 @@ public class Game {
         if(Config.PRINT_EVERYTHING){
             printPlayers();
         }
+    }
+
+    public Game(Map<Color, Coordinate> initialPawnPositions){
+        initializeCards();
+        initializeBoardWithGivenPawns(initialPawnPositions);
+        // no players in this constructor
     }
 
     private void initializeCards(){
@@ -83,6 +90,17 @@ public class Game {
         board.initializeStartingTile(this.startingCard);
         board.initializeStartingPawns(initialPawns);
         // board.testPathFinder();
+    }
+
+    private void initializeBoardWithGivenPawns(Map<Color, Coordinate> initialPawnPositions){
+        List<Pawn> initialPawns = new ArrayList<>();
+        for (Map.Entry<Color, Coordinate> entry : initialPawnPositions.entrySet()) {
+            initialPawns.add(new Pawn(entry.getValue(), entry.getKey()));
+        }
+
+        this.board = new Board(boardMaxSize);
+        board.initializeStartingTile(this.startingCard);
+        board.initializeStartingPawns(initialPawns);
     }
 
     public Board getBoard() {

@@ -2,16 +2,22 @@ package org.game.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.game.model.*;
 import org.game.model.AI.AIPlayerType;
 import org.game.model.AI.OneHeroPlayer;
 import org.game.model.board.Board;
+import org.game.utils.output.GameRecord;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class JsonReader {
 
@@ -44,6 +50,28 @@ public class JsonReader {
             }
 
             return cards;
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load board from JSON", e);
+        }
+    }
+
+    public GameRecord loadGameFromJson(String folderName, String fileName){
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+
+        String filePath = "output/" + folderName + "/" + fileName;
+        Path path = Path.of(filePath);
+
+        try (InputStream inputStream = Files.newInputStream(path);) {
+            if (inputStream == null) {
+                throw new RuntimeException("File not found: " + filePath);
+            }
+
+            // Deserialize JSON into GameRecord object
+            return objectMapper.readValue(inputStream, GameRecord.class);
 
         } catch (IOException e) {
             throw new RuntimeException("Failed to load board from JSON", e);

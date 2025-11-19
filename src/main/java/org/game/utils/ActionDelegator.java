@@ -24,7 +24,8 @@ public class ActionDelegator {
         Pawn updatedPawn;
         if(action == Action.MOVE_EAST || action == Action.MOVE_WEST || action == Action.MOVE_NORTH || action == Action.MOVE_SOUTH){
             updatedPawn = board.movePawn(pawnColor, action);
-            actionWriter.recordMove(pawnColor, action);
+            if(actionWriter != null) actionWriter.recordMove(pawnColor, action);
+
             if(board.isPawnAtTimerTile(updatedPawn)){
                 boardUI.changeTimerColorToDark(updatedPawn.getCoordinate());
             }
@@ -35,7 +36,7 @@ public class ActionDelegator {
                 System.out.println("No escalator to use for pawn " + pawnColor);
             }
             else{
-                actionWriter.recordMove(pawnColor, action);
+                if(actionWriter != null) actionWriter.recordMove(pawnColor, action);
             }
         }
         else{
@@ -56,7 +57,7 @@ public class ActionDelegator {
             // re-render the board
             if(discoveredCardId != 0){
                 boardUI.renderDiscoveredTiles(corner);
-                actionWriter.recordDiscover(pawnColor, discoveredCardId);
+                if(actionWriter != null) actionWriter.recordDiscover(pawnColor, discoveredCardId);
             }
         }
     }
@@ -71,7 +72,7 @@ public class ActionDelegator {
             // re-render the board
             if(discoveredCardId != 0){
                 boardUI.renderDiscoveredTiles(corner);
-                actionWriter.recordDiscover(pawnColor, discoveredCardId);
+                if(actionWriter != null) actionWriter.recordDiscover(pawnColor, discoveredCardId);
             }
         }
     }
@@ -82,7 +83,7 @@ public class ActionDelegator {
             System.out.println("No vortex to use for pawn " + pawnColor + " with number " + vortexNumber);
             return;
         }
-        actionWriter.recordVortex(pawnColor, vortexNumber);
+        if(actionWriter != null) actionWriter.recordVortex(pawnColor, vortexNumber);
 
         handlePawns(previousPawn, updatedPawn);
     }

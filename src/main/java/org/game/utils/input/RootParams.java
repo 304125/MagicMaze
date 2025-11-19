@@ -5,6 +5,7 @@ import java.util.List;
 public class RootParams {
     private String mode;
     private String gameName;
+    private int replayRun;
     private List<GameParams> games;
 
     public List<GameParams> getGames() {
@@ -17,5 +18,9 @@ public class RootParams {
 
     public String getGameName() {
         return gameName;
+    }
+
+    public int getReplayRun() {
+        return replayRun;
     }
 }

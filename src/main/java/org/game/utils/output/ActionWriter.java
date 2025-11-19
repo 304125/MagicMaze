@@ -2,6 +2,7 @@ package org.game.utils.output;
 
 import org.game.model.Action;
 import org.game.model.Color;
+import org.game.model.Pawn;
 import org.game.utils.input.GameParams;
 
 import java.io.IOException;
@@ -9,14 +10,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.Instant;
+import java.util.List;
 
 public class ActionWriter {
     private final String filePath;
     private GameRecord gameRecord;
 
-    public ActionWriter(String folderName, String fileName, GameParams gameParams){
+    public ActionWriter(String folderName, String fileName, GameParams gameParams, List<Pawn> allPawns){
         filePath = "output/" + folderName + "/" + fileName + ".json";
         gameRecord = new GameRecord(gameParams);
+        initializePawnPositions(allPawns);
         createOrClearJsonFile();
         writeGameRecordToFile();
     }
@@ -37,6 +40,12 @@ public class ActionWriter {
         } catch (IOException e) {
             throw new RuntimeException("Could not create or clear the JSON file: " + filePath, e);
         }
+    }
+
+    private void initializePawnPositions(List<Pawn> allPawns){
+        List<Color> pawnColors = allPawns.stream().map(Pawn::getColor).toList();
+        List<org.game.model.Coordinate> coordinates = allPawns.stream().map(Pawn::getCoordinate).toList();
+        gameRecord.setInitialPawnPositions(pawnColors, coordinates);
     }
 
     private void writeGameRecordToFile(){
