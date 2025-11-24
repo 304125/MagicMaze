@@ -9,6 +9,7 @@ import org.game.utils.ReplayManager;
 import org.game.utils.input.GameParams;
 import org.game.utils.input.RootParams;
 import org.game.utils.output.ActionWriter;
+import org.game.utils.output.RunOverviewWriter;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -33,12 +34,13 @@ public class Main {
         RootParams root = mapper.readValue(inputStream, RootParams.class);
 
         if(root.getMode().equals("new")){
+            RunOverviewWriter runOverviewWriter = new RunOverviewWriter(root.getGameName());
             int gameNumber = 1;
             for (GameParams gameParams : root.getGames()){
                 System.out.println("Starting a new game");
                 CountDownLatch latch = new CountDownLatch(1);
                 String gameName = root.getGameName() + "_" + gameNumber;
-                runOnce(gameParams, latch, gameName, root.getGameName());
+                runOnce(gameParams, latch, gameName, root.getGameName(), runOverviewWriter);
                 latch.await();
                 gameNumber++;
             }
@@ -84,7 +86,7 @@ public class Main {
         }
     }
 
-    private static void runOnce(GameParams gameParams, CountDownLatch latch, String gameName, String folderName) throws IOException {
+    private static void runOnce(GameParams gameParams, CountDownLatch latch, String gameName, String folderName, RunOverviewWriter runOverviewWriter) throws IOException {
 
         try {
             Game game = new Game(gameParams.getNumberOfPlayers(), gameParams.getAiPlayers());
@@ -101,6 +103,7 @@ public class Main {
                 game.setTimerFinishCallback(() -> {
                     game.endGame();
                     System.out.println("Game has ended, you have lost.");
+                    runOverviewWriter.writeGameResult(gameParams, false);
                     SwingUtilities.invokeLater(boardUI::dispose); // Close the window
                     latch.countDown();
                 });
@@ -108,6 +111,7 @@ public class Main {
                 game.setGameWonCallback(() -> {
                     game.endGame();
                     System.out.println("Congratulations! You have won the game.");
+                    runOverviewWriter.writeGameResult(gameParams, true);
                     SwingUtilities.invokeLater(boardUI::dispose); // Close the window
                     latch.countDown();
                 });
