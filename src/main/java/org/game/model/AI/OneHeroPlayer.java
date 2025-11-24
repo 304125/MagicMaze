@@ -180,6 +180,12 @@ public class OneHeroPlayer extends AIPlayer{
         actionExecutionThread.start();
     }
 
+    @Override
+    public void onFirstPhaseCompleted(){
+        // force build of action tree for all heroes
+        buildActionTree();
+    }
+
     public int calculatePriority(Coordinate goal){
         Tile goalTile = getBoard().getTileAt(goal);
         return switch (goalTile.getType()) {

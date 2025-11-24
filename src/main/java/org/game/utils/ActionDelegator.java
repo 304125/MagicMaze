@@ -43,8 +43,10 @@ public class ActionDelegator {
             System.out.println("Unknown action");
             return;
         }
+        handlePawnsUI(previousPawn, updatedPawn);
 
-        handlePawns(previousPawn, updatedPawn);
+        // check for goal conditions
+        board.checkGoalConditions();
     }
 
     public void discoverRandomCard(Color pawnColor) {
@@ -77,6 +79,10 @@ public class ActionDelegator {
         }
     }
     public void vortexPawn(Color pawnColor, int vortexNumber) {
+        if(!board.isFirstPhase()){
+            System.out.println("Cannot use vortex outside of first phase");
+            return;
+        }
         Pawn previousPawn = new Pawn(board.getPawnByColor(pawnColor));
         Pawn updatedPawn = board.useVortex(pawnColor, vortexNumber);
         if(updatedPawn.equals(previousPawn)){
@@ -85,7 +91,7 @@ public class ActionDelegator {
         }
         if(actionWriter != null) actionWriter.recordVortex(pawnColor, vortexNumber);
 
-        handlePawns(previousPawn, updatedPawn);
+        handlePawnsUI(previousPawn, updatedPawn);
     }
 
     public void vortexPawn(Color color, Coordinate vortexCoordinate){
@@ -93,7 +99,7 @@ public class ActionDelegator {
         vortexPawn(color, vortexNumber);
     }
 
-    private void handlePawns(Pawn previousPawn, Pawn updatedPawn) {
+    private void handlePawnsUI(Pawn previousPawn, Pawn updatedPawn) {
         if(Config.PRINT_EVERYTHING){
             board.printAllPawns();
         }

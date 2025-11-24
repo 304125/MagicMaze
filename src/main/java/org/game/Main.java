@@ -95,7 +95,14 @@ public class Main {
 
             game.setTimerFinishCallback(() -> {
                 game.endGame();
-                System.out.println("Game has ended.");
+                System.out.println("Game has ended, you have lost.");
+                SwingUtilities.invokeLater(boardUI::dispose); // Close the window
+                latch.countDown();
+            });
+
+            game.setGameWonCallback(() -> {
+                game.endGame();
+                System.out.println("Congratulations! You have won the game.");
                 SwingUtilities.invokeLater(boardUI::dispose); // Close the window
                 latch.countDown();
             });

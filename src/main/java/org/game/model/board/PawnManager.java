@@ -194,4 +194,10 @@ public class PawnManager {
             listener.onPawnMoved(pawn, action);
         }
     }
+
+    public void firstPhaseCompleted(){
+        for (StateChangeListener listener : listeners) {
+            listener.onFirstPhaseCompleted();
+        }
+    }
 }

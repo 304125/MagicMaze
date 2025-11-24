@@ -54,7 +54,7 @@ public class Timer {
         timerThread.start();
     }
 
-    private void stopTimer(){
+    public void stopTimer(){
         running = false;
         if(timerThread != null && timerThread.isAlive()){
             timerThread.interrupt();

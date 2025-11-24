@@ -20,6 +20,7 @@ public class Game {
     private final int boardMaxSize = 30;
     private List<Player> players;
     private final List<StateChangeListener> listeners = new ArrayList<>();
+    private boolean isFirstPhase = true;
 
     public Game(int numberOfPlayers, List<AIPlayerType> aiPlayerTypes) {
         initializeCards();
@@ -194,5 +195,9 @@ public class Game {
                 aiPlayer.endGame();
             }
         }
+    }
+
+    public void setGameWonCallback(Runnable callback){
+        board.setGameWonCallback(callback);
     }
 }

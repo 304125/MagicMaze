@@ -6,4 +6,5 @@ import org.game.model.Pawn;
 public interface StateChangeListener {
     void onPawnMoved(Pawn movedPawn, Action action);
     void onDiscovered(Pawn pawn);
+    void onFirstPhaseCompleted();
 }

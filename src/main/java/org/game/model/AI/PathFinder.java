@@ -32,27 +32,30 @@ public class PathFinder {
         Node startNode = new Node(coordinateStart, 0, findDistance(coordinateStart, coordinateEnd), null, null);
         openSet.add(startNode);
 
-        // check for all vortexes that could shorten the distance
-        List<BoardVortex> vortexesOfColor = board.getVortexListByColor(pawnColor);
-        List<Coordinate> vortexCoordinates = new ArrayList<>();
-        for (BoardVortex vortex : vortexesOfColor) {
-            vortexCoordinates.add(vortex.position());
-        }
-        // for each vortexCoordinates, if using the vortex would shorten the distance, add it to the openSet
-        for (Coordinate vortexCoordinate : vortexCoordinates) {
-            int distanceToVortex = 1;
-            int distanceFromVortexToEnd = findDistance(vortexCoordinate, coordinateEnd);
-            int directDistance = findDistance(coordinateStart, coordinateEnd);
-            if (distanceToVortex + distanceFromVortexToEnd < directDistance) {
-                // add vortexCoordinate to openSet
-                int newG = distanceToVortex;
-                int newH = distanceFromVortexToEnd;
-                int dx = vortexCoordinate.x() - coordinateStart.x();
-                int dy = vortexCoordinate.y() - coordinateStart.y();
-                Action vortexAction = Action.VORTEX;
-                vortexAction.setDynamicCoordinates(dx, dy);
-                Node vortexNode = new Node(vortexCoordinate, newG, newH, startNode, vortexAction);
-                openSet.add(vortexNode);
+        // only search for vortexes in the first phase (second phase vortexes are not usable)
+        if(board.isFirstPhase()){
+            // check for all vortexes that could shorten the distance
+            List<BoardVortex> vortexesOfColor = board.getVortexListByColor(pawnColor);
+            List<Coordinate> vortexCoordinates = new ArrayList<>();
+            for (BoardVortex vortex : vortexesOfColor) {
+                vortexCoordinates.add(vortex.position());
+            }
+            // for each vortexCoordinates, if using the vortex would shorten the distance, add it to the openSet
+            for (Coordinate vortexCoordinate : vortexCoordinates) {
+                int distanceToVortex = 1;
+                int distanceFromVortexToEnd = findDistance(vortexCoordinate, coordinateEnd);
+                int directDistance = findDistance(coordinateStart, coordinateEnd);
+                if (distanceToVortex + distanceFromVortexToEnd < directDistance) {
+                    // add vortexCoordinate to openSet
+                    int newG = distanceToVortex;
+                    int newH = distanceFromVortexToEnd;
+                    int dx = vortexCoordinate.x() - coordinateStart.x();
+                    int dy = vortexCoordinate.y() - coordinateStart.y();
+                    Action vortexAction = Action.VORTEX;
+                    vortexAction.setDynamicCoordinates(dx, dy);
+                    Node vortexNode = new Node(vortexCoordinate, newG, newH, startNode, vortexAction);
+                    openSet.add(vortexNode);
+                }
             }
         }
 

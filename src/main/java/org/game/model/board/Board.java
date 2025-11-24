@@ -22,6 +22,8 @@ public class Board {
     private final PawnManager pawnManager;
     private final PathFinder pathFinder;
     private final GeneralGoalManager generalGoalManager;
+    private boolean isFirstPhase = true;
+    private Runnable onGameWonCallback;
 
 
     public Board(int maxSize) {
@@ -357,6 +359,23 @@ public class Board {
         return pawnManager.movePawn(pawnColor, action);
     }
 
+    public void checkGoalConditions(){
+        if(isFirstPhase){
+            if(isAllGoalItemReached()){
+                System.out.println("All pawns have reached their goal items! Beginning second phase.");
+                beginSecondPhase();
+            }
+        }
+        else {
+            if(isAllGoalExitReached()){
+                System.out.println("All pawns have reached their goal exits! Game over.");
+                // stop the timer
+                timer.stopTimer();
+                onGameWonCallback.run();
+            }
+        }
+    }
+
     public void removeTimerFromGoals(Coordinate timer) {
         generalGoalManager.removeTimerFromAllPawns(timer);
     }
@@ -368,4 +387,39 @@ public class Board {
     public void setTimerFinishCallback(Runnable callback) {
         timer.setOnTimerFinishCallback(callback);
     }
+
+    public void setGameWonCallback(Runnable callback) {
+        this.onGameWonCallback = callback;
+    }
+
+    public boolean isFirstPhase(){
+        return isFirstPhase;
+    }
+
+    public void beginSecondPhase(){
+        isFirstPhase = false;
+        // notify all AI agents and re-calculate their paths
+        pawnManager.firstPhaseCompleted();
+    }
+
+    public boolean isAllGoalItemReached(){
+        for (Pawn pawn : pawns) {
+            Tile tile = getTileAt(pawn.getCoordinate());
+            if (tile.getType() != TileType.GOAL_ITEM || tile.getColor() != pawn.getColor()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isAllGoalExitReached(){
+        for (Pawn pawn : pawns) {
+            Tile tile = getTileAt(pawn.getCoordinate());
+            if (tile.getType() != TileType.GOAL_EXIT || tile.getColor() != pawn.getColor()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
