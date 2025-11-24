@@ -30,6 +30,10 @@ public class GeneralGoalManager {
         return instance;
     }
 
+    public void reset() {
+        instance = new GeneralGoalManager();
+    }
+
     public PawnGoalManager getPawnGoalManager(Color color) {
         for (PawnGoalManager pgm : pawnGoalManagers) {
             if (pgm.pawnColor == color) {

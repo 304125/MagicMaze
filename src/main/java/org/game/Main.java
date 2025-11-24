@@ -85,38 +85,44 @@ public class Main {
     }
 
     private static void runOnce(GameParams gameParams, CountDownLatch latch, String gameName, String folderName) throws IOException {
-        SwingUtilities.invokeLater(() -> {
+
+        try {
             Game game = new Game(gameParams.getNumberOfPlayers(), gameParams.getAiPlayers());
-            List<Pawn> allPawns = game.getBoard().getPawns();
-            BoardUI boardUI = new BoardUI(game.getBoard());
-            ActionWriter actionWriter = new ActionWriter(folderName, gameName, gameParams, allPawns);
-            ActionDelegator actionDelegator = new ActionDelegator(game, boardUI, actionWriter);
-            game.giveActionDelegatorToAIPlayers(actionDelegator);
+            // all setup must finish before starting the game
+            CountDownLatch setupLatch = new CountDownLatch(1);
+            SwingUtilities.invokeLater(() -> {
 
-            game.setTimerFinishCallback(() -> {
-                game.endGame();
-                System.out.println("Game has ended, you have lost.");
-                SwingUtilities.invokeLater(boardUI::dispose); // Close the window
-                latch.countDown();
+                List<Pawn> allPawns = game.getBoard().getPawns();
+                BoardUI boardUI = new BoardUI(game.getBoard());
+                ActionWriter actionWriter = new ActionWriter(folderName, gameName, gameParams, allPawns);
+                ActionDelegator actionDelegator = new ActionDelegator(game, boardUI, actionWriter);
+                game.giveActionDelegatorToAIPlayers(actionDelegator);
+
+                game.setTimerFinishCallback(() -> {
+                    game.endGame();
+                    System.out.println("Game has ended, you have lost.");
+                    SwingUtilities.invokeLater(boardUI::dispose); // Close the window
+                    latch.countDown();
+                });
+
+                game.setGameWonCallback(() -> {
+                    game.endGame();
+                    System.out.println("Congratulations! You have won the game.");
+                    SwingUtilities.invokeLater(boardUI::dispose); // Close the window
+                    latch.countDown();
+                });
+
+                new KeyboardInputManager(actionDelegator);
+                setupLatch.countDown(); // Signal that setup is complete
             });
 
-            game.setGameWonCallback(() -> {
-                game.endGame();
-                System.out.println("Congratulations! You have won the game.");
-                SwingUtilities.invokeLater(boardUI::dispose); // Close the window
-                latch.countDown();
-            });
-
-            // sleep for 1 second to let the UI load
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            setupLatch.await();
             game.startGame();
-
-            new KeyboardInputManager(actionDelegator);
-        });
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Thread was interrupted during setup", e);
+        }
     }
 
     private static void replayOnce(String folderName, String fileName, CountDownLatch latch){

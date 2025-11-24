@@ -4,6 +4,7 @@ import org.game.model.AI.AIPlayer;
 import org.game.model.AI.AIPlayerType;
 import org.game.model.AI.StateChangeListener;
 import org.game.model.board.Board;
+import org.game.model.board.GeneralGoalManager;
 import org.game.utils.ActionDelegator;
 import org.game.utils.Config;
 import org.game.utils.JsonReader;
@@ -195,6 +196,7 @@ public class Game {
                 aiPlayer.endGame();
             }
         }
+        GeneralGoalManager.getInstance().reset();
     }
 
     public void setGameWonCallback(Runnable callback){
