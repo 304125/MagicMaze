@@ -28,7 +28,7 @@ public class PawnManager {
             if (vortex.cardId() == vortexNumber) {
                 Coordinate destination = vortex.position();
                 // check if the destination is occupied
-                if(board.getTileAt(new Coordinate(destination.x(), destination.y())).isOccupied()){
+                if(board.getTileAt(destination).isOccupied()){
                     System.out.println("Error: Vortex destination is occupied");
                     return pawn;
                 }
@@ -38,7 +38,7 @@ public class PawnManager {
 
                 // set previous tile not occupied, move pawn to destination, set new tile to occupied
                 board.getTileAt(pawn.getCoordinate()).setOccupied(false);
-                pawn.moveTo(new Coordinate(destination.x(), destination.y()));
+                pawn.moveTo(destination);
                 board.getTileAt(pawn.getCoordinate()).setOccupied(true);
 
                 updateLastMovedPawn(pawn, Action.VORTEX);
@@ -51,14 +51,13 @@ public class PawnManager {
 
     public Pawn useEscalator(Color pawnColor){
         Pawn pawn = board.getPawnByColor(pawnColor);
-        Tile currentTile = board.getTileAt(pawn.getCoordinate());
 
         Coordinate destination = getOtherSideOfEscalator(pawn.getCoordinate());
         if(destination == null){
             System.out.println("Error: No escalator found at current position");
             return pawn;
         }
-        if(board.getTileAt(new Coordinate(destination.x(), destination.y())).isOccupied()){
+        if(board.getTileAt(destination).isOccupied()){
             System.out.println("Error: Escalator destination is occupied");
             return pawn;
         }
@@ -69,7 +68,7 @@ public class PawnManager {
 
             // set previous tile not occupied, move pawn to destination, set new tile to occupied
             board.getTileAt(pawn.getCoordinate()).setOccupied(false);
-            pawn.moveTo(new Coordinate(destination.x(), destination.y()));
+            pawn.moveTo(destination);
             board.getTileAt(pawn.getCoordinate()).setOccupied(true);
 
             updateLastMovedPawn(pawn, Action.ESCALATOR);

@@ -21,7 +21,6 @@ public class Game {
     private final int boardMaxSize = 30;
     private List<Player> players;
     private final List<StateChangeListener> listeners = new ArrayList<>();
-    private boolean isFirstPhase = true;
 
     public Game(int numberOfPlayers, List<AIPlayerType> aiPlayerTypes) {
         initializeCards();
@@ -133,15 +132,7 @@ public class Game {
 
     public int discoverRandomCard(Pawn pawn) {
         Card nextCard = unplayedCards.drawCard();
-        if(Config.PRINT_EVERYTHING){
-            System.out.println("Discovered card with ID: " + nextCard.getId());
-        }
-        boolean success = board.addCardToBoard(nextCard, pawn.getCoordinate());
-        if(success){
-            updateStateOfGame(pawn);
-            return nextCard.getId();
-        }
-        return 0;
+        return discover(nextCard, pawn);
     }
 
     public int discoverGivenCard(Pawn pawn, int cardId) {
@@ -152,6 +143,10 @@ public class Game {
             }
             return 0;
         }
+        return discover(nextCard, pawn);
+    }
+
+    private int discover(Card nextCard, Pawn pawn){
         if(Config.PRINT_EVERYTHING){
             System.out.println("Discovered card with ID: " + nextCard.getId());
         }

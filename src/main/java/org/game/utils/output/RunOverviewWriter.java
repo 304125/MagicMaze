@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RunOverviewWriter {
     private final String filePath;
@@ -47,7 +45,7 @@ public class RunOverviewWriter {
             GameResultList gameResults;
             if (Files.exists(path) && Files.size(path) > 0) {
                 String existingContent = Files.readString(path);
-                gameResults = objectMapper.readValue(existingContent, new TypeReference<GameResultList>() {});
+                gameResults = objectMapper.readValue(existingContent, new TypeReference<>() {});
             } else {
                 gameResults = new GameResultList();
             }

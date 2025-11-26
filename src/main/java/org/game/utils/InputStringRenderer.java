@@ -4,7 +4,7 @@ import org.game.model.Action;
 import org.game.model.Color;
 
 public class InputStringRenderer {
-    private ActionDelegator actionDelegator;
+    private final ActionDelegator actionDelegator;
 
     public InputStringRenderer(ActionDelegator actionDelegator){
         this.actionDelegator = actionDelegator;

@@ -8,16 +8,14 @@ import java.time.Instant;
 import java.util.Map;
 
 public class ReplayManager {
-    private GameRecord gameRecord;
-    private JsonReader jsonReader;
-    private ActionDelegator actionDelegator;
+    private final GameRecord gameRecord;
     private InputStringRenderer inputStringRenderer;
     private Runnable onGameFinishedCallback;
     private Thread replayThread;
     private volatile boolean running;
 
     public ReplayManager(String folderName, String fileName){
-        this.jsonReader = new JsonReader();
+        JsonReader jsonReader = new JsonReader();
         this.gameRecord = jsonReader.loadGameFromJson(folderName, fileName);
     }
 
@@ -26,7 +24,6 @@ public class ReplayManager {
     }
 
     public void setActionDelegator(ActionDelegator actionDelegator){
-        this.actionDelegator = actionDelegator;
         inputStringRenderer = new InputStringRenderer(actionDelegator);
     }
 
@@ -57,12 +54,5 @@ public class ReplayManager {
 
     public void setOnGameFinishedCallback(Runnable callback) {
         this.onGameFinishedCallback = callback;
-    }
-
-    private void stopReplay(){
-        running = false;
-        if(replayThread != null && replayThread.isAlive()){
-            replayThread.interrupt();
-        }
     }
 }

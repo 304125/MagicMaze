@@ -22,9 +22,7 @@ public class GeneralGoalManager {
     public static GeneralGoalManager getInstance() {
         if (instance == null) {
             synchronized (GeneralGoalManager.class) {
-                if (instance == null) {
-                    instance = new GeneralGoalManager();
-                }
+                instance = new GeneralGoalManager();
             }
         }
         return instance;

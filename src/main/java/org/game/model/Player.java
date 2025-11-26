@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Player {
     private final List<Action> actions;
-    private String name;
+    private final String name;
 
     public Player(List<Action> actions, String name) {
         this.actions = actions;

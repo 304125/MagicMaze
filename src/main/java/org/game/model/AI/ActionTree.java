@@ -46,16 +46,6 @@ public class ActionTree {
         current.priority = priority;
     }
 
-    /** Assign priorities to all leaves */
-    public void assignLeafPriorities(Map<List<Action>, Integer> leafPriorities) {
-        for (Map.Entry<List<Action>, Integer> entry : leafPriorities.entrySet()) {
-            Node leaf = findNode(entry.getKey());
-            if (leaf != null) {
-                leaf.priority = entry.getValue();
-            }
-        }
-    }
-
     /** Find a node by a sequence of actions from root */
     private Node findNode(List<Action> actions) {
         Node current = root;

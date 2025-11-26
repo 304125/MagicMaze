@@ -6,7 +6,6 @@ import org.game.model.Tile;
 import org.game.model.board.Board;
 import org.game.model.Pawn;
 import org.game.model.board.GeneralGoalManager;
-import org.game.utils.ActionDelegator;
 import org.game.utils.Config;
 
 import java.util.Comparator;
@@ -79,9 +78,9 @@ public class OneHeroPlayer extends AIPlayer{
                 System.out.println("Added path to goal " + goal + " with estimated distance " + distanceMap.get(goal) + " to action tree.");
             }
         }
-//        if(Config.PRINT_EVERYTHING){
-//        }
-        actionTree.printTree(getName());
+        if(Config.PRINT_EVERYTHING){
+            actionTree.printTree(getName());
+        }
     }
 
     @Override
@@ -146,23 +145,20 @@ public class OneHeroPlayer extends AIPlayer{
                             switch (bestAction){
                                 case MOVE_EAST, MOVE_NORTH, MOVE_SOUTH, MOVE_WEST, ESCALATOR -> {
                                     if(Config.PRINT_EVERYTHING){
-
+                                        System.out.println(getName() + " is performing action: " + bestAction + " with pawn " + lastMovedPawn.getColor());
                                     }
-                                    System.out.println(getName() + " is performing action: " + bestAction + " with pawn " + lastMovedPawn.getColor());
                                     getActionDelegator().movePawn(lastMovedPawn.getColor(), bestAction);
                                 }
                                 case DISCOVER -> {
                                     if(Config.PRINT_EVERYTHING){
-
+                                        System.out.println(getName() + " is performing action: " + bestAction + " with pawn " + lastMovedPawn.getColor());
                                     }
-                                    System.out.println(getName() + " is performing action: " + bestAction + " with pawn " + lastMovedPawn.getColor());
                                     getActionDelegator().discoverRandomCard(lastMovedPawn.getColor());
                                 }
                                 case VORTEX -> {
                                     if(Config.PRINT_EVERYTHING){
-
+                                        System.out.println(getName() + " is performing action: " + bestAction + " with pawn " + lastMovedPawn.getColor());
                                     }
-                                    System.out.println(getName() + " is performing action: " + bestAction + " with pawn " + lastMovedPawn.getColor());
                                     getActionDelegator().vortexPawn(lastMovedPawn.getColor(), bestAction.getVortexCoordinate());
                                 }
                             }

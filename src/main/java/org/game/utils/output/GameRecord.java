@@ -11,7 +11,7 @@ import java.util.TreeMap;
 
 public class GameRecord {
     private GameParams gameParams;
-    private TreeMap<Instant, String> gameMoves;
+    private final TreeMap<Instant, String> gameMoves;
     private Map<Color, Coordinate> initialPawnPositions;
 
     public GameRecord(GameParams gameParams){

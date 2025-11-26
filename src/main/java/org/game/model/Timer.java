@@ -64,8 +64,4 @@ public class Timer {
     public int getTimeLeftInTimer() {
         return timeLeftInTimer;
     }
-
-    public int getTotalTime() {
-        return totalTime;
-    }
 }

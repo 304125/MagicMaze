@@ -1,8 +1,5 @@
 package org.game.utils;
 
-import org.game.model.Action;
-import org.game.model.Color;
-
 import java.util.Scanner;
 
 public class KeyboardInputManager {

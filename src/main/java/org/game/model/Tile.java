@@ -1,13 +1,13 @@
 package org.game.model;
 
 public class Tile {
-    private TileType type;
-    private Color color;
-    private boolean wallUp;
-    private boolean wallDown;
-    private boolean wallLeft;
-    private boolean wallRight;
-    private int cardId;
+    private final TileType type;
+    private final Color color;
+    private final boolean wallUp;
+    private final boolean wallDown;
+    private final boolean wallLeft;
+    private final boolean wallRight;
+    private final int cardId;
     private boolean isOccupied = false;
     private String escalator;
     private boolean used = false;
@@ -55,22 +55,6 @@ public class Tile {
 
     public Color getColor() {
         return color;
-    }
-
-    public void setWallUp(boolean wallUp) {
-        this.wallUp = wallUp;
-    }
-
-    public void setWallDown(boolean wallDown) {
-        this.wallDown = wallDown;
-    }
-
-    public void setWallLeft(boolean wallLeft) {
-        this.wallLeft = wallLeft;
-    }
-
-    public void setWallRight(boolean wallRight) {
-        this.wallRight = wallRight;
     }
 
     public int getCardId() {

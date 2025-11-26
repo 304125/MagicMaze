@@ -58,7 +58,7 @@ public class Main {
                     String filePath = "output/" + folderName + "/" + fileName;
                     Path path = Path.of(filePath);
                     try{
-                        InputStream is = Files.newInputStream(path);
+                        Files.newInputStream(path);
                         fileNames.add(fileName);
                         gameNumber++;
                     }
@@ -86,7 +86,7 @@ public class Main {
         }
     }
 
-    private static void runOnce(GameParams gameParams, CountDownLatch latch, String gameName, String folderName, RunOverviewWriter runOverviewWriter) throws IOException {
+    private static void runOnce(GameParams gameParams, CountDownLatch latch, String gameName, String folderName, RunOverviewWriter runOverviewWriter) {
 
         try {
             Game game = new Game(gameParams.getNumberOfPlayers(), gameParams.getAiPlayers());

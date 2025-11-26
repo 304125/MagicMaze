@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class JsonReader {
 
@@ -65,11 +64,7 @@ public class JsonReader {
         String filePath = "output/" + folderName + "/" + fileName;
         Path path = Path.of(filePath);
 
-        try (InputStream inputStream = Files.newInputStream(path);) {
-            if (inputStream == null) {
-                throw new RuntimeException("File not found: " + filePath);
-            }
-
+        try (InputStream inputStream = Files.newInputStream(path)) {
             // Deserialize JSON into GameRecord object
             return objectMapper.readValue(inputStream, GameRecord.class);
 

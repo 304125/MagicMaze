@@ -1,8 +1,6 @@
 package org.game.model.board;
 
 import org.game.model.*;
-import org.game.model.AI.PathFinder;
-import org.game.model.AI.SearchPath;
 import org.game.utils.Config;
 
 import java.util.List;
@@ -20,7 +18,6 @@ public class Board {
     private final List<BoardVortex> orangeVortices = new java.util.ArrayList<>();
     private final Timer timer;
     private final PawnManager pawnManager;
-    private final PathFinder pathFinder;
     private final GeneralGoalManager generalGoalManager;
     private boolean isFirstPhase = true;
     private Runnable onGameWonCallback;
@@ -31,35 +28,9 @@ public class Board {
         numCols = maxSize;
         this.tiles = new Tile[numRows][numCols];
         this.pawnManager = new PawnManager(this);
-        this.pathFinder = new PathFinder(tiles, this);
         this.generalGoalManager = GeneralGoalManager.getInstance();
 
         this.timer = new Timer();
-    }
-
-    public void testPathFinder(){
-        // locate one of the pawns
-        Coordinate from = new Coordinate(13, 11);
-        Coordinate to = new Coordinate(13, 14);
-        // find pawn at location from
-        Pawn pawn = null;
-        for (Pawn p : pawns) {
-            if (p.getCoordinate().equals(from)) {
-                pawn = p;
-                break;
-            }
-        }
-
-        System.out.println("Finding path from "+ from +" to "+ to + " for pawn " + (pawn != null ? pawn.getColor() : "not found"));
-        SearchPath path = pathFinder.findShortestPath(from, to, pawn.getColor());
-        if (path != null) {
-            System.out.println("Path found:");
-            for (SearchPath.Node node : path.getNodes()) {
-                System.out.println("Step to (" + node.x() + ", " + node.y() + ") using " + node.action());
-            }
-        } else {
-            System.out.println("No path found.");
-        }
     }
 
     public Tile[][] getTiles() {
@@ -150,7 +121,7 @@ public class Board {
     public boolean addCardToBoard(Card newCard, Coordinate coordinate) {
         // remove the discovery tile from goals
 
-        // calculate the newCard so that the START is on the bottom left corner of the coordinate
+        // calculate the newCard so that the START is in the bottom left corner of the coordinate
         Tile[][] newCardTiles = newCard.getTiles();
 
         // check the 4 possible positions of Start
@@ -298,13 +269,6 @@ public class Board {
         possibleEntries.add(new Coordinate(leftTopCorner.x()-1, leftTopCorner.y()+2)); // top
         possibleEntries.add(new Coordinate(leftTopCorner.x()+4, leftTopCorner.y()+1)); // bottom
         return possibleEntries;
-    }
-
-    public void printEscalators(){
-        for (BoardEscalator escalator : escalators) {
-            System.out.println("Escalator ID: " + escalator.getId() + " from " + escalator.getStart().x() + "," + escalator.getStart().y() +
-                    " to " + (escalator.getEnd() != null ? escalator.getEnd().x() + "," + escalator.getEnd().y() : "not set"));
-        }
     }
 
     public List<BoardEscalator> getEscalators() {

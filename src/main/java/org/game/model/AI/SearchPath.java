@@ -32,24 +32,12 @@ public class SearchPath {
                 PathFinder.Action action = (PathFinder.Action) actionObj;
                 // PathFinder.Action and model.Action are different!
                 switch (action) {
-                    case MOVE_NORTH -> {
-                        actions.add(Action.MOVE_NORTH);
-                    }
-                    case MOVE_SOUTH -> {
-                        actions.add(Action.MOVE_SOUTH);
-                    }
-                    case MOVE_WEST -> {
-                        actions.add(Action.MOVE_WEST);
-                    }
-                    case MOVE_EAST -> {
-                        actions.add(Action.MOVE_EAST);
-                    }
-                    case ESCALATOR -> {
-                        actions.add(Action.ESCALATOR);
-                    }
-                    case DISCOVERY -> {
-                        actions.add(Action.DISCOVER);
-                    }
+                    case MOVE_NORTH -> actions.add(Action.MOVE_NORTH);
+                    case MOVE_SOUTH -> actions.add(Action.MOVE_SOUTH);
+                    case MOVE_WEST -> actions.add(Action.MOVE_WEST);
+                    case MOVE_EAST -> actions.add(Action.MOVE_EAST);
+                    case ESCALATOR -> actions.add(Action.ESCALATOR);
+                    case DISCOVERY -> actions.add(Action.DISCOVER);
                     case VORTEX -> {
                         Action vortexAction = Action.VORTEX;
                         vortexAction.setVortexCoordinate(new org.game.model.Coordinate(node.x, node.y));

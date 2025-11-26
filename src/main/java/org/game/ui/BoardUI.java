@@ -53,7 +53,7 @@ public class BoardUI extends JFrame {
                 tilePanel.setLayout(new BorderLayout());
                 tilePanel.add(timerLabel, BorderLayout.CENTER);
                 // update timer every second
-                new Timer(1000, e -> timerLabel.setText(""+board.getTimer().getTimeLeftInTimer())).start();
+                new Timer(1000, _ -> timerLabel.setText(""+board.getTimer().getTimeLeftInTimer())).start();
                 tilePanel.setBackground(java.awt.Color.LIGHT_GRAY);
 
             }
@@ -222,35 +222,27 @@ public class BoardUI extends JFrame {
     }
 
     private java.awt.Color getColorForTileType(TileType type, Tile tile) {
-        switch (type) {
-            case START:
-                return java.awt.Color.WHITE;
-            case OBSTACLE:
-                return java.awt.Color.decode(Color.BROWN.getHexCode());
-            case TIMER:
-                if(tile.isUsed()){
-                    return java.awt.Color.decode(Color.DARK_RED.getHexCode());
+        return switch (type) {
+            case START -> java.awt.Color.WHITE;
+            case OBSTACLE -> java.awt.Color.decode(Color.BROWN.getHexCode());
+            case TIMER -> {
+                if (tile.isUsed()) {
+                    yield java.awt.Color.decode(Color.DARK_RED.getHexCode());
                 }
-                return java.awt.Color.decode(Color.RED.getHexCode());
-            case PATH:
-            default:
-                return java.awt.Color.decode(Color.NONE.getHexCode());
-        }
+                yield java.awt.Color.decode(Color.RED.getHexCode());
+            }
+            default -> java.awt.Color.decode(Color.NONE.getHexCode());
+        };
     }
 
     private java.awt.Color getColorForTile(Tile tile) {
-        switch (tile.getColor()) {
-            case ORANGE:
-                return java.awt.Color.decode(Color.ORANGE.getHexCode());
-            case PURPLE:
-                return java.awt.Color.decode(Color.PURPLE.getHexCode());
-            case GREEN:
-                return java.awt.Color.decode(Color.GREEN.getHexCode());
-            case YELLOW:
-                return java.awt.Color.decode(Color.YELLOW.getHexCode());
-            default:
-                return java.awt.Color.decode(Color.NONE.getHexCode());
-        }
+        return switch (tile.getColor()) {
+            case ORANGE -> java.awt.Color.decode(Color.ORANGE.getHexCode());
+            case PURPLE -> java.awt.Color.decode(Color.PURPLE.getHexCode());
+            case GREEN -> java.awt.Color.decode(Color.GREEN.getHexCode());
+            case YELLOW -> java.awt.Color.decode(Color.YELLOW.getHexCode());
+            default -> java.awt.Color.decode(Color.NONE.getHexCode());
+        };
     }
 
     private Border createTileBorder(Tile tile) {

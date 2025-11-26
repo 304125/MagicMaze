@@ -12,7 +12,7 @@ import java.util.*;
 
 public class PathFinder {
     private final Tile[][] grid;
-    private Board board;
+    private final Board board;
 
     public PathFinder(Tile[][] grid, Board board) {
         this.grid = grid;
@@ -66,7 +66,7 @@ public class PathFinder {
             // Goal check
             if (current.getX() == coordinateEnd.x() && current.getY() == coordinateEnd.y()) {
                 reconstructPath(searchPath, current);
-                // if the coodrdinateEnd is a Discovery tile, add action to the searchPath
+                // if the coordinateEnd is a Discovery tile, add action to the searchPath
                 handleDiscoveryTile(searchPath, coordinateEnd);
                 return searchPath; // Return the shortest path from start to goal
             }
@@ -196,14 +196,6 @@ public class PathFinder {
         Action(int dx, int dy) {
             this.dx = dx;
             this.dy = dy;
-        }
-
-        public int getDx() {
-            return dx;
-        }
-
-        public int getDy() {
-            return dy;
         }
 
         public void setDynamicCoordinates(int dx, int dy) {

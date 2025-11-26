@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ActionWriter {
     private final String filePath;
-    private GameRecord gameRecord;
+    private final GameRecord gameRecord;
 
     public ActionWriter(String folderName, String fileName, GameParams gameParams, List<Pawn> allPawns){
         filePath = "output/" + folderName + "/" + fileName + ".json";
