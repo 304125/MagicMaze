@@ -64,7 +64,7 @@ public class BoardUI extends JFrame {
             gridPanel.add(tilePanel);
         }
 
-        // Initialize the board and find the START position
+        // Initialize the board and find the START coordinate
         for (int i = 1; i < numberOfRows; i++) {
             for (int j = 0; j < numberOfCols; j++) {
                 Tile tile = board.getTiles()[i][j];
@@ -113,7 +113,7 @@ public class BoardUI extends JFrame {
             }
         }
 
-        // Initialize the pawn at the START position
+        // Initialize the pawn at the START coordinate
         List<Pawn> allPawns = board.getPawns();
         for (Pawn pawn : allPawns) {
             highlightPawn(pawn);
@@ -166,7 +166,7 @@ public class BoardUI extends JFrame {
     }
 
     public void highlightPawn(Pawn pawn) {
-        // Highlight the pawn's position
+        // Highlight the pawn's coordinate
         JPanel pawnTile = getTilePanelAt(pawn.getCoordinate());
 
         // if there is a vortex number on the tile, remove it
@@ -275,7 +275,9 @@ public class BoardUI extends JFrame {
                         }
 
                         if(tile.hasEscalator()){
-                            System.out.println("Rendering escalator at: (" + boardX + ", " + boardY + ")");
+                            if(Config.PRINT_EVERYTHING){
+                                System.out.println("Rendering escalator at: (" + boardX + ", " + boardY + ")");
+                            }
                         }
 
                         ImageIcon tileImage = tileTypeImages.get(tile.getType());

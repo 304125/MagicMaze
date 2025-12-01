@@ -1,8 +1,8 @@
 package org.game.model;
 
 /**
- * @param x Row position
- * @param y Column position
+ * @param x Row coordinate
+ * @param y Column coordinate
  */
 public record Coordinate(int x, int y) {
 

@@ -3,6 +3,7 @@ package org.game.utils;
 import org.game.model.*;
 import org.game.model.Action;
 import org.game.model.board.Board;
+import org.game.model.board.PawnManager;
 import org.game.ui.BoardUI;
 import org.game.utils.output.ActionWriter;
 
@@ -19,21 +20,29 @@ public class ActionDelegator {
         this.actionWriter = actionWriter;
     }
 
-    public void movePawn(Color pawnColor, Action action) {
+    // return false if the action was not performed
+    public boolean movePawn(Color pawnColor, Action action) {
         Pawn previousPawn = new Pawn(board.getPawnByColor(pawnColor));
         Pawn updatedPawn;
         if(action == Action.MOVE_EAST || action == Action.MOVE_WEST || action == Action.MOVE_NORTH || action == Action.MOVE_SOUTH){
             updatedPawn = board.movePawn(pawnColor, action);
-            if(actionWriter != null) actionWriter.recordMove(pawnColor, action);
+            if(updatedPawn.getCoordinate() == previousPawn.getCoordinate()){
+                // the pawn has not moved
+                return false;
+            }
+            else{
+                if(actionWriter != null) actionWriter.recordMove(pawnColor, action);
 
-            if(board.isPawnAtTimerTile(updatedPawn)){
-                boardUI.changeTimerColorToDark(updatedPawn.getCoordinate());
+                if(board.isPawnAtTimerTile(updatedPawn)){
+                    boardUI.changeTimerColorToDark(updatedPawn.getCoordinate());
+                }
             }
         }
         else if(action == Action.ESCALATOR){
             updatedPawn = board.useEscalator(pawnColor);
             if(updatedPawn.equals(previousPawn)){
                 System.out.println("No escalator to use for pawn " + pawnColor);
+                return false;
             }
             else{
                 if(actionWriter != null) actionWriter.recordMove(pawnColor, action);
@@ -41,12 +50,13 @@ public class ActionDelegator {
         }
         else{
             System.out.println("Unknown action");
-            return;
+            return false;
         }
         handlePawnsUI(previousPawn, updatedPawn);
 
         // check for goal conditions
         board.checkGoalConditions();
+        return true;
     }
 
     public void discoverRandomCard(Color pawnColor) {
@@ -78,25 +88,26 @@ public class ActionDelegator {
             }
         }
     }
-    public void vortexPawn(Color pawnColor, int vortexNumber) {
+    public boolean vortexPawn(Color pawnColor, int vortexNumber) {
         if(!board.isFirstPhase()){
             System.out.println("Cannot use vortex outside of first phase");
-            return;
+            return false;
         }
         Pawn previousPawn = new Pawn(board.getPawnByColor(pawnColor));
         Pawn updatedPawn = board.useVortex(pawnColor, vortexNumber);
         if(updatedPawn.equals(previousPawn)){
             System.out.println("No vortex to use for pawn " + pawnColor + " with number " + vortexNumber);
-            return;
+            return false;
         }
         if(actionWriter != null) actionWriter.recordVortex(pawnColor, vortexNumber);
 
         handlePawnsUI(previousPawn, updatedPawn);
+        return true;
     }
 
-    public void vortexPawn(Color color, Coordinate vortexCoordinate){
+    public boolean vortexPawn(Color color, Coordinate vortexCoordinate){
         int vortexNumber = board.getCardIdOfVortex(vortexCoordinate, color);
-        vortexPawn(color, vortexNumber);
+        return vortexPawn(color, vortexNumber);
     }
 
     private void handlePawnsUI(Pawn previousPawn, Pawn updatedPawn) {
@@ -105,5 +116,29 @@ public class ActionDelegator {
         }
         boardUI.unhighlightPawn(previousPawn);
         boardUI.highlightPawn(updatedPawn);
+    }
+
+    public Pawn getBlockingPawn(Pawn pawn, Action action, Coordinate vortexCoordinate){
+        switch (action){
+            case Action.MOVE_EAST :
+                return board.getPawnAt(pawn.getCoordinate().move(0, 1));
+            case Action.MOVE_WEST:
+                return board.getPawnAt(pawn.getCoordinate().move(0, -1));
+            case Action.MOVE_NORTH:
+                return board.getPawnAt(pawn.getCoordinate().move(-1, 0));
+            case Action.MOVE_SOUTH:
+                return board.getPawnAt(pawn.getCoordinate().move(1, 0));
+            case Action.ESCALATOR:
+                return board.getPawnAt(PawnManager.getOtherSideOfEscalator(pawn.getCoordinate()));
+            case Action.VORTEX:
+                return board.getPawnAt(vortexCoordinate);
+        }
+
+        return null;
+    }
+
+    public boolean vortexToClosest(Pawn pawn){
+        Coordinate closestVortex = board.getClosestVortex(pawn.getCoordinate(), pawn.getColor());
+        return vortexPawn(pawn.getColor(), closestVortex);
     }
 }

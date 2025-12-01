@@ -26,7 +26,7 @@ public class PawnManager {
         // find the vortex with the given cardId
         for (BoardVortex vortex : vortexList) {
             if (vortex.cardId() == vortexNumber) {
-                Coordinate destination = vortex.position();
+                Coordinate destination = vortex.coordinate();
                 // check if the destination is occupied
                 if(board.getTileAt(destination).isOccupied()){
                     System.out.println("Error: Vortex destination is occupied");
@@ -54,7 +54,7 @@ public class PawnManager {
 
         Coordinate destination = getOtherSideOfEscalator(pawn.getCoordinate());
         if(destination == null){
-            System.out.println("Error: No escalator found at current position");
+            System.out.println("Error: No escalator found at current coordinate");
             return pawn;
         }
         if(board.getTileAt(destination).isOccupied()){

@@ -1,6 +1,7 @@
 package org.game.model.board;
 
 import org.game.model.*;
+import org.game.model.AI.PathFinder;
 import org.game.utils.Config;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class Board {
     private final GeneralGoalManager generalGoalManager;
     private boolean isFirstPhase = true;
     private Runnable onGameWonCallback;
+    private PathFinder pathFinder;
 
 
     public Board(int maxSize) {
@@ -29,8 +31,8 @@ public class Board {
         this.tiles = new Tile[numRows][numCols];
         this.pawnManager = new PawnManager(this);
         this.generalGoalManager = GeneralGoalManager.getInstance();
-
         this.timer = new Timer();
+        pathFinder = new PathFinder(tiles, this);
     }
 
     public Tile[][] getTiles() {
@@ -86,7 +88,7 @@ public class Board {
     private void checkForBlockedDiscoveries(Coordinate leftTopCorner){
         List<Coordinate> possibleEntries = getFourPossibleAdjacentEntryTiles(leftTopCorner);
         for (Coordinate entry : possibleEntries) {
-            // check if there is a discovery tile at this position
+            // check if there is a discovery tile at this coordinate
             Tile tile = getTileAt(new Coordinate(entry.x(), entry.y()));
             if(tile != null && tile.getType() == TileType.DISCOVERY){
                 // no need to check if it is now blocked from all 4 sides - if it exists, it is surrounded
@@ -110,7 +112,7 @@ public class Board {
 
     public void initializeStartingPawns(List<Pawn> initialPawns) {
         this.pawns = initialPawns;
-        // for each pawn, set their position at occupied in the corresponding tile
+        // for each pawn, set their coordinate at occupied in the corresponding tile
         for (Pawn pawn : initialPawns) {
             int x = pawn.getCoordinate().x();
             int y = pawn.getCoordinate().y();
@@ -166,7 +168,7 @@ public class Board {
 
         Coordinate corner = getLeftTopCornerOfNewCard(coordinate);
         Tile[][] rotatedTiles = rotatedCard.getTiles();
-        // add the new tiles to the board at the correct position
+        // add the new tiles to the board at the correct coordinate
         for (int i = 0; i < rotatedTiles.length; i++) {
             System.arraycopy(rotatedTiles[i], 0, tiles[corner.x() + i], corner.y(), rotatedTiles[i].length);
         }
@@ -227,7 +229,7 @@ public class Board {
 
     public void printAllPawns(){
         for (Pawn pawn : pawns) {
-            System.out.println("Pawn color: " + pawn.getColor() + " at position " + pawn.getCoordinate());
+            System.out.println("Pawn color: " + pawn.getColor() + " at coordinate " + pawn.getCoordinate());
         }
     }
 
@@ -237,6 +239,15 @@ public class Board {
         } else {
             return null;
         }
+    }
+
+    public Pawn getPawnAt(Coordinate coordinate){
+        for (Pawn pawn : pawns){
+            if(pawn.getCoordinate() == coordinate){
+                return pawn;
+            }
+        }
+        return null;
     }
 
     public Coordinate getLeftTopCornerOfNewCard(Coordinate position) {
@@ -303,7 +314,7 @@ public class Board {
     public int getCardIdOfVortex(Coordinate coordinate, Color color){
         List<BoardVortex> vortexList = getVortexListByColor(color);
         for (BoardVortex vortex : vortexList) {
-            if (vortex.position().equals(coordinate)) {
+            if (vortex.coordinate().equals(coordinate)) {
                 return vortex.cardId();
             }
         }
@@ -384,6 +395,20 @@ public class Board {
             }
         }
         return true;
+    }
+
+    public Coordinate getClosestVortex(Coordinate coordinate, Color color){
+        List<BoardVortex> vortexList = getVortexListByColor(color);
+        double smallestDistance = Double.POSITIVE_INFINITY;
+        Coordinate closestCoordinate = null;
+        for(BoardVortex vortex : vortexList){
+            int distance = pathFinder.findDistance(coordinate, vortex.coordinate());
+            if(distance < smallestDistance){
+                smallestDistance = distance;
+                closestCoordinate = vortex.coordinate();
+            }
+        }
+        return closestCoordinate;
     }
 
 }

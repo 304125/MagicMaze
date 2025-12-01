@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.game.model.*;
 import org.game.model.AI.AIPlayerType;
-import org.game.model.AI.OneHeroPlayer;
+import org.game.model.AI.PlayerType.OneHeroPlayer;
 import org.game.model.board.Board;
 import org.game.utils.output.GameRecord;
 

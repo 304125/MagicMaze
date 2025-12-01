@@ -1,5 +1,6 @@
-package org.game.model.AI;
+package org.game.model.AI.PlayerType;
 
+import org.game.model.AI.*;
 import org.game.model.Action;
 import org.game.model.Coordinate;
 import org.game.model.Tile;
@@ -13,13 +14,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class OneHeroPlayer extends AIPlayer{
+public class OneHeroPlayer extends AIPlayer {
     private Pawn lastMovedPawn;
     private ActionTree actionTree;
     private final int maximumChunkSize;
     private final GeneralGoalManager generalGoalManager;
     PathFinder pathFinder;
     Thread actionExecutionThread;
+    private boolean isThreadSleeping = false;
 
     public OneHeroPlayer(List<Action> actions, String name, Board board) {
         super(actions, name, board);
@@ -85,9 +87,21 @@ public class OneHeroPlayer extends AIPlayer{
 
     @Override
     public void onPawnMoved(Pawn movedPawn, Action action) {
+        if(!isThreadSleeping){
+            try{
+                isThreadSleeping = true;
+                Thread.sleep(500); // wait a bit to process
+                isThreadSleeping = false;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         if(movedPawn.getColor() == lastMovedPawn.getColor()) {
             boolean moved = actionTree.takeAction(action);
-            actionTree.printTree(getName());
+            if(Config.PRINT_EVERYTHING){
+                actionTree.printTree(getName());
+            }
             if(actionTree.isEmpty()){
                 // re-build tree, all actions used up
                 buildActionTree();
@@ -112,8 +126,10 @@ public class OneHeroPlayer extends AIPlayer{
                 // re-build tree, all actions used up
                 buildActionTree();
             }
+            if(Config.PRINT_EVERYTHING){
+                actionTree.printTree(getName());
+            }
 
-            actionTree.printTree(getName());
             if (!moved) {
                 // re-build tree, the pawn was moved in an unexpected way
                 buildActionTree();
@@ -131,23 +147,35 @@ public class OneHeroPlayer extends AIPlayer{
         actionExecutionThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    Thread.sleep(1000); // Wait for 1 second
+                    if(!isThreadSleeping){
+                        isThreadSleeping = true;
+                        Thread.sleep(1000); // Wait for 1 second
+                        isThreadSleeping = false;
+                    }
+
                     Action bestAction = actionTree.bestAction();
                     if(canPerformAction(bestAction)){
                         //boolean actionTaken = actionTree.takeAction(bestAction);
                         if (actionTree.isEmpty()) {
                             System.out.println("No valid action to take. Rebuilding action tree...");
                             buildActionTree(); // Rebuild the tree if no action is available
-                            Thread.sleep(3000); // Wait for 3 seconds
+                            if(!isThreadSleeping){
+                                isThreadSleeping = true;
+                                Thread.sleep(3000); // Wait for 3 seconds
+                                isThreadSleeping = false;
+                            }
+
                         }
                         else{
-                            // perform the action
+                            // try to perform the action
+                            // if moved = false, then the action is blocked (by another pawn)
+                            boolean moved = true;
                             switch (bestAction){
                                 case MOVE_EAST, MOVE_NORTH, MOVE_SOUTH, MOVE_WEST, ESCALATOR -> {
                                     if(Config.PRINT_EVERYTHING){
                                         System.out.println(getName() + " is performing action: " + bestAction + " with pawn " + lastMovedPawn.getColor());
                                     }
-                                    getActionDelegator().movePawn(lastMovedPawn.getColor(), bestAction);
+                                    moved = getActionDelegator().movePawn(lastMovedPawn.getColor(), bestAction);
                                 }
                                 case DISCOVER -> {
                                     if(Config.PRINT_EVERYTHING){
@@ -159,7 +187,22 @@ public class OneHeroPlayer extends AIPlayer{
                                     if(Config.PRINT_EVERYTHING){
                                         System.out.println(getName() + " is performing action: " + bestAction + " with pawn " + lastMovedPawn.getColor());
                                     }
-                                    getActionDelegator().vortexPawn(lastMovedPawn.getColor(), bestAction.getVortexCoordinate());
+                                    moved = getActionDelegator().vortexPawn(lastMovedPawn.getColor(), bestAction.getVortexCoordinate());
+                                }
+                            }
+
+                            // if moved = false, I need to add plan for the blocking pawn
+                            if(!moved){
+                                Pawn blockingPawn = getActionDelegator().getBlockingPawn(lastMovedPawn, bestAction, bestAction.getVortexCoordinate());
+                                if(blockingPawn == null){
+                                    // the blocking pawn has since moved, just wait it out and try again
+                                    break;
+                                }
+                                else{
+                                    // schedule a plan for the blocking pawn to move away
+                                    // just vortex that pawn to the closest vortex
+                                    // own color's vortex is never blocking
+                                    getActionDelegator().vortexToClosest(blockingPawn);
                                 }
                             }
                         }

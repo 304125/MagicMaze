@@ -38,7 +38,7 @@ public class PathFinder {
             List<BoardVortex> vortexesOfColor = board.getVortexListByColor(pawnColor);
             List<Coordinate> vortexCoordinates = new ArrayList<>();
             for (BoardVortex vortex : vortexesOfColor) {
-                vortexCoordinates.add(vortex.position());
+                vortexCoordinates.add(vortex.coordinate());
             }
             // for each vortexCoordinates, if using the vortex would shorten the distance, add it to the openSet
             for (Coordinate vortexCoordinate : vortexCoordinates) {
