@@ -16,6 +16,7 @@ public class OneHeroPlayer extends AIPlayer {
     Thread actionExecutionThread;
     private boolean isThreadSleeping = false;
     private List<Color> otherPawnMoves = new ArrayList<>();
+    private int ticksWaiting = 0;
 
     public OneHeroPlayer(List<Action> actions, String name, Board board) {
         super(actions, name, board);
@@ -36,6 +37,16 @@ public class OneHeroPlayer extends AIPlayer {
 
     // builds action tree from scratch
     private void buildActionTree() {
+        if(!isThreadSleeping){
+            try{
+                isThreadSleeping = true;
+                Thread.sleep(1000); // wait a bit to process
+                isThreadSleeping = false;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         otherPawnMoves.removeIf(color -> color.equals(lastMovedPawn.getColor()));
         actionTree = new ActionTree();
         int currentChunkSize = 0;
@@ -92,6 +103,7 @@ public class OneHeroPlayer extends AIPlayer {
         }
 
         if(movedPawn.getColor() == lastMovedPawn.getColor()) {
+            ticksWaiting = 0;
             boolean moved = actionTree.takeAction(action);
             if(Config.PRINT_EVERYTHING){
                 actionTree.printTree(getName());
@@ -153,6 +165,7 @@ public class OneHeroPlayer extends AIPlayer {
 
                     Action bestAction = actionTree.bestAction();
                     if(canPerformAction(bestAction)){
+                        ticksWaiting = 0;
                         if (actionTree.isEmpty()) {
                             System.out.println("No valid action to take. Rebuilding action tree...");
                             buildActionTree(); // Rebuild the tree if no action is available
@@ -164,6 +177,13 @@ public class OneHeroPlayer extends AIPlayer {
                         }
                         else{
                             attemptBestAction(bestAction);
+                        }
+                    }
+                    else{
+                        ticksWaiting++;
+                        if(ticksWaiting >= super.getPatience()){
+                            getActionDelegator().placeDoSomething(bestAction);
+                            ticksWaiting = 0;
                         }
                     }
 
@@ -260,6 +280,14 @@ public class OneHeroPlayer extends AIPlayer {
             // someone wants me to do something, but I don't know what to do (not in my plan)
             // look at all pawns and perform a random action from my action set on a random pawn
             getActionDelegator().performRandomAvailableActionFromActionSet(super.getActions());
+        }
+    }
+
+    @Override
+    public void doSomethingPlaced(Player player){
+        if(player.getActions().contains(actionTree.bestAction())){
+            // someone already notified the player about the same thing i am waiting for - no need to do it twice
+            ticksWaiting = 0;
         }
     }
 }

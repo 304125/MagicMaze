@@ -13,14 +13,17 @@ public class GameRecord {
     private GameParams gameParams;
     private final TreeMap<Instant, String> gameMoves;
     private Map<Color, Coordinate> initialPawnPositions;
+    private final TreeMap<Instant, String> doSomethingTimestamps;
 
     public GameRecord(GameParams gameParams){
         this.gameParams = gameParams;
-        gameMoves = new java.util.TreeMap<>();
+        gameMoves = new TreeMap<>();
+        doSomethingTimestamps = new TreeMap<>();
     }
 
     public GameRecord(){
-        gameMoves = new java.util.TreeMap<>();
+        gameMoves = new TreeMap<>();
+        doSomethingTimestamps = new TreeMap<>();
     }
 
     public GameParams getGameParams() {
@@ -29,6 +32,10 @@ public class GameRecord {
 
     public TreeMap<Instant, String> getGameMoves() {
         return gameMoves;
+    }
+
+    public TreeMap<Instant, String> getDoSomethingTimestamps(){
+        return doSomethingTimestamps;
     }
 
     public Map<Color, Coordinate> getInitialPawnPositions() {
@@ -43,10 +50,16 @@ public class GameRecord {
         gameMoves.put(timestamp, move);
     }
 
+    public void addDoSomething(Instant timestamp, String action){
+        doSomethingTimestamps.put(timestamp, action);
+    }
+
     public void setInitialPawnPositions(List<Color> pawnColors, List<Coordinate> coordinates){
         initialPawnPositions = new TreeMap<>();
         for(int i = 0; i < pawnColors.size(); i++){
             initialPawnPositions.put(pawnColors.get(i), coordinates.get(i));
         }
     }
+
+
 }

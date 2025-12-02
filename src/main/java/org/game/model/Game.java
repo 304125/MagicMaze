@@ -10,6 +10,7 @@ import org.game.utils.Config;
 import org.game.utils.JsonReader;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -54,7 +55,7 @@ public class Game {
         allCards.remove(startingCard);
 
         // shuffle allCards
-        java.util.Collections.shuffle(allCards);
+        Collections.shuffle(allCards);
         this.unplayedCards = new StackOfCards(allCards);
     }
 
@@ -112,7 +113,7 @@ public class Game {
         int middle = (boardMaxSize / 2)+1;
         List<Pawn> pawns;
         // make a list of starting positions as List of (int, int)
-        List<int[]> startingPositions = new java.util.ArrayList<>(List.of(
+        List<int[]> startingPositions = new ArrayList<>(List.of(
                 new int[]{middle, middle}, // left top
                 new int[]{middle, middle+1}, // right top
                 new int[]{middle+1, middle}, // left bottom
@@ -120,7 +121,7 @@ public class Game {
         ));
 
         // shuffle the list in a random way
-        java.util.Collections.shuffle(startingPositions);
+        Collections.shuffle(startingPositions);
         pawns = List.of(
                 //new Pawn(new Coordinate(startingPositions.get(0)[0], startingPositions.get(0)[1]), Color.YELLOW)
                 new Pawn(new Coordinate(startingPositions.get(1)[0], startingPositions.get(1)[1]), Color.GREEN)
@@ -199,10 +200,20 @@ public class Game {
     }
 
     public void placeDoSomething(Action action){
+        System.out.println("Placing do something on "+action.toString());
+        Player chosenPlayer = null;
         for(Player player : players){
             if(player.canPerformAction(action)){
                 player.doSomething();
+                chosenPlayer = player;
             }
+        }
+        if(chosenPlayer == null){
+            // should not get here, somone has to have that action
+            return;
+        }
+        for(Player player : players){
+            player.doSomethingPlaced(chosenPlayer);
         }
     }
 }

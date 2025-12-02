@@ -26,4 +26,8 @@ public class Player {
     public void doSomething(){
         System.out.println("Do something!");
     }
+
+    public void doSomethingPlaced(Player player){
+        System.out.println("Do something was placed in front of player "+player.getName());
+    }
 }

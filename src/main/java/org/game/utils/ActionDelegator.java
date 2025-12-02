@@ -157,12 +157,17 @@ public class ActionDelegator {
     }
 
     public void placeDoSomething(Action action){
+        actionWriter.recordDoSomething(action);
         game.placeDoSomething(action);
     }
 
     public void performRandomAvailableActionFromActionSet(List<Action> actions){
         // randomly ordered list of all colors and actions
-        List<Color> allColors = new ArrayList<>(Arrays.asList(Color.GREEN, Color.ORANGE, Color.PURPLE, Color.YELLOW));
+        List<Pawn> allPawns = board.getPawns();
+        List<Color> allColors = new ArrayList<>();
+        for(Pawn pawn : allPawns){
+            allColors.add(pawn.getColor());
+        }
         Collections.shuffle(allColors);
         Collections.shuffle(actions);
 
@@ -173,12 +178,15 @@ public class ActionDelegator {
                 switch (action){
                     case Action.DISCOVER: {
                         done = discoverRandomCard(color);
+                        break;
                     }
                     case Action.MOVE_EAST, Action.MOVE_NORTH, Action.MOVE_WEST, Action.MOVE_SOUTH, Action.ESCALATOR: {
                         done = movePawn(color, action);
+                        break;
                     }
                     case Action.VORTEX: {
                         done = vortexToClosest(color);
+                        break;
                     }
                 }
                 if(done){

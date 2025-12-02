@@ -89,6 +89,12 @@ public class ActionWriter {
         writeGameRecordToFile();
     }
 
+    public void recordDoSomething(Action action){
+        String actionString = action.toString();
+        gameRecord.addDoSomething(Instant.now(), actionString);
+        writeGameRecordToFile();
+    }
+
     private String getColor(Color color){
         return switch (color) {
             case YELLOW -> "y";

@@ -13,6 +13,7 @@ public abstract class AIPlayer extends Player  implements StateChangeListener, A
     private ActionDelegator actionDelegator;
     private int currentMemoryCapacity;
     private int blindness;
+    private int patience;
 
     public AIPlayer(List<Action> actions, String name, Board board) {
         super(actions, name);
@@ -21,6 +22,7 @@ public abstract class AIPlayer extends Player  implements StateChangeListener, A
         Random random = new Random();
         // 0, 1, 2, 3
         blindness = random.nextInt(4);
+        patience = random.nextInt(5,10);
     }
 
     public Board getBoard() {
@@ -45,5 +47,9 @@ public abstract class AIPlayer extends Player  implements StateChangeListener, A
 
     public int getBlindness(){
         return blindness;
+    }
+
+    public int getPatience(){
+        return patience;
     }
 }

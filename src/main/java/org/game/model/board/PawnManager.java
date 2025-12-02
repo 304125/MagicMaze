@@ -155,20 +155,25 @@ public class PawnManager {
 
             updateLastMovedPawn(pawn, action);
 
-            // set the previous tile to not occupied
-            switch (action) {
-                case MOVE_NORTH:
-                    board.getTileAt(pawn.getCoordinate().move(1, 0)).setOccupied(false);
-                    break;
-                case MOVE_SOUTH:
-                    board.getTileAt(pawn.getCoordinate().move(-1, 0)).setOccupied(false);
-                    break;
-                case MOVE_WEST:
-                    board.getTileAt(pawn.getCoordinate().move(0, 1)).setOccupied(false);
-                    break;
-                case MOVE_EAST:
-                    board.getTileAt(pawn.getCoordinate().move(0, -1)).setOccupied(false);
-                    break;
+            try {
+                // set the previous tile to not occupied
+                switch (action) {
+                    case MOVE_NORTH:
+                        board.getTileAt(pawn.getCoordinate().move(1, 0)).setOccupied(false);
+                        break;
+                    case MOVE_SOUTH:
+                        board.getTileAt(pawn.getCoordinate().move(-1, 0)).setOccupied(false);
+                        break;
+                    case MOVE_WEST:
+                        board.getTileAt(pawn.getCoordinate().move(0, 1)).setOccupied(false);
+                        break;
+                    case MOVE_EAST:
+                        board.getTileAt(pawn.getCoordinate().move(0, -1)).setOccupied(false);
+                        break;
+                }
+            }
+            catch (NullPointerException e){
+                Coordinate problem = pawn.getCoordinate();
             }
         }
 
