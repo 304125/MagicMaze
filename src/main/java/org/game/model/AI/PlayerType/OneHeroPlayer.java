@@ -1,18 +1,12 @@
 package org.game.model.AI.PlayerType;
 
+import org.game.model.*;
 import org.game.model.AI.*;
-import org.game.model.Action;
-import org.game.model.Coordinate;
-import org.game.model.Tile;
 import org.game.model.board.Board;
-import org.game.model.Pawn;
 import org.game.model.board.GeneralGoalManager;
 import org.game.utils.Config;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class OneHeroPlayer extends AIPlayer {
     private Pawn lastMovedPawn;
@@ -21,6 +15,7 @@ public class OneHeroPlayer extends AIPlayer {
     PathFinder pathFinder;
     Thread actionExecutionThread;
     private boolean isThreadSleeping = false;
+    private List<Color> otherPawnMoves = new ArrayList<>();
 
     public OneHeroPlayer(List<Action> actions, String name, Board board) {
         super(actions, name, board);
@@ -41,6 +36,7 @@ public class OneHeroPlayer extends AIPlayer {
 
     // builds action tree from scratch
     private void buildActionTree() {
+        otherPawnMoves.removeIf(color -> color.equals(lastMovedPawn.getColor()));
         actionTree = new ActionTree();
         int currentChunkSize = 0;
         List<Coordinate> goalCoordinates = generalGoalManager.getPawnGoalManager(lastMovedPawn.getColor()).getAllGoals();
@@ -110,9 +106,13 @@ public class OneHeroPlayer extends AIPlayer {
             }
         }
         else{
-            lastMovedPawn = movedPawn;
-            // re-build tree, another pawn was moved
-            buildActionTree();
+            otherPawnMoves.add(movedPawn.getColor());
+            // if that pawn has been moved more times than my blindness (and is not the pawn i have tree for), re-build
+            if(otherPawnMoves.stream().filter(color -> color.equals(movedPawn.getColor())).count() >= super.getBlindness()){
+                lastMovedPawn = movedPawn;
+                // re-build tree, another pawn was moved
+                buildActionTree();
+            }
         }
     }
 
