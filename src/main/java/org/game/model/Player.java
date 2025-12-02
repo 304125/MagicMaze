@@ -22,4 +22,8 @@ public class Player {
     public boolean canPerformAction(Action action) {
         return actions.contains(action);
     }
+
+    public void doSomething(){
+        System.out.println("Do something!");
+    }
 }

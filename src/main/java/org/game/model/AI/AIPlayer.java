@@ -10,10 +10,12 @@ import java.util.List;
 public abstract class AIPlayer extends Player  implements StateChangeListener, AIPlayerBehavior{
     private final Board board;
     private ActionDelegator actionDelegator;
+    private int currentMemoryCapacity;
 
     public AIPlayer(List<Action> actions, String name, Board board) {
         super(actions, name);
         this.board = board;
+        currentMemoryCapacity = ChunkGenerator.generateChunkSize();
     }
 
     public Board getBoard() {
@@ -28,5 +30,11 @@ public abstract class AIPlayer extends Player  implements StateChangeListener, A
         return actionDelegator;
     }
 
+    public int getCurrentMemoryCapacity(){
+        return currentMemoryCapacity;
+    }
 
+    public void decreaseMemoryCapacity(){
+        currentMemoryCapacity--;
+    }
 }

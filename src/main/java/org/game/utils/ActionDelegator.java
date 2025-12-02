@@ -7,6 +7,11 @@ import org.game.model.board.PawnManager;
 import org.game.ui.BoardUI;
 import org.game.utils.output.ActionWriter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public class ActionDelegator {
     private final Game game;
     private final Board board;
@@ -59,7 +64,7 @@ public class ActionDelegator {
         return true;
     }
 
-    public void discoverRandomCard(Color pawnColor) {
+    public boolean discoverRandomCard(Color pawnColor) {
         Pawn pawn = new Pawn(board.getPawnByColor(pawnColor));
         // check if the pawn is standing on discovery tile
         Tile currentTile = board.getTileAt(pawn.getCoordinate());
@@ -71,10 +76,14 @@ public class ActionDelegator {
                 boardUI.renderDiscoveredTiles(corner);
                 if(actionWriter != null) actionWriter.recordDiscover(pawnColor, discoveredCardId);
             }
+            return true;
+        }
+        else{
+            return false;
         }
     }
 
-    public void discoverGivenCard(Color pawnColor, int cardId) {
+    public boolean discoverGivenCard(Color pawnColor, int cardId) {
         Pawn pawn = new Pawn(board.getPawnByColor(pawnColor));
         // check if the pawn is standing on discovery tile
         Tile currentTile = board.getTileAt(pawn.getCoordinate());
@@ -86,6 +95,10 @@ public class ActionDelegator {
                 boardUI.renderDiscoveredTiles(corner);
                 if(actionWriter != null) actionWriter.recordDiscover(pawnColor, discoveredCardId);
             }
+            return true;
+        }
+        else{
+            return false;
         }
     }
     public boolean vortexPawn(Color pawnColor, int vortexNumber) {
@@ -137,8 +150,42 @@ public class ActionDelegator {
         return null;
     }
 
-    public boolean vortexToClosest(Pawn pawn){
+    public boolean vortexToClosest(Color pawnColor){
+        Pawn pawn = board.getPawnByColor(pawnColor);
         Coordinate closestVortex = board.getClosestVortex(pawn.getCoordinate(), pawn.getColor());
         return vortexPawn(pawn.getColor(), closestVortex);
+    }
+
+    public void placeDoSomething(Action action){
+        game.placeDoSomething(action);
+    }
+
+    public void performRandomAvailableActionFromActionSet(List<Action> actions){
+        // randomly ordered list of all colors and actions
+        List<Color> allColors = new ArrayList<>(Arrays.asList(Color.GREEN, Color.ORANGE, Color.PURPLE, Color.YELLOW));
+        Collections.shuffle(allColors);
+        Collections.shuffle(actions);
+
+        // going from first to last, try to perform action on color until one action is allowed. then stop
+        boolean done = false;
+        for(Action action: actions){
+            for(Color color: allColors){
+                switch (action){
+                    case Action.DISCOVER: {
+                        done = discoverRandomCard(color);
+                    }
+                    case Action.MOVE_EAST, Action.MOVE_NORTH, Action.MOVE_WEST, Action.MOVE_SOUTH, Action.ESCALATOR: {
+                        done = movePawn(color, action);
+                    }
+                    case Action.VORTEX: {
+                        done = vortexToClosest(color);
+                    }
+                }
+                if(done){
+                    return;
+                }
+            }
+        }
+        System.out.println("There is nothing this agent can do");
     }
 }

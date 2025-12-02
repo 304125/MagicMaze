@@ -197,4 +197,12 @@ public class Game {
     public void setGameWonCallback(Runnable callback){
         board.setGameWonCallback(callback);
     }
+
+    public void placeDoSomething(Action action){
+        for(Player player : players){
+            if(player.canPerformAction(action)){
+                player.doSomething();
+            }
+        }
+    }
 }
