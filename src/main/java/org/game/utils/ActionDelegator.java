@@ -185,22 +185,24 @@ public class ActionDelegator {
         boolean done = false;
         for(Action action: actions){
             for(Color color: allColors){
-                switch (action){
-                    case Action.DISCOVER: {
-                        done = discoverRandomCard(color);
-                        break;
+                if(isPerformable(action, color)){
+                    switch (action){
+                        case Action.DISCOVER: {
+                            done = discoverRandomCard(color);
+                            break;
+                        }
+                        case Action.MOVE_EAST, Action.MOVE_NORTH, Action.MOVE_WEST, Action.MOVE_SOUTH, Action.ESCALATOR: {
+                            done = movePawn(color, action);
+                            break;
+                        }
+                        case Action.VORTEX: {
+                            done = vortexToClosest(color);
+                            break;
+                        }
                     }
-                    case Action.MOVE_EAST, Action.MOVE_NORTH, Action.MOVE_WEST, Action.MOVE_SOUTH, Action.ESCALATOR: {
-                        done = movePawn(color, action);
-                        break;
+                    if(done){
+                        return;
                     }
-                    case Action.VORTEX: {
-                        done = vortexToClosest(color);
-                        break;
-                    }
-                }
-                if(done){
-                    return;
                 }
             }
         }
