@@ -9,7 +9,7 @@ import org.game.utils.Config;
 import java.util.*;
 
 public class OneHeroPlayer extends AIPlayer {
-    private Pawn lastMovedPawn;
+    private Pawn currentlyPlannedPawn;
     private ActionTree actionTree;
     private final GeneralGoalManager generalGoalManager;
     PathFinder pathFinder;
@@ -21,7 +21,7 @@ public class OneHeroPlayer extends AIPlayer {
 
     public OneHeroPlayer(List<Action> actions, String name, Board board) {
         super(actions, name, board);
-        lastMovedPawn = board.getRandomPawn();
+        currentlyPlannedPawn = board.getRandomPawn();
         actionTree = new ActionTree();
         if(Config.PRINT_EVERYTHING){
             System.out.println("OneHeroPlayer initialized with memory capacity: " + super.getCurrentMemoryCapacity());
@@ -50,12 +50,12 @@ public class OneHeroPlayer extends AIPlayer {
             }
         }
 
-        otherPawnMoves.removeIf(color -> color.equals(lastMovedPawn.getColor()));
+        otherPawnMoves.removeIf(color -> color.equals(currentlyPlannedPawn.getColor()));
         actionTree = new ActionTree();
         int currentChunkSize = 0;
-        List<Coordinate> goalCoordinates = generalGoalManager.getPawnGoalManager(lastMovedPawn.getColor()).getAllGoals();
+        List<Coordinate> goalCoordinates = generalGoalManager.getPawnGoalManager(currentlyPlannedPawn.getColor()).getAllGoals();
         if(Config.PRINT_EVERYTHING){
-            System.out.println("Building action tree for pawn " + lastMovedPawn.getColor() + " towards goals: " + goalCoordinates);
+            System.out.println("Building action tree for pawn " + currentlyPlannedPawn.getColor() + " towards goals: " + goalCoordinates);
         }
 
         // consider all possible goals of that color of hero in ascending order of distance
@@ -63,11 +63,11 @@ public class OneHeroPlayer extends AIPlayer {
         // order goalCoordinates by distance to lastMovedPawn
         Map<Coordinate, Integer> distanceMap = new HashMap<>();
         for (Coordinate goal : goalCoordinates) {
-            int estimatedDistance = pathFinder.findDistance(lastMovedPawn.getCoordinate(), goal);
+            int estimatedDistance = pathFinder.findDistance(currentlyPlannedPawn.getCoordinate(), goal);
             distanceMap.put(goal, estimatedDistance);
         }
         if(Config.PRINT_EVERYTHING){
-            System.out.println("Distance map from pawn " + lastMovedPawn.getColor() + " at " + lastMovedPawn.getCoordinate() + ": " + distanceMap);
+            System.out.println("Distance map from pawn " + currentlyPlannedPawn.getColor() + " at " + currentlyPlannedPawn.getCoordinate() + ": " + distanceMap);
         }
 
         // sort goalCoordinates by estimated distance from distanceMap
@@ -75,7 +75,7 @@ public class OneHeroPlayer extends AIPlayer {
 
         // starting from the closest goal, find the shortest path
         for (Coordinate goal : goalCoordinates) {
-            SearchPath path = pathFinder.findShortestPath(lastMovedPawn.getCoordinate(), goal, lastMovedPawn.getColor());
+            SearchPath path = pathFinder.findShortestPath(currentlyPlannedPawn.getCoordinate(), goal, currentlyPlannedPawn.getColor());
             currentChunkSize += ChunkGenerator.countChunks(path);
             if(currentChunkSize > super.getCurrentMemoryCapacity()){
                 if(Config.PRINT_EVERYTHING){
@@ -89,20 +89,22 @@ public class OneHeroPlayer extends AIPlayer {
             }
         }
         // there is nothing to do for this color now -> re-do with another color
-        if(actionTree.isEmpty()){
+        if(actionTree.isEmpty() || !actionTree.areAnyLeafsPositivePriority()){
             // re-plan for the last moved pawn not of current color
             if(otherPawnMoves.isEmpty()){
-                lastMovedPawn = getActionDelegator().getRandomPawn();
+                currentlyPlannedPawn = getActionDelegator().getRandomPawn();
             }
             else{
                 Color replanForColor = otherPawnMoves.getLast();
-                lastMovedPawn = getActionDelegator().getPawnByColor(replanForColor);
+                currentlyPlannedPawn = getActionDelegator().getPawnByColor(replanForColor);
             }
             buildActionTree();
         }
         if(Config.PRINT_EVERYTHING){
-            actionTree.printTree(getName());
+
         }
+        System.out.println("Planned for pawn of color: "+currentlyPlannedPawn.getColor());
+        actionTree.printTree(getName(), super.getActions());
     }
 
     @Override
@@ -117,11 +119,11 @@ public class OneHeroPlayer extends AIPlayer {
             }
         }
 
-        if(movedPawn.getColor() == lastMovedPawn.getColor()) {
+        if(movedPawn.getColor() == currentlyPlannedPawn.getColor()) {
             ticksWaiting = 0;
             boolean moved = actionTree.takeAction(action);
             if(Config.PRINT_EVERYTHING){
-                actionTree.printTree(getName());
+                actionTree.printTree(getName(), super.getActions());
             }
             if(actionTree.isEmpty()){
                 // re-build tree, all actions used up
@@ -136,7 +138,7 @@ public class OneHeroPlayer extends AIPlayer {
             otherPawnMoves.add(movedPawn.getColor());
             // if that pawn has been moved more times than my blindness (and is not the pawn i have tree for), re-build
             if(otherPawnMoves.stream().filter(color -> color.equals(movedPawn.getColor())).count() >= super.getBlindness()){
-                lastMovedPawn = movedPawn;
+                currentlyPlannedPawn = movedPawn;
                 // re-build tree, another pawn was moved
                 buildActionTree();
             }
@@ -145,14 +147,14 @@ public class OneHeroPlayer extends AIPlayer {
 
     @Override
     public void onDiscovered(Pawn pawn){
-        if(pawn.getColor() == lastMovedPawn.getColor()) {
+        if(pawn.getColor() == currentlyPlannedPawn.getColor()) {
             boolean moved = actionTree.takeAction(Action.DISCOVER);
             if(actionTree.isEmpty()){
                 // re-build tree, all actions used up
                 buildActionTree();
             }
             if(Config.PRINT_EVERYTHING){
-                actionTree.printTree(getName());
+                actionTree.printTree(getName(), super.getActions());
             }
 
             if (!moved) {
@@ -161,7 +163,7 @@ public class OneHeroPlayer extends AIPlayer {
             }
         }
         else{
-            lastMovedPawn = pawn;
+            currentlyPlannedPawn = pawn;
             // re-build tree, another pawn was moved
             buildActionTree();
         }
@@ -179,6 +181,17 @@ public class OneHeroPlayer extends AIPlayer {
                     }
 
                     Action bestAction = actionTree.bestAction();
+                    while(bestAction == null){
+                        // nothing is worth doing
+                        System.out.println("No action is worth taking. Rebuilding action tree...");
+                        buildActionTree(); // Rebuild the tree if no action is available
+                        if(!isThreadSleeping && running){
+                            isThreadSleeping = true;
+                            Thread.sleep(3000); // Wait for 3 seconds
+                            isThreadSleeping = false;
+                        }
+                        bestAction = actionTree.bestAction();
+                    }
                     if(canPerformAction(bestAction)){
                         ticksWaiting = 0;
                         if (actionTree.isEmpty()) {
@@ -201,7 +214,7 @@ public class OneHeroPlayer extends AIPlayer {
                         else{
                             ticksWaiting++;
                             if(ticksWaiting >= super.getPatience()){
-                                if(getActionDelegator().isPerformable(bestAction, lastMovedPawn.getColor())){
+                                if(getActionDelegator().isPerformable(bestAction, currentlyPlannedPawn.getColor())){
                                     getActionDelegator().placeDoSomething(bestAction);
                                 }
                                 else{
@@ -228,43 +241,44 @@ public class OneHeroPlayer extends AIPlayer {
         // try to perform the action
         // if moved = false, then the action is blocked (by another pawn)
         boolean moved = true;
+        if(Config.PRINT_EVERYTHING){
+
+        }
+        System.out.println(getName() + " is performing action: " + bestAction + " with pawn " + currentlyPlannedPawn.getColor());
         switch (bestAction){
             case MOVE_EAST, MOVE_NORTH, MOVE_SOUTH, MOVE_WEST, ESCALATOR -> {
-                if(Config.PRINT_EVERYTHING){
-                    System.out.println(getName() + " is performing action: " + bestAction + " with pawn " + lastMovedPawn.getColor());
-                }
-                moved = getActionDelegator().movePawn(lastMovedPawn.getColor(), bestAction);
+                moved = getActionDelegator().movePawn(currentlyPlannedPawn.getColor(), bestAction);
             }
             case DISCOVER -> {
-                if(Config.PRINT_EVERYTHING){
-                    System.out.println(getName() + " is performing action: " + bestAction + " with pawn " + lastMovedPawn.getColor());
-                }
-                getActionDelegator().discoverRandomCard(lastMovedPawn.getColor());
+                getActionDelegator().discoverRandomCard(currentlyPlannedPawn.getColor());
             }
             case VORTEX -> {
-                if(Config.PRINT_EVERYTHING){
-                    System.out.println(getName() + " is performing action: " + bestAction + " with pawn " + lastMovedPawn.getColor());
-                }
-                moved = getActionDelegator().vortexPawn(lastMovedPawn.getColor(), bestAction.getVortexCoordinate());
+                moved = getActionDelegator().vortexPawn(currentlyPlannedPawn.getColor(), bestAction.getVortexCoordinate());
             }
         }
 
         // if moved = false, I need to add plan for the blocking pawn
         if(!moved){
-            Pawn blockingPawn = getActionDelegator().getBlockingPawn(lastMovedPawn, bestAction, bestAction.getVortexCoordinate());
-            if(blockingPawn == null){
-                // the blocking pawn has since moved, just wait it out and try again
-                return;
+            tryToClearBlockingPawn(bestAction);
+        }
+    }
+
+    private void tryToClearBlockingPawn(Action bestAction){
+        Pawn blockingPawn = getActionDelegator().getBlockingPawn(currentlyPlannedPawn, bestAction, bestAction.getVortexCoordinate());
+        if(blockingPawn == null){
+            // the blocking pawn has since moved, just wait it out and try again
+            return;
+        }
+        else{
+            // schedule a plan for the blocking pawn to move away
+            // just vortex that pawn to the closest vortex
+            // own color's vortex is never blocking
+            if(canPerformAction(Action.VORTEX)){
+                getActionDelegator().vortexToClosest(blockingPawn.getColor());
             }
             else{
-                // schedule a plan for the blocking pawn to move away
-                // just vortex that pawn to the closest vortex
-                // own color's vortex is never blocking
-                if(canPerformAction(Action.VORTEX)){
-                    getActionDelegator().vortexToClosest(blockingPawn.getColor());
-                }
-                else{
-                    // Place a "do something" token in front of person who can do that action
+                // Place a "do something" token in front of person who can do that action
+                if(ticksWaiting >= super.getPatience()){
                     getActionDelegator().placeDoSomething(Action.VORTEX);
                 }
             }
@@ -279,11 +293,36 @@ public class OneHeroPlayer extends AIPlayer {
 
     public int calculatePriority(Coordinate goal){
         Tile goalTile = getBoard().getTileAt(goal);
-        return switch (goalTile.getType()) {
-            case DISCOVERY -> 2;
-            case TIMER -> 1;
-            default -> 0;
+        switch (goalTile.getType()) {
+            case DISCOVERY: {
+                if(getActionDelegator().areAllGoalsDiscovered()){
+                    return 0;
+                }
+                return 2;
+            }
+            case GOAL_ITEM: {
+                if(getActionDelegator().isFirstPhase()){
+                    return 1;
+                }
+                else{
+                    // negative priority = will not be ever followed
+                    return -1;
+                }
+            }
+            case GOAL_EXIT: {
+                if(getActionDelegator().isFirstPhase()){
+                    return -1;
+                }
+                else{
+                    return 1;
+                }
+            }
+            case TIMER: {
+                // following the logarithmic function
+                return getActionDelegator().getTimerPayoff();
+            }
         };
+        return 0;
     }
 
     public void endGame(){
@@ -302,25 +341,36 @@ public class OneHeroPlayer extends AIPlayer {
 
         // look if I can do anything according to my plan
         Action bestAction = actionTree.bestAction();
-        if(canPerformAction(bestAction)){
-            attemptBestAction(bestAction);
+        // while nothing is worth doing, re-build
+        while(bestAction == null){
+            buildActionTree(); // Rebuild the tree if no action is available
+            bestAction = actionTree.bestAction();
+        }
+
+        if(getActionDelegator().isPerformable(bestAction, currentlyPlannedPawn.getColor())){
+            if(canPerformAction(bestAction)){
+                attemptBestAction(bestAction);
+            }
+            else{
+                // someone wants me to do something, but I don't know what to do (not in my plan)
+                // look at all pawns and perform a random action from my action set on a random pawn
+                getActionDelegator().performRandomAvailableActionFromActionSet(super.getActions());
+            }
         }
         else{
-            // someone wants me to do something, but I don't know what to do (not in my plan)
-            // look at all pawns and perform a random action from my action set on a random pawn
-            getActionDelegator().performRandomAvailableActionFromActionSet(super.getActions());
+            // my next best thing is not executable -> can I vortex?
+            if(super.getActions().contains(Action.VORTEX)){
+                tryToClearBlockingPawn(bestAction);
+            }
         }
     }
 
     @Override
     public void doSomethingPlaced(Player player){
-        if(actionTree.isEmpty()){
-            buildActionTree();
-            return;
-        }
-        if(player.getActions().contains(actionTree.bestAction()) || !getActionDelegator().isPerformable(actionTree.bestAction(), lastMovedPawn.getColor())){
-            // someone already notified the player about the same thing i am waiting for - no need to do it twice
-            ticksWaiting = 0;
-        }
+        ticksWaiting = 0;
+//        if(player.getActions().contains(actionTree.bestAction()) || !getActionDelegator().isPerformable(actionTree.bestAction(), currentlyPlannedPawn.getColor())){
+//            // someone already notified the player about the same thing i am waiting for - no need to do it twice
+//            ticksWaiting = 0;
+//        }
     }
 }

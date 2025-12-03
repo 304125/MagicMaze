@@ -52,4 +52,22 @@ public class GeneralGoalManager {
             pgm.removeTimer(timer);
         }
     }
+
+    public boolean areAllItemGoalsDiscovered(){
+        for (PawnGoalManager pawnGoalManager : pawnGoalManagers){
+            if (pawnGoalManager.getItem() == null){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean areAllExitGoalsDiscovered(){
+        for (PawnGoalManager pawnGoalManager : pawnGoalManagers){
+            if (pawnGoalManager.getExit() == null){
+                return false;
+            }
+        }
+        return true;
+    }
 }

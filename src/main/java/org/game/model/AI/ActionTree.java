@@ -65,14 +65,6 @@ public class ActionTree {
         return true;
     }
 
-    public boolean takeBestAction(){
-        Action bestAction = bestAction();
-        if(bestAction == null){
-            return false;
-        }
-        return takeAction(bestAction);
-    }
-
     /** Find the child of root whose subtree has the highest-priority leaf */
     public Action bestAction() {
         Action bestAction = null;
@@ -86,7 +78,11 @@ public class ActionTree {
             }
         }
 
-        return bestAction;
+        if(bestPriority > 0){
+            return bestAction;
+        }
+
+        return null;
     }
 
     /** Recursively find maximum priority (the higher, the better) in subtree */
@@ -99,8 +95,8 @@ public class ActionTree {
     }
 
     /** Print the tree */
-    public void printTree(String playerName) {
-        System.out.println("Action Tree for " + playerName + ":");
+    public void printTree(String playerName, List<Action> actions) {
+        System.out.println("Action Tree for " + playerName + "("+actions+") :");
         printTree(root, "", "");
     }
 
@@ -129,5 +125,9 @@ public class ActionTree {
 
     public boolean isEmpty(){
         return root.edges.isEmpty();
+    }
+
+    public boolean areAnyLeafsPositivePriority(){
+        return maxPriority(root)>0;
     }
 }

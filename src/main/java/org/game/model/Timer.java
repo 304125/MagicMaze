@@ -64,4 +64,8 @@ public class Timer {
     public int getTimeLeftInTimer() {
         return timeLeftInTimer;
     }
+
+    public int getMaxTime(){
+        return maxTime;
+    }
 }

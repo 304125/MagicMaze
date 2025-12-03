@@ -115,9 +115,9 @@ public class PawnManager {
                 if (!currentTile.hasWallUp() && board.getTileAt(pawn.getCoordinate().move(-1, 0)) != null && !board.getTileAt(pawn.getCoordinate().move(-1, 0)).isOccupied()) {
                     pawn.moveNorth();
                     if(Config.PRINT_EVERYTHING){
-                        System.out.println("Moved "+ pawnColor +" north");
-                    }
 
+                    }
+                    System.out.println("Moved "+ pawnColor +" north");
                     moved = true;
                 }
                 break;
@@ -125,8 +125,9 @@ public class PawnManager {
                 if( !currentTile.hasWallDown() && board.getTileAt(pawn.getCoordinate().move(1, 0)) != null && !board.getTileAt(pawn.getCoordinate().move(1, 0)).isOccupied()) {
                     pawn.moveSouth();
                     if(Config.PRINT_EVERYTHING){
-                        System.out.println("Moved "+ pawnColor +" south");
+
                     }
+                    System.out.println("Moved "+ pawnColor +" south");
                     moved = true;
                 }
                 break;
@@ -134,8 +135,9 @@ public class PawnManager {
                 if (!currentTile.hasWallLeft() && board.getTileAt(pawn.getCoordinate().move(0, -1)) != null && !board.getTileAt(pawn.getCoordinate().move(0, -1)).isOccupied()) {
                     pawn.moveWest();
                     if(Config.PRINT_EVERYTHING){
-                        System.out.println("Moved "+ pawnColor +" west");
+
                     }
+                    System.out.println("Moved "+ pawnColor +" west");
                     moved = true;
                 }
                 break;
@@ -143,8 +145,9 @@ public class PawnManager {
                 if( !currentTile.hasWallRight() && board.getTileAt(pawn.getCoordinate().move(0, 1)) != null && !board.getTileAt(pawn.getCoordinate().move(0, 1)).isOccupied()) {
                     pawn.moveEast();
                     if(Config.PRINT_EVERYTHING){
-                        System.out.println("Moved "+ pawnColor +" east");
+
                     }
+                    System.out.println("Moved "+ pawnColor +" east");
                     moved = true;
                 }
                 break;
@@ -152,28 +155,23 @@ public class PawnManager {
 
         //update occupied
         if(moved){
-            try {
-                // set the previous tile to not occupied
-                switch (action) {
-                    case MOVE_NORTH:
-                        board.getTileAt(pawn.getCoordinate().move(1, 0)).setOccupied(false);
-                        break;
-                    case MOVE_SOUTH:
-                        board.getTileAt(pawn.getCoordinate().move(-1, 0)).setOccupied(false);
-                        break;
-                    case MOVE_WEST:
-                        board.getTileAt(pawn.getCoordinate().move(0, 1)).setOccupied(false);
-                        break;
-                    case MOVE_EAST:
-                        board.getTileAt(pawn.getCoordinate().move(0, -1)).setOccupied(false);
-                        break;
-                }
+            // set the previous tile to not occupied
+            switch (action) {
+                case MOVE_NORTH:
+                    board.getTileAt(pawn.getCoordinate().move(1, 0)).setOccupied(false);
+                    break;
+                case MOVE_SOUTH:
+                    board.getTileAt(pawn.getCoordinate().move(-1, 0)).setOccupied(false);
+                    break;
+                case MOVE_WEST:
+                    board.getTileAt(pawn.getCoordinate().move(0, 1)).setOccupied(false);
+                    break;
+                case MOVE_EAST:
+                    board.getTileAt(pawn.getCoordinate().move(0, -1)).setOccupied(false);
+                    break;
             }
-            catch (NullPointerException e){
-                Coordinate problem = pawn.getCoordinate();
 
-                updateLastMovedPawn(pawn, action);
-            }
+            updateLastMovedPawn(pawn, action);
 
             board.getTileAt(pawn.getCoordinate()).setOccupied(true);
         }

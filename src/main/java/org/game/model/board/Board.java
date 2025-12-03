@@ -424,4 +424,8 @@ public class Board {
         return destination;
     }
 
+    public boolean areAllGoalsDiscovered(){
+        return generalGoalManager.areAllItemGoalsDiscovered() && generalGoalManager.areAllExitGoalsDiscovered();
+    }
+
 }

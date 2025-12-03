@@ -204,13 +204,15 @@ public class Game {
         Player chosenPlayer = null;
         for(Player player : players){
             if(player.canPerformAction(action)){
-                player.doSomething();
                 chosenPlayer = player;
             }
         }
         if(chosenPlayer == null){
             // should not get here, somone has to have that action
             return;
+        }
+        else{
+            chosenPlayer.doSomething();
         }
         for(Player player : players){
             player.doSomethingPlaced(chosenPlayer);

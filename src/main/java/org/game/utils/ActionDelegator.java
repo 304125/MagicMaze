@@ -1,6 +1,7 @@
 package org.game.utils;
 
 import org.game.model.*;
+import org.game.model.AI.PayoffCalculator;
 import org.game.model.Action;
 import org.game.model.board.Board;
 import org.game.model.board.PawnManager;
@@ -17,12 +18,14 @@ public class ActionDelegator {
     private final Board board;
     private final BoardUI boardUI;
     private final ActionWriter actionWriter;
+    private PayoffCalculator payoffCalculator;
 
     public ActionDelegator(Game game, BoardUI boardUI, ActionWriter actionWriter) {
         this.game = game;
         board = game.getBoard();
         this.boardUI = boardUI;
         this.actionWriter = actionWriter;
+        this.payoffCalculator = new PayoffCalculator(board.getTimer());
     }
 
     // return false if the action was not performed
@@ -108,7 +111,7 @@ public class ActionDelegator {
         }
         Pawn previousPawn = new Pawn(board.getPawnByColor(pawnColor));
         Pawn updatedPawn = board.useVortex(pawnColor, vortexNumber);
-        if(updatedPawn.equals(previousPawn)){
+        if(updatedPawn.getCoordinate().equals(previousPawn.getCoordinate())){
             System.out.println("No vortex to use for pawn " + pawnColor + " with number " + vortexNumber);
             // attempt to vortex the pawn standing on the destination away
             Coordinate vortexCoordinate = board.getVortexCoordinateById(vortexNumber, pawnColor);
@@ -172,6 +175,7 @@ public class ActionDelegator {
     }
 
     public void performRandomAvailableActionFromActionSet(List<Action> actions){
+        System.out.println("Panic!");
         // randomly ordered list of all colors and actions
         List<Pawn> allPawns = board.getPawns();
         List<Color> allColors = new ArrayList<>();
@@ -210,6 +214,9 @@ public class ActionDelegator {
     }
 
     public boolean isPerformable(Action action, Color pawnColor){
+        if(action == null){
+            return false;
+        }
         Coordinate pawnCoordinate = board.getPawnByColor(pawnColor).getCoordinate();
         Tile currentTile = board.getTileAt(pawnCoordinate);
         switch (action){
@@ -265,5 +272,17 @@ public class ActionDelegator {
 
     public Pawn getRandomPawn(){
         return board.getRandomPawn();
+    }
+
+    public boolean isFirstPhase(){
+        return board.isFirstPhase();
+    }
+
+    public boolean areAllGoalsDiscovered(){
+        return board.areAllGoalsDiscovered();
+    }
+
+    public int getTimerPayoff(){
+        return payoffCalculator.calculateLogarithmicTimePayoff();
     }
 }
