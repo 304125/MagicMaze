@@ -101,6 +101,7 @@ public class Main {
                 game.giveActionDelegatorToAIPlayers(actionDelegator);
 
                 game.setTimerFinishCallback(() -> {
+                    actionWriter.close();
                     game.endGame();
                     System.out.println("Game has ended, you have lost.");
                     runOverviewWriter.writeGameResult(gameParams, false);
@@ -109,6 +110,7 @@ public class Main {
                 });
 
                 game.setGameWonCallback(() -> {
+                    actionWriter.close();
                     game.endGame();
                     System.out.println("Congratulations! You have won the game.");
                     runOverviewWriter.writeGameResult(gameParams, true);

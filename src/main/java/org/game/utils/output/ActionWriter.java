@@ -72,6 +72,9 @@ public class ActionWriter {
         };
         String record = color + actionString;
         gameRecord.addMove(Instant.now(), record);
+    }
+
+    public void close(){
         writeGameRecordToFile();
     }
 
