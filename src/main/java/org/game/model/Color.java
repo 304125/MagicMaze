@@ -25,4 +25,11 @@ public enum Color {
     public String toString() {
         return this.name().toLowerCase();
     }
+
+    public boolean equals(Color color){
+        if(color.getHexCode().equals(this.hexCode)){
+            return  true;
+        }
+        return false;
+    }
 }

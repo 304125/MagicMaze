@@ -119,7 +119,7 @@ public class OneHeroPlayer extends AIPlayer {
             }
         }
 
-        if(movedPawn.getColor() == currentlyPlannedPawn.getColor()) {
+        if(movedPawn.getColor().equals(currentlyPlannedPawn.getColor())) {
             ticksWaiting = 0;
             boolean moved = actionTree.takeAction(action);
             if(Config.PRINT_EVERYTHING){
@@ -335,7 +335,6 @@ public class OneHeroPlayer extends AIPlayer {
     @Override
     public void doSomething() {
         super.decreaseMemoryCapacity();
-
         // forceful re-build of action tree with diminished memory
         buildActionTree();
 
@@ -343,26 +342,47 @@ public class OneHeroPlayer extends AIPlayer {
         Action bestAction = actionTree.bestAction();
         // while nothing is worth doing, re-build
         while(bestAction == null){
-            buildActionTree(); // Rebuild the tree if no action is available
+            buildActionTree(); // Rebuild the tree if no action is available (automatically switches color)
             bestAction = actionTree.bestAction();
         }
 
-        if(getActionDelegator().isPerformable(bestAction, currentlyPlannedPawn.getColor())){
-            if(canPerformAction(bestAction)){
-                attemptBestAction(bestAction);
+        // all colors is ordered in decreasing order of being moved in the past
+        List<Color> allColors = new ArrayList<>(List.of(Color.PURPLE, Color.GREEN, Color.ORANGE, Color.YELLOW));
+        for(Color color : otherPawnMoves){
+            allColors.remove(color);
+            allColors.add(color);
+        }
+
+        // place the last moved in the beginning
+        allColors.remove(currentlyPlannedPawn.getColor());
+        allColors.add(0, currentlyPlannedPawn.getColor());
+
+        int index = 1;
+
+
+        while(index<allColors.size()){
+            if(getActionDelegator().isPerformable(bestAction, currentlyPlannedPawn.getColor())){
+                if(canPerformAction(bestAction)){
+                    attemptBestAction(bestAction);
+                    return;
+                }
+                else{
+                    // someone wants me to do something, but I don't know what to do (not in my plan)
+                    currentlyPlannedPawn = getActionDelegator().getPawnByColor(allColors.get(index));
+                    buildActionTree();
+                    index++;
+                }
             }
             else{
-                // someone wants me to do something, but I don't know what to do (not in my plan)
-                // look at all pawns and perform a random action from my action set on a random pawn
-                getActionDelegator().performRandomAvailableActionFromActionSet(super.getActions());
+                // my next best thing is not executable -> can I vortex?
+                if(super.getActions().contains(Action.VORTEX)){
+                    tryToClearBlockingPawn(bestAction);
+                    return;
+                }
             }
         }
-        else{
-            // my next best thing is not executable -> can I vortex?
-            if(super.getActions().contains(Action.VORTEX)){
-                tryToClearBlockingPawn(bestAction);
-            }
-        }
+
+
     }
 
     @Override
