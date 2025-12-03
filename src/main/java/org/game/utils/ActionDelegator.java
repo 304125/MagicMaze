@@ -226,7 +226,15 @@ public class ActionDelegator {
                 return !isOtherSideOccupied;
             }
             case Action.VORTEX: {
-                return !board.getTileAt(action.getVortexCoordinate()).isOccupied();
+                if(action.getVortexCoordinate() == null){
+                    // vortex to the closest one (triggered by random action)
+                    Coordinate closestVortex = board.getClosestVortex(pawnCoordinate, pawnColor);
+                    return !board.getTileAt(closestVortex).isOccupied();
+                }
+                else{
+                    // vortex to a specific coordinate
+                    return !board.getTileAt(action.getVortexCoordinate()).isOccupied();
+                }
             }
             case Action.MOVE_EAST: {
                 if(board.getTileAt(pawnCoordinate.move(0, 1)) == null) return false;
