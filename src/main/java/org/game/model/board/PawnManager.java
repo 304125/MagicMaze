@@ -28,7 +28,8 @@ public class PawnManager {
             if (vortex.cardId() == vortexNumber) {
                 Coordinate destination = vortex.coordinate();
                 // check if the destination is occupied
-                if(board.getTileAt(destination).isOccupied()){
+                Tile destinationTile = board.getTileAt(destination);
+                if(destinationTile.isOccupied()){
                     System.out.println("Error: Vortex destination is occupied");
                     return pawn;
                 }

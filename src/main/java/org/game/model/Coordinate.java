@@ -14,4 +14,7 @@ public record Coordinate(int x, int y) {
         return "(" + x + ", " + y + ")";
     }
 
+    public boolean equals(Coordinate coordinate){
+        return this.x == coordinate.x && this.y == coordinate.y;
+    }
 }

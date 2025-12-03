@@ -110,7 +110,10 @@ public class ActionDelegator {
         Pawn updatedPawn = board.useVortex(pawnColor, vortexNumber);
         if(updatedPawn.equals(previousPawn)){
             System.out.println("No vortex to use for pawn " + pawnColor + " with number " + vortexNumber);
-            return false;
+            // attempt to vortex the pawn standing on the destination away
+            Coordinate vortexCoordinate = board.getVortexCoordinateById(vortexNumber, pawnColor);
+            Pawn blockingPawn = board.getPawnAt(vortexCoordinate);
+            return vortexToClosest(blockingPawn.getColor());
         }
         if(actionWriter != null) actionWriter.recordVortex(pawnColor, vortexNumber);
 
@@ -153,7 +156,14 @@ public class ActionDelegator {
     public boolean vortexToClosest(Color pawnColor){
         Pawn pawn = board.getPawnByColor(pawnColor);
         Coordinate closestVortex = board.getClosestVortex(pawn.getCoordinate(), pawn.getColor());
-        return vortexPawn(pawn.getColor(), closestVortex);
+
+        boolean worked = vortexPawn(pawn.getColor(), closestVortex);
+
+        if(!worked){
+            Pawn blockingPawn = board.getPawnAt(closestVortex);
+            return vortexToClosest(blockingPawn.getColor());
+        }
+        return true;
     }
 
     public void placeDoSomething(Action action){
@@ -195,5 +205,51 @@ public class ActionDelegator {
             }
         }
         System.out.println("There is nothing this agent can do");
+    }
+
+    public boolean isPerformable(Action action, Color pawnColor){
+        Coordinate pawnCoordinate = board.getPawnByColor(pawnColor).getCoordinate();
+        Tile currentTile = board.getTileAt(pawnCoordinate);
+        switch (action){
+            case Action.DISCOVER: {
+                return (currentTile.getType() == TileType.DISCOVERY && pawnColor == currentTile.getColor());
+            }
+            case Action.ESCALATOR: {
+                boolean isCurrentEscalator = currentTile.hasEscalator();
+                if(!isCurrentEscalator){
+                    return false;
+                }
+                Coordinate otherSide = PawnManager.getOtherSideOfEscalator(pawnCoordinate);
+                boolean isOtherSideOccupied = board.getTileAt(otherSide).isOccupied();
+                return !isOtherSideOccupied;
+            }
+            case Action.VORTEX: {
+                return !board.getTileAt(action.getVortexCoordinate()).isOccupied();
+            }
+            case Action.MOVE_EAST: {
+                return !board.getTileAt(pawnCoordinate.move(0, 1)).isOccupied();
+            }
+
+            case Action.MOVE_NORTH: {
+                return !board.getTileAt(pawnCoordinate.move(-1, 0)).isOccupied();
+            }
+
+            case Action.MOVE_SOUTH: {
+                return !board.getTileAt(pawnCoordinate.move(1, 0)).isOccupied();
+            }
+
+            case Action.MOVE_WEST: {
+                return !board.getTileAt(pawnCoordinate.move(0, -1)).isOccupied();
+            }
+        }
+        return false;
+    }
+
+    public Pawn getPawnByColor(Color color){
+        return board.getPawnByColor(color);
+    }
+
+    public Pawn getRandomPawn(){
+        return board.getRandomPawn();
     }
 }

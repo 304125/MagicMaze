@@ -37,6 +37,7 @@ public class OneHeroPlayer extends AIPlayer {
 
     // builds action tree from scratch
     private void buildActionTree() {
+        ticksWaiting = 0;
         if(!isThreadSleeping){
             try{
                 isThreadSleeping = true;
@@ -84,6 +85,18 @@ public class OneHeroPlayer extends AIPlayer {
             if(Config.PRINT_EVERYTHING){
                 System.out.println("Added path to goal " + goal + " with estimated distance " + distanceMap.get(goal) + " to action tree.");
             }
+        }
+        // there is nothing to do for this color now -> re-do with another color
+        if(actionTree.isEmpty()){
+            // re-plan for the last moved pawn not of current color
+            if(otherPawnMoves.isEmpty()){
+                lastMovedPawn = getActionDelegator().getRandomPawn();
+            }
+            else{
+                Color replanForColor = otherPawnMoves.getLast();
+                lastMovedPawn = getActionDelegator().getPawnByColor(replanForColor);
+            }
+            buildActionTree();
         }
         if(Config.PRINT_EVERYTHING){
             actionTree.printTree(getName());
@@ -180,10 +193,21 @@ public class OneHeroPlayer extends AIPlayer {
                         }
                     }
                     else{
-                        ticksWaiting++;
-                        if(ticksWaiting >= super.getPatience()){
-                            getActionDelegator().placeDoSomething(bestAction);
-                            ticksWaiting = 0;
+                        if(actionTree.isEmpty()){
+                            buildActionTree();
+                        }
+                        else{
+                            ticksWaiting++;
+                            if(ticksWaiting >= super.getPatience()){
+                                if(getActionDelegator().isPerformable(bestAction, lastMovedPawn.getColor())){
+                                    getActionDelegator().placeDoSomething(bestAction);
+                                }
+                                else{
+                                    // if the action is not performable, someone is blocking the pawn -> vortex
+                                    getActionDelegator().placeDoSomething(Action.VORTEX);
+                                }
+                                ticksWaiting = 0;
+                            }
                         }
                     }
 
@@ -285,7 +309,11 @@ public class OneHeroPlayer extends AIPlayer {
 
     @Override
     public void doSomethingPlaced(Player player){
-        if(player.getActions().contains(actionTree.bestAction())){
+        if(actionTree.isEmpty()){
+            buildActionTree();
+            return;
+        }
+        if(player.getActions().contains(actionTree.bestAction()) || !getActionDelegator().isPerformable(actionTree.bestAction(), lastMovedPawn.getColor())){
             // someone already notified the player about the same thing i am waiting for - no need to do it twice
             ticksWaiting = 0;
         }

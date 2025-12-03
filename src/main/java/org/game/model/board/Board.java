@@ -243,7 +243,7 @@ public class Board {
 
     public Pawn getPawnAt(Coordinate coordinate){
         for (Pawn pawn : pawns){
-            if(pawn.getCoordinate() == coordinate){
+            if(pawn.getCoordinate().equals(coordinate)){
                 return pawn;
             }
         }
@@ -409,6 +409,19 @@ public class Board {
             }
         }
         return closestCoordinate;
+    }
+
+    public Coordinate getVortexCoordinateById(int vortexNumber, Color pawnColor){
+        List<BoardVortex> vortexList = getVortexListByColor(pawnColor);
+        Coordinate destination = null;
+
+        // find the vortex with the given cardId
+        for (BoardVortex vortex : vortexList) {
+            if (vortex.cardId() == vortexNumber) {
+                destination = vortex.coordinate();
+            }
+        }
+        return destination;
     }
 
 }
