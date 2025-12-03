@@ -17,6 +17,7 @@ public class OneHeroPlayer extends AIPlayer {
     private boolean isThreadSleeping = false;
     private List<Color> otherPawnMoves = new ArrayList<>();
     private int ticksWaiting = 0;
+    private boolean running = false;
 
     public OneHeroPlayer(List<Action> actions, String name, Board board) {
         super(actions, name, board);
@@ -31,6 +32,7 @@ public class OneHeroPlayer extends AIPlayer {
 
     @Override
     public void startGame(){
+        running = true;
         buildActionTree();
         startActionExecution();
     }
@@ -38,7 +40,7 @@ public class OneHeroPlayer extends AIPlayer {
     // builds action tree from scratch
     private void buildActionTree() {
         ticksWaiting = 0;
-        if(!isThreadSleeping){
+        if(!isThreadSleeping && running){
             try{
                 isThreadSleeping = true;
                 Thread.sleep(1000); // wait a bit to process
@@ -105,7 +107,7 @@ public class OneHeroPlayer extends AIPlayer {
 
     @Override
     public void onPawnMoved(Pawn movedPawn, Action action) {
-        if(!isThreadSleeping){
+        if(!isThreadSleeping && running){
             try{
                 isThreadSleeping = true;
                 Thread.sleep(500); // wait a bit to process
@@ -170,7 +172,7 @@ public class OneHeroPlayer extends AIPlayer {
         actionExecutionThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    if(!isThreadSleeping){
+                    if(!isThreadSleeping && running){
                         isThreadSleeping = true;
                         Thread.sleep(1000); // Wait for 1 second
                         isThreadSleeping = false;
@@ -182,7 +184,7 @@ public class OneHeroPlayer extends AIPlayer {
                         if (actionTree.isEmpty()) {
                             System.out.println("No valid action to take. Rebuilding action tree...");
                             buildActionTree(); // Rebuild the tree if no action is available
-                            if(!isThreadSleeping){
+                            if(!isThreadSleeping && running){
                                 isThreadSleeping = true;
                                 Thread.sleep(3000); // Wait for 3 seconds
                                 isThreadSleeping = false;
@@ -285,7 +287,10 @@ public class OneHeroPlayer extends AIPlayer {
     }
 
     public void endGame(){
-        actionExecutionThread.interrupt();
+        running = false;
+        if(actionExecutionThread != null && actionExecutionThread.isAlive()){
+            actionExecutionThread.interrupt();
+        }
     }
 
     @Override

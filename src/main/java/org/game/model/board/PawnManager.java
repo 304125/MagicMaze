@@ -152,10 +152,6 @@ public class PawnManager {
 
         //update occupied
         if(moved){
-            board.getTileAt(pawn.getCoordinate()).setOccupied(true);
-
-            updateLastMovedPawn(pawn, action);
-
             try {
                 // set the previous tile to not occupied
                 switch (action) {
@@ -175,7 +171,11 @@ public class PawnManager {
             }
             catch (NullPointerException e){
                 Coordinate problem = pawn.getCoordinate();
+
+                updateLastMovedPawn(pawn, action);
             }
+
+            board.getTileAt(pawn.getCoordinate()).setOccupied(true);
         }
 
         // check if the pawn has moved onto a Timer tile

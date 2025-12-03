@@ -227,18 +227,22 @@ public class ActionDelegator {
                 return !board.getTileAt(action.getVortexCoordinate()).isOccupied();
             }
             case Action.MOVE_EAST: {
+                if(board.getTileAt(pawnCoordinate.move(0, 1)) == null) return false;
                 return !board.getTileAt(pawnCoordinate.move(0, 1)).isOccupied();
             }
 
             case Action.MOVE_NORTH: {
+                if(board.getTileAt(pawnCoordinate.move(-1, 0)) == null) return false;
                 return !board.getTileAt(pawnCoordinate.move(-1, 0)).isOccupied();
             }
 
             case Action.MOVE_SOUTH: {
+                if(board.getTileAt(pawnCoordinate.move(1, 0)) == null) return false;
                 return !board.getTileAt(pawnCoordinate.move(1, 0)).isOccupied();
             }
 
             case Action.MOVE_WEST: {
+                if(board.getTileAt(pawnCoordinate.move(0, -1)) == null) return false;
                 return !board.getTileAt(pawnCoordinate.move(0, -1)).isOccupied();
             }
         }
