@@ -126,6 +126,7 @@ public class ActionDelegator {
 
     public boolean vortexPawn(Color color, Coordinate vortexCoordinate){
         int vortexNumber = board.getCardIdOfVortex(vortexCoordinate, color);
+        System.out.println("Vortexing pawn " + color + " to vortex number " + vortexNumber + " at coordinate " + vortexCoordinate);
         return vortexPawn(color, vortexNumber);
     }
 

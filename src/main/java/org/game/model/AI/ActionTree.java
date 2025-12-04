@@ -1,6 +1,7 @@
 package org.game.model.AI;
 
 import org.game.model.Action;
+import org.game.utils.Config;
 
 import java.util.*;
 
@@ -79,6 +80,9 @@ public class ActionTree {
         }
 
         if(bestPriority > 0){
+            if(Config.PRINT_EVERYTHING) {
+                System.out.println("Max priority: " + bestPriority + " by action: " + bestAction);
+            }
             return bestAction;
         }
 

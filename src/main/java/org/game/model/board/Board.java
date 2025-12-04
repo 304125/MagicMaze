@@ -242,6 +242,7 @@ public class Board {
     }
 
     public Pawn getPawnAt(Coordinate coordinate){
+        if(coordinate == null){ return null; }
         for (Pawn pawn : pawns){
             if(pawn.getCoordinate().equals(coordinate)){
                 return pawn;
@@ -318,8 +319,9 @@ public class Board {
                 return vortex.cardId();
             }
         }
-        return -1; // not found
 
+        System.out.println("Error: Vortex not found at coordinate " + coordinate + " for color " + color);
+        return -1; // not found
     }
 
     public Pawn useVortex(Color pawnColor, int vortexNumber){

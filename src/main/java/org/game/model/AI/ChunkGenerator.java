@@ -21,4 +21,8 @@ public class ChunkGenerator {
         int nodes = searchPath.length();
         return nodes / 5; // assuming each chunk has 5 nodes
     }
+
+    public static int estimateChunks(int totalActions){
+        return totalActions / 5; // assuming each chunk has 5 actions
+    }
 }

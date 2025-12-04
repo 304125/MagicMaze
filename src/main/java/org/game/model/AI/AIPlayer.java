@@ -21,8 +21,10 @@ public abstract class AIPlayer extends Player  implements StateChangeListener, A
         currentMemoryCapacity = ChunkGenerator.generateChunkSize();
         Random random = new Random();
         // 0, 1, 2, 3
-        blindness = random.nextInt(1);
-        patience = random.nextInt(5,10);
+//        blindness = random.nextInt(1);
+        blindness = 0;
+//        patience = random.nextInt(5,10);
+        patience = 5;
     }
 
     public Board getBoard() {

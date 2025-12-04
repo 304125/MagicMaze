@@ -19,7 +19,7 @@ public class Game {
     private StackOfCards unplayedCards;
     private final JsonReader jsonReader = new JsonReader();
     private Card startingCard;
-    private final int boardMaxSize = 70;
+    private final int boardMaxSize = 35;
     private List<Player> players;
     private final List<StateChangeListener> listeners = new ArrayList<>();
 
@@ -215,7 +215,9 @@ public class Game {
             chosenPlayer.doSomething();
         }
         for(Player player : players){
-            player.doSomethingPlaced(chosenPlayer);
+            if(player != chosenPlayer){
+                player.doSomethingPlaced(chosenPlayer);
+            }
         }
     }
 }

@@ -182,7 +182,7 @@ public class BoardUI extends JFrame {
             System.out.println("Highlighting pawn at: " + pawn.getCoordinate());
         }
         JLabel pawnIcon = new JLabel();
-        pawnIcon.setPreferredSize(new Dimension(TILE_SIZE / 2, TILE_SIZE / 2));
+        pawnIcon.setPreferredSize(new Dimension((2*TILE_SIZE) / 3, 2*(TILE_SIZE) / 3));
         pawnIcon.setOpaque(true);
         Color pawnColor = pawn.getColor();
         pawnIcon.setBackground(java.awt.Color.decode(pawnColor.getHexCode())); // Pawn color

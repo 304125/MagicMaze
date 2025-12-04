@@ -1,36 +1,8 @@
 {
   "mode": "new",
-  "gameName": "testing",
+  "gameName": "test",
   "replayRun": 1,
   "games": [
-    {
-      "numberOfPlayers": 4,
-      "aiPlayers": ["ONE_HERO", "ONE_HERO", "ONE_HERO", "ONE_HERO"]
-    },
-    {
-      "numberOfPlayers": 4,
-      "aiPlayers": ["ONE_HERO", "ONE_HERO", "ONE_HERO", "ONE_HERO"]
-    },
-    {
-      "numberOfPlayers": 4,
-      "aiPlayers": ["ONE_HERO", "ONE_HERO", "ONE_HERO", "ONE_HERO"]
-    },
-    {
-      "numberOfPlayers": 4,
-      "aiPlayers": ["ONE_HERO", "ONE_HERO", "ONE_HERO", "ONE_HERO"]
-    },
-    {
-      "numberOfPlayers": 4,
-      "aiPlayers": ["ONE_HERO", "ONE_HERO", "ONE_HERO", "ONE_HERO"]
-    },
-    {
-      "numberOfPlayers": 4,
-      "aiPlayers": ["ONE_HERO", "ONE_HERO", "ONE_HERO", "ONE_HERO"]
-    },
-    {
-      "numberOfPlayers": 4,
-      "aiPlayers": ["ONE_HERO", "ONE_HERO", "ONE_HERO", "ONE_HERO"]
-    },
     {
       "numberOfPlayers": 4,
       "aiPlayers": ["ONE_HERO", "ONE_HERO", "ONE_HERO", "ONE_HERO"]

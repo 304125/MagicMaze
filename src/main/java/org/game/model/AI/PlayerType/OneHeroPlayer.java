@@ -18,6 +18,9 @@ public class OneHeroPlayer extends AIPlayer {
     private List<Color> otherPawnMoves = new ArrayList<>();
     private int ticksWaiting = 0;
     private boolean running = false;
+    private boolean thinking = false;
+    private boolean buildingTree = false;
+    private boolean iWasLastToMove = false;
 
     public OneHeroPlayer(List<Action> actions, String name, Board board) {
         super(actions, name, board);
@@ -39,6 +42,7 @@ public class OneHeroPlayer extends AIPlayer {
 
     // builds action tree from scratch
     private void buildActionTree() {
+        buildingTree = true;
         ticksWaiting = 0;
         if(!isThreadSleeping && running){
             try{
@@ -50,7 +54,10 @@ public class OneHeroPlayer extends AIPlayer {
             }
         }
 
-        otherPawnMoves.removeIf(color -> color.equals(currentlyPlannedPawn.getColor()));
+        if(otherPawnMoves.contains(currentlyPlannedPawn.getColor())){
+            otherPawnMoves.removeIf(color -> color.equals(currentlyPlannedPawn.getColor()));
+        }
+
         actionTree = new ActionTree();
         int currentChunkSize = 0;
         List<Coordinate> goalCoordinates = generalGoalManager.getPawnGoalManager(currentlyPlannedPawn.getColor()).getAllGoals();
@@ -101,21 +108,28 @@ public class OneHeroPlayer extends AIPlayer {
             buildActionTree();
         }
         if(Config.PRINT_EVERYTHING){
-
         }
         System.out.println("Planned for pawn of color: "+currentlyPlannedPawn.getColor());
         actionTree.printTree(getName(), super.getActions());
+        buildingTree = false;
     }
 
     @Override
     public void onPawnMoved(Pawn movedPawn, Action action) {
+        if(canPerformAction(action)){
+            iWasLastToMove = true;
+        }
+        else{
+            iWasLastToMove = false;
+        }
+
         if(!isThreadSleeping && running){
             try{
                 isThreadSleeping = true;
                 Thread.sleep(500); // wait a bit to process
                 isThreadSleeping = false;
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                System.out.println("Wakey wakey!");
             }
         }
 
@@ -147,6 +161,13 @@ public class OneHeroPlayer extends AIPlayer {
 
     @Override
     public void onDiscovered(Pawn pawn){
+        if(canPerformAction(Action.DISCOVER)){
+            iWasLastToMove = true;
+        }
+        else{
+            iWasLastToMove = false;
+        }
+
         if(pawn.getColor() == currentlyPlannedPawn.getColor()) {
             boolean moved = actionTree.takeAction(Action.DISCOVER);
             if(actionTree.isEmpty()){
@@ -174,16 +195,23 @@ public class OneHeroPlayer extends AIPlayer {
         actionExecutionThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    if(!isThreadSleeping && running){
-                        isThreadSleeping = true;
-                        Thread.sleep(1000); // Wait for 1 second
-                        isThreadSleeping = false;
+                    // only wait if someone else was moving
+                    // if i was moving last, continue moving (go 3 left in once ex.)
+                    if(!iWasLastToMove){
+                        if(!isThreadSleeping && running){
+                            isThreadSleeping = true;
+                            Thread.sleep(1000); // Wait for 1 second
+                            isThreadSleeping = false;
+                        }
                     }
 
+                    if(buildingTree){
+                        continue; // skip this iteration if the tree is being built
+                    }
                     Action bestAction = actionTree.bestAction();
                     while(bestAction == null){
                         // nothing is worth doing
-                        System.out.println("No action is worth taking. Rebuilding action tree...");
+                        System.out.println("No action is worth taking ("+currentlyPlannedPawn.getColor()+"). Rebuilding action tree...");
                         buildActionTree(); // Rebuild the tree if no action is available
                         if(!isThreadSleeping && running){
                             isThreadSleeping = true;
@@ -214,6 +242,7 @@ public class OneHeroPlayer extends AIPlayer {
                         else{
                             ticksWaiting++;
                             if(ticksWaiting >= super.getPatience()){
+                                ticksWaiting = 0;
                                 if(getActionDelegator().isPerformable(bestAction, currentlyPlannedPawn.getColor())){
                                     getActionDelegator().placeDoSomething(bestAction);
                                 }
@@ -221,7 +250,6 @@ public class OneHeroPlayer extends AIPlayer {
                                     // if the action is not performable, someone is blocking the pawn -> vortex
                                     getActionDelegator().placeDoSomething(Action.VORTEX);
                                 }
-                                ticksWaiting = 0;
                             }
                         }
                     }
@@ -244,7 +272,7 @@ public class OneHeroPlayer extends AIPlayer {
         if(Config.PRINT_EVERYTHING){
 
         }
-        System.out.println(getName() + " is performing action: " + bestAction + " with pawn " + currentlyPlannedPawn.getColor());
+        System.out.println(getName() + " is attempting to perform action: " + bestAction + " with pawn " + currentlyPlannedPawn.getColor());
         switch (bestAction){
             case MOVE_EAST, MOVE_NORTH, MOVE_SOUTH, MOVE_WEST, ESCALATOR -> {
                 moved = getActionDelegator().movePawn(currentlyPlannedPawn.getColor(), bestAction);
@@ -266,10 +294,14 @@ public class OneHeroPlayer extends AIPlayer {
     private void tryToClearBlockingPawn(Action bestAction){
         Pawn blockingPawn = getActionDelegator().getBlockingPawn(currentlyPlannedPawn, bestAction, bestAction.getVortexCoordinate());
         if(blockingPawn == null){
-            // the blocking pawn has since moved, just wait it out and try again
+            System.out.println("Hmmmm something weird happened");
+            // the blocking pawn has since moved or it is not blocking what i think it is, just wait it out and try again
+            buildActionTree();
             return;
         }
         else{
+            System.out.println("I "+ super.getName()+" can see that pawn "+blockingPawn.getColor()+" is blocking best action "+bestAction+" for pawn "+currentlyPlannedPawn.getColor());
+            System.out.println("Can I vortex? "+canPerformAction(Action.VORTEX));
             // schedule a plan for the blocking pawn to move away
             // just vortex that pawn to the closest vortex
             // own color's vortex is never blocking
@@ -280,7 +312,9 @@ public class OneHeroPlayer extends AIPlayer {
                 // Place a "do something" token in front of person who can do that action
                 if(ticksWaiting >= super.getPatience()){
                     getActionDelegator().placeDoSomething(Action.VORTEX);
+                    ticksWaiting = 0;
                 }
+                ticksWaiting++;
             }
         }
     }
@@ -292,16 +326,21 @@ public class OneHeroPlayer extends AIPlayer {
     }
 
     public int calculatePriority(Coordinate goal){
+        Coordinate pawnCoordinate = currentlyPlannedPawn.getCoordinate();
         Tile goalTile = getBoard().getTileAt(goal);
         switch (goalTile.getType()) {
             case DISCOVERY: {
                 if(getActionDelegator().areAllGoalsDiscovered()){
                     return 0;
                 }
-                return 2;
+                // higher priority for closer discovery goals, give one penalty for each chunk (5 nodes)
+                int distance = pathFinder.findDistance(pawnCoordinate, goal);
+                int chunkPenalty = ChunkGenerator.estimateChunks(distance);
+
+                return 5-chunkPenalty;
             }
             case GOAL_ITEM: {
-                if(getActionDelegator().isFirstPhase()){
+                if(getActionDelegator().isFirstPhase() && !pawnCoordinate.equals(goal)){
                     return 1;
                 }
                 else{
@@ -310,7 +349,7 @@ public class OneHeroPlayer extends AIPlayer {
                 }
             }
             case GOAL_EXIT: {
-                if(getActionDelegator().isFirstPhase()){
+                if(getActionDelegator().isFirstPhase() && !pawnCoordinate.equals(goal)){
                     return -1;
                 }
                 else{
@@ -334,6 +373,11 @@ public class OneHeroPlayer extends AIPlayer {
 
     @Override
     public void doSomething() {
+        ticksWaiting = 0;
+        if(thinking){
+            return;
+        }
+        thinking = true;
         super.decreaseMemoryCapacity();
         // forceful re-build of action tree with diminished memory
         buildActionTree();
@@ -364,6 +408,7 @@ public class OneHeroPlayer extends AIPlayer {
             if(getActionDelegator().isPerformable(bestAction, currentlyPlannedPawn.getColor())){
                 if(canPerformAction(bestAction)){
                     attemptBestAction(bestAction);
+                    thinking = false;
                     return;
                 }
                 else{
@@ -377,16 +422,16 @@ public class OneHeroPlayer extends AIPlayer {
                 // my next best thing is not executable -> can I vortex?
                 if(super.getActions().contains(Action.VORTEX)){
                     tryToClearBlockingPawn(bestAction);
+                    thinking = false;
                     return;
                 }
             }
         }
-
-
     }
 
     @Override
     public void doSomethingPlaced(Player player){
+        thinking = false;
         ticksWaiting = 0;
 //        if(player.getActions().contains(actionTree.bestAction()) || !getActionDelegator().isPerformable(actionTree.bestAction(), currentlyPlannedPawn.getColor())){
 //            // someone already notified the player about the same thing i am waiting for - no need to do it twice
