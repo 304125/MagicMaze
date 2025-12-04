@@ -26,11 +26,11 @@ public class ActionTree {
     /** Represents a node in the tree */
     private static class Node {
         Map<Action, ActionEdge> edges = new HashMap<>();
-        Integer priority = null; // only for leaves
+        Double priority = null; // only for leaves
     }
 
     /** Add a route of actions top-to-bottom */
-    public void addRoute(List<Action> actions, int priority) {
+    public void addRoute(List<Action> actions, double priority) {
         Node current = root;
         for (Action action : actions) {
             ActionEdge edge = current.edges.get(action);
@@ -69,10 +69,10 @@ public class ActionTree {
     /** Find the child of root whose subtree has the highest-priority leaf */
     public Action bestAction() {
         Action bestAction = null;
-        int bestPriority = Integer.MIN_VALUE;
+        Double bestPriority = -1.0;
 
         for (Map.Entry<Action, ActionEdge> entry : root.edges.entrySet()) {
-            int subtreeMax = maxPriority(entry.getValue().childNode);
+            Double subtreeMax = maxPriority(entry.getValue().childNode);
             if (subtreeMax > bestPriority) {
                 bestPriority = subtreeMax;
                 bestAction = entry.getKey();
@@ -90,8 +90,8 @@ public class ActionTree {
     }
 
     /** Recursively find maximum priority (the higher, the better) in subtree */
-    private int maxPriority(Node node) {
-        int max = (node.priority != null) ? node.priority : Integer.MIN_VALUE;
+    private Double maxPriority(Node node) {
+        Double max = (node.priority != null) ? node.priority : -Double.MAX_VALUE;
         for (ActionEdge edge : node.edges.values()) {
             max = Math.max(max, maxPriority(edge.childNode));
         }

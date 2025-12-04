@@ -6,6 +6,7 @@ public class StackOfCards {
     List<Card> unplayedCards;
 
     public StackOfCards(List<Card> unplayedCards) {
+        System.out.println("StackOfCards initialized with " + unplayedCards.size() + " cards.");
         this.unplayedCards = unplayedCards;
     }
 
@@ -14,6 +15,7 @@ public class StackOfCards {
     }
 
     public Card drawCard() {
+        System.out.println("Drawing a card. Cards left before draw: " + unplayedCards.size());
         if (isEmpty()) {
             throw new IllegalStateException("No more cards to draw");
         }

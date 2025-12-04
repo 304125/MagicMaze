@@ -48,7 +48,7 @@ public class ActionDelegator {
         }
         else if(action == Action.ESCALATOR){
             updatedPawn = board.useEscalator(pawnColor);
-            if(updatedPawn.equals(previousPawn)){
+            if(updatedPawn.getCoordinate().equals(previousPawn.getCoordinate())){
                 System.out.println("No escalator to use for pawn " + pawnColor);
                 return false;
             }
@@ -61,6 +61,8 @@ public class ActionDelegator {
             return false;
         }
         handlePawnsUI(previousPawn, updatedPawn);
+
+        board.updateLastMovedPawn(updatedPawn, action);
 
         // check for goal conditions
         board.checkGoalConditions();
@@ -114,13 +116,23 @@ public class ActionDelegator {
         if(updatedPawn.getCoordinate().equals(previousPawn.getCoordinate())){
             System.out.println("No vortex to use for pawn " + pawnColor + " with number " + vortexNumber);
             // attempt to vortex the pawn standing on the destination away
-            Coordinate vortexCoordinate = board.getVortexCoordinateById(vortexNumber, pawnColor);
-            Pawn blockingPawn = board.getPawnAt(vortexCoordinate);
-            return vortexToClosest(blockingPawn.getColor());
+            // only if it is a different color
+            if(board.getPawnByColor(pawnColor).getCoordinate().equals(board.getVortexCoordinateById(vortexNumber, pawnColor))){
+                System.out.println("Vortex destination is occupied by the same color pawn. Cannot vortex.");
+                return false;
+            }
+            else{
+                Coordinate vortexCoordinate = board.getVortexCoordinateById(vortexNumber, pawnColor);
+                Pawn blockingPawn = board.getPawnAt(vortexCoordinate);
+                return vortexToClosest(blockingPawn.getColor());
+            }
         }
         if(actionWriter != null) actionWriter.recordVortex(pawnColor, vortexNumber);
 
         handlePawnsUI(previousPawn, updatedPawn);
+
+        board.updateLastMovedPawn(updatedPawn, Action.VORTEX);
+
         return true;
     }
 
@@ -158,6 +170,7 @@ public class ActionDelegator {
     }
 
     public boolean vortexToClosest(Color pawnColor){
+        System.out.println("Vortexing pawn " + pawnColor + " to closest vortex");
         Pawn pawn = board.getPawnByColor(pawnColor);
         Coordinate closestVortex = board.getClosestVortex(pawn.getCoordinate(), pawn.getColor());
 

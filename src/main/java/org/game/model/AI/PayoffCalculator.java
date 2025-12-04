@@ -1,6 +1,7 @@
 package org.game.model.AI;
 
 import org.game.model.Timer;
+import org.game.utils.Config;
 
 public class PayoffCalculator {
     private final int maxTime;
@@ -34,7 +35,9 @@ public class PayoffCalculator {
             }
         }
 
-        System.out.println("Current time payoff: "+payoff);
+        if(Config.PRINT_EVERYTHING){
+            System.out.println("Current time payoff: "+payoff);
+        }
 
         return payoff;
     }

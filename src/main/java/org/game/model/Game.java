@@ -200,7 +200,6 @@ public class Game {
     }
 
     public void placeDoSomething(Action action){
-        System.out.println("Placing do something on "+action.toString());
         Player chosenPlayer = null;
         for(Player player : players){
             if(player.canPerformAction(action)){

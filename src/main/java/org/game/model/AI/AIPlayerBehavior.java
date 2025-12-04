@@ -6,5 +6,5 @@ public interface AIPlayerBehavior {
     void startGame();
     void endGame();
     void startActionExecution();
-    int calculatePriority(Coordinate goal);
+    Double calculatePriority(Coordinate goal);
 }

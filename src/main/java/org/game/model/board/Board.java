@@ -336,6 +336,10 @@ public class Board {
         return pawnManager.movePawn(pawnColor, action);
     }
 
+    public void updateLastMovedPawn(Pawn pawn, Action action){
+        pawnManager.updateLastMovedPawn(pawn, action);
+    }
+
     public void checkGoalConditions(){
         if(isFirstPhase){
             if(isAllGoalItemReached()){
@@ -427,6 +431,10 @@ public class Board {
     }
 
     public boolean areAllGoalsDiscovered(){
+        if(Config.PRINT_EVERYTHING){
+            System.out.println("Checking if all goals are discovered...");
+        }
+
         return generalGoalManager.areAllItemGoalsDiscovered() && generalGoalManager.areAllExitGoalsDiscovered();
     }
 

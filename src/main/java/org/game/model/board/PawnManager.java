@@ -42,8 +42,6 @@ public class PawnManager {
                 pawn.moveTo(destination);
                 board.getTileAt(pawn.getCoordinate()).setOccupied(true);
 
-                updateLastMovedPawn(pawn, Action.VORTEX);
-
                 return pawn;
             }
         }
@@ -71,8 +69,6 @@ public class PawnManager {
             board.getTileAt(pawn.getCoordinate()).setOccupied(false);
             pawn.moveTo(destination);
             board.getTileAt(pawn.getCoordinate()).setOccupied(true);
-
-            updateLastMovedPawn(pawn, Action.ESCALATOR);
         }
         return pawn;
     }
@@ -171,8 +167,6 @@ public class PawnManager {
                     break;
             }
 
-            updateLastMovedPawn(pawn, action);
-
             board.getTileAt(pawn.getCoordinate()).setOccupied(true);
         }
 
@@ -191,7 +185,7 @@ public class PawnManager {
         return pawn;
     }
 
-    private void updateLastMovedPawn(Pawn pawn, Action action){
+    public void updateLastMovedPawn(Pawn pawn, Action action){
         // Notify all listeners about the pawn move
         for (StateChangeListener listener : listeners) {
             listener.onPawnMoved(pawn, action);
