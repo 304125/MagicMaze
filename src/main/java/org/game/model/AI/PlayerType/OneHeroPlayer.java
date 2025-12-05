@@ -75,8 +75,9 @@ public class OneHeroPlayer extends AIPlayer {
         int currentChunkSize = 0;
         List<Coordinate> goalCoordinates = generalGoalManager.getPawnGoalManager(currentlyPlannedPawn.getColor()).getAllGoals();
         if(Config.PRINT_EVERYTHING){
-            System.out.println("Building action tree for pawn " + currentlyPlannedPawn.getColor() + " towards goals: " + goalCoordinates);
+
         }
+        System.out.println("Building action tree for pawn " + currentlyPlannedPawn.getColor() + " towards goals: " + goalCoordinates);
 
         // consider all possible goals of that color of hero in ascending order of distance
 
@@ -165,6 +166,7 @@ public class OneHeroPlayer extends AIPlayer {
                 buildActionTree();
             }
             if (!moved) {
+                System.out.println("Action "+action+" taken by pawn "+movedPawn.getColor()+" was not in my ("+ super.getName()+") plan. Rebuilding action tree...");
                 // re-build tree, the pawn was moved in an unexpected way
                 buildActionTree();
             }
@@ -301,8 +303,9 @@ public class OneHeroPlayer extends AIPlayer {
         // if moved = false, then the action is blocked (by another pawn)
         boolean moved = true;
         if(Config.PRINT_EVERYTHING){
-            System.out.println(getName() + " is attempting to perform action: " + bestAction + " with pawn " + currentlyPlannedPawn.getColor());
+
         }
+        System.out.println(getName() + " is attempting to perform action: " + bestAction + " with pawn " + currentlyPlannedPawn.getColor());
 
         switch (bestAction){
             case MOVE_EAST, MOVE_NORTH, MOVE_SOUTH, MOVE_WEST, ESCALATOR -> {
@@ -378,15 +381,17 @@ public class OneHeroPlayer extends AIPlayer {
             case DISCOVERY: {
                 if(getActionDelegator().areAllGoalsDiscovered()){
                     if(Config.PRINT_EVERYTHING){
-                        System.out.println("All discovery goals have been discovered. No priority for discovery goals.");
+
                     }
+                    System.out.println("All discovery goals have been discovered. No priority for discovery goals.");
                     return (double) 0;
                 }
                 // higher priority for closer discovery goals, give one penalty for each chunk (5 nodes)
                 int distance = pathFinder.findDistance(pawnCoordinate, goal);
                 double chunkPenalty = ChunkGenerator.estimateChunks(distance);
 
-                return 3-chunkPenalty;
+
+                return 5-chunkPenalty;
             }
             case GOAL_ITEM: {
                 if(getActionDelegator().isFirstPhase() && !pawnCoordinate.equals(goal)){
@@ -435,9 +440,7 @@ public class OneHeroPlayer extends AIPlayer {
         thinking = true;
         System.out.println("I am going to do something");
 
-        super.decreaseMemoryCapacity();
-        // forceful re-build of action tree with diminished memory
-        buildActionTree();
+
 
         // look if I can do anything according to my plan
         Action bestAction = actionTree.bestAction();
@@ -451,14 +454,16 @@ public class OneHeroPlayer extends AIPlayer {
         List<Color> allColors = new ArrayList<>(List.of(Color.PURPLE, Color.GREEN, Color.ORANGE, Color.YELLOW));
         for(Color color : otherPawnMoves){
             allColors.remove(color);
-            allColors.add(color);
+            allColors.addFirst(color);
         }
 
         // place the last moved in the beginning
         allColors.remove(currentlyPlannedPawn.getColor());
-        allColors.add(0, currentlyPlannedPawn.getColor());
+        allColors.addFirst(currentlyPlannedPawn.getColor());
 
         int index = 0;
+
+        super.decreaseMemoryCapacity();
 
 
         while(index<allColors.size()){
@@ -476,6 +481,7 @@ public class OneHeroPlayer extends AIPlayer {
                 else{
                     // someone wants me to do something, but I don't know what to do (not in my plan)
                     currentlyPlannedPawn = getActionDelegator().getPawnByColor(allColors.get(index));
+                    System.out.println("Now going to consider pawn of color "+currentlyPlannedPawn.getColor());
                     buildActionTree();
                     index++;
                 }
@@ -489,6 +495,8 @@ public class OneHeroPlayer extends AIPlayer {
                     return;
                 }
                 else{
+                    currentlyPlannedPawn = getActionDelegator().getPawnByColor(allColors.get(index));
+                    buildActionTree();
                     index++;
                 }
             }

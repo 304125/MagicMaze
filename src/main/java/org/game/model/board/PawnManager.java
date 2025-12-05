@@ -34,8 +34,9 @@ public class PawnManager {
                     return pawn;
                 }
                 if(Config.PRINT_EVERYTHING){
-                    System.out.println("Pawn " + pawnColor + " used vortex " + vortexNumber + " to (" + destination.x() + "," + destination.y() + ")");
+
                 }
+                System.out.println("Pawn " + pawnColor + " used vortex " + vortexNumber + " to (" + destination.x() + "," + destination.y() + ")");
 
                 // set previous tile not occupied, move pawn to destination, set new tile to occupied
                 board.getTileAt(pawn.getCoordinate()).setOccupied(false);

@@ -26,6 +26,8 @@ public class PayoffCalculator {
         // Intervals are logarithmic - every next interval is half the size of the previous one
         while (threshold >= 1.0) {
             if (timeLeftInTimer <= threshold) {
+                // +2 payoff for each interval passed
+                payoff++;
                 payoff++;
                 // Halve the threshold to check the next smaller interval.
                 threshold /= 2.0;

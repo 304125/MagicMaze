@@ -14,6 +14,7 @@ public abstract class AIPlayer extends Player  implements StateChangeListener, A
     private int currentMemoryCapacity;
     private int blindness;
     private int patience;
+    private boolean shouldDecreaseMemoryCapacity = false;
 
     public AIPlayer(List<Action> actions, String name, Board board) {
         super(actions, name);
@@ -44,7 +45,9 @@ public abstract class AIPlayer extends Player  implements StateChangeListener, A
     }
 
     public void decreaseMemoryCapacity(){
-        currentMemoryCapacity--;
+        if(shouldDecreaseMemoryCapacity){
+            currentMemoryCapacity--;
+        }
     }
 
     public int getBlindness(){

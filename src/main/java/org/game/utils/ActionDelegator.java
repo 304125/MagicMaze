@@ -178,7 +178,11 @@ public class ActionDelegator {
 
         if(!worked){
             Pawn blockingPawn = board.getPawnAt(closestVortex);
-            return vortexToClosest(blockingPawn.getColor());
+            if(blockingPawn.getColor() != pawnColor){
+                // try to vortex the blocking pawn away if it is a different color
+                // otherwise if it is the same color, it would loop forever (move itself to where it already is standing)
+                return vortexToClosest(blockingPawn.getColor());
+            }
         }
         return true;
     }
