@@ -142,7 +142,14 @@ public class Main {
             replayManager.startReplay();
 
             replayManager.setOnGameFinishedCallback(() -> {
+
+                SwingUtilities.invokeLater(boardUI::dispose); // Close the window
+                latch.countDown();
+            });
+
+            game.setGameWonCallback(() -> {
                 System.out.println("Replay has ended.");
+                System.out.println("Congratulations! You have won the game.");
                 SwingUtilities.invokeLater(boardUI::dispose); // Close the window
                 latch.countDown();
             });
