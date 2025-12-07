@@ -191,13 +191,14 @@ public class ActionDelegator {
     }
 
     public void placeDoSomething(Action action){
-        actionWriter.recordDoSomething(action);
+        List<Action> allActions = game.getAllActionsForPlayer(action);
+        actionWriter.recordDoSomething(allActions);
         game.placeDoSomething(action);
-        placeDoSomethingUI(action.toString());
+        placeDoSomethingUI(allActions);
     }
 
-    public void placeDoSomethingUI(String action){
-        actionUIUpdater.updateUI(action);
+    public void placeDoSomethingUI(List<Action> actions){
+        actionUIUpdater.updateUI(actions);
     }
 
     public void performRandomAvailableActionFromActionSet(List<Action> actions){

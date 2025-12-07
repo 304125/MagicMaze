@@ -1,7 +1,7 @@
 {
-  "mode": "replay",
-  "gameName": "human_gameplay",
-  "replayRun": 2,
+  "mode": "new",
+  "gameName": "test",
+  "replayRun": 1,
   "games": [
     {
       "numberOfPlayers": 4,

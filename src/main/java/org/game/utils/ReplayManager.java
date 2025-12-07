@@ -6,6 +6,7 @@ import org.game.model.Coordinate;
 import org.game.utils.output.GameRecord;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 public class ReplayManager {
@@ -42,7 +43,8 @@ public class ReplayManager {
             while(running && (next != null || doSomethingNext != null)){
                 if(doSomethingNext != null && (next == null || doSomethingFirst.getKey().isBefore(first.getKey()))){
                     // Time to render a "do something" action
-                    actionDelegator.placeDoSomethingUI(doSomethingFirst.getValue());
+                    List<Action> actionList = inputStringRenderer.renderActions(doSomethingFirst.getValue());
+                    actionDelegator.placeDoSomethingUI(actionList);
                     long doSomethingDelay = doSomethingNext.getKey().toEpochMilli() - doSomethingFirst.getKey().toEpochMilli();
                     assert next != null;
                     long actionDelay = first.getKey().toEpochMilli() - doSomethingFirst.getKey().toEpochMilli();

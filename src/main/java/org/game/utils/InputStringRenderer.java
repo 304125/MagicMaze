@@ -3,6 +3,8 @@ package org.game.utils;
 import org.game.model.Action;
 import org.game.model.Color;
 
+import java.util.List;
+
 public class InputStringRenderer {
     private final ActionDelegator actionDelegator;
 
@@ -74,5 +76,28 @@ public class InputStringRenderer {
         else {
             System.out.println("Invalid input. Please provide both color and direction in correct format.");
         }
+    }
+
+    public List<Action> renderActions(String actionsList){
+        // render the String including the List<Action> casted to String back to List<Action>
+        actionsList = actionsList.replaceAll("[\\[\\]\\s]", ""); // remove brackets and spaces
+        String[] actionStrings = actionsList.split(",");
+        List<Action> actions = new java.util.ArrayList<>();
+        for (String actionString : actionStrings) {
+            Action action = switch (actionString) {
+                case "MOVE_NORTH" -> Action.MOVE_NORTH;
+                case "MOVE_SOUTH" -> Action.MOVE_SOUTH;
+                case "MOVE_WEST" -> Action.MOVE_WEST;
+                case "MOVE_EAST" -> Action.MOVE_EAST;
+                case "DISCOVER" -> Action.DISCOVER;
+                case "VORTEX" -> Action.VORTEX;
+                case "ESCALATOR" -> Action.ESCALATOR;
+                default -> null;
+            };
+            if (action != null) {
+                actions.add(action);
+            }
+        }
+        return actions;
     }
 }

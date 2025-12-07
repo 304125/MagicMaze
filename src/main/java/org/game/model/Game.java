@@ -219,4 +219,20 @@ public class Game {
             }
         }
     }
+
+    public List<Action> getAllActionsForPlayer(Action action){
+        Player chosenPlayer = null;
+        for(Player player : players){
+            if(player.canPerformAction(action)){
+                chosenPlayer = player;
+            }
+        }
+        if(chosenPlayer == null){
+            // should not get here, somone has to have that action
+            return new ArrayList<>();
+        }
+        else{
+            return chosenPlayer.getActions();
+        }
+    }
 }

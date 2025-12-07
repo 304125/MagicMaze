@@ -92,8 +92,8 @@ public class ActionWriter {
         writeGameRecordToFile();
     }
 
-    public void recordDoSomething(Action action){
-        String actionString = action.toString();
+    public void recordDoSomething(List<Action> actions){
+        String actionString = actions.toString();
         gameRecord.addDoSomething(Instant.now(), actionString);
         writeGameRecordToFile();
     }
