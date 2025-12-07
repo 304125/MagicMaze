@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 public class BoardUI extends JFrame {
-    private static final int TILE_SIZE = 30;
+    private static final int TILE_SIZE = 28;
     private final JPanel[][] tilePanels;
     private LinePanel linePanel;
     private final Board board;

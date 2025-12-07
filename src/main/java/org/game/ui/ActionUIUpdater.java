@@ -2,8 +2,11 @@ package org.game.ui;
 
 import org.game.model.Action;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class ActionUIUpdater {
     private final BoardUI boardUI;
@@ -33,11 +36,19 @@ public class ActionUIUpdater {
 
         // Update the action text panel
         actionTextPanel.removeAll();
-        JLabel actionLabel = new JLabel(action.toString());
-        actionLabel.setFont(new Font("Arial", Font.BOLD, 12));
-        actionLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        // display image from resources/images corresponding to the action
+        String path = "images/"+action.toLowerCase()+".png";
+        BufferedImage image;
+        try{
+            image = ImageIO.read(getClass().getClassLoader().getResourceAsStream(path));
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        ImageIcon imageIcon = new ImageIcon(image);
+        ImagePanel imagePanel = new ImagePanel(imageIcon.getImage(), 0.9, Color.LIGHT_GRAY);
         actionTextPanel.setLayout(new BorderLayout());
-        actionTextPanel.add(actionLabel, BorderLayout.CENTER);
+        actionTextPanel.add(imagePanel, BorderLayout.CENTER);
         actionTextPanel.revalidate();
         actionTextPanel.repaint();
     }
