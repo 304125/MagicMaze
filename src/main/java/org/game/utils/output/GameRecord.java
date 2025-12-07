@@ -46,6 +46,10 @@ public class GameRecord {
         return gameMoves.pollFirstEntry();
     }
 
+    public Map.Entry<Instant, String> nextDoSomething() {
+        return doSomethingTimestamps.pollFirstEntry();
+    }
+
     public void addMove(Instant timestamp, String move){
         gameMoves.put(timestamp, move);
     }

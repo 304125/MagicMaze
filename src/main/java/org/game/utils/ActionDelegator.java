@@ -5,6 +5,7 @@ import org.game.model.AI.PayoffCalculator;
 import org.game.model.Action;
 import org.game.model.board.Board;
 import org.game.model.board.PawnManager;
+import org.game.ui.ActionUIUpdater;
 import org.game.ui.BoardUI;
 import org.game.utils.output.ActionWriter;
 
@@ -19,6 +20,7 @@ public class ActionDelegator {
     private final BoardUI boardUI;
     private final ActionWriter actionWriter;
     private PayoffCalculator payoffCalculator;
+    private final ActionUIUpdater actionUIUpdater;
 
     public ActionDelegator(Game game, BoardUI boardUI, ActionWriter actionWriter) {
         this.game = game;
@@ -26,6 +28,7 @@ public class ActionDelegator {
         this.boardUI = boardUI;
         this.actionWriter = actionWriter;
         this.payoffCalculator = new PayoffCalculator(board.getTimer());
+        this.actionUIUpdater = new ActionUIUpdater(boardUI);
     }
 
     // return false if the action was not performed
@@ -190,6 +193,11 @@ public class ActionDelegator {
     public void placeDoSomething(Action action){
         actionWriter.recordDoSomething(action);
         game.placeDoSomething(action);
+        placeDoSomethingUI(action.toString());
+    }
+
+    public void placeDoSomethingUI(String action){
+        actionUIUpdater.updateUI(action);
     }
 
     public void performRandomAvailableActionFromActionSet(List<Action> actions){
