@@ -133,7 +133,15 @@ public class Game {
 
     public int discoverRandomCard(Pawn pawn) {
         Card nextCard = unplayedCards.drawCard();
-        return discover(nextCard, pawn);
+        int cardId = discover(nextCard, pawn);
+        if(cardId == 0){
+            returnCardToUnplayedCards(nextCard);
+        }
+        return cardId;
+    }
+
+    public void returnCardToUnplayedCards(Card card){
+        unplayedCards.returnCard(card);
     }
 
     public int discoverGivenCard(Pawn pawn, int cardId) {
@@ -144,7 +152,11 @@ public class Game {
             }
             return 0;
         }
-        return discover(nextCard, pawn);
+        int success = discover(nextCard, pawn);
+        if(success == 0){
+            returnCardToUnplayedCards(nextCard);
+        }
+        return cardId;
     }
 
     private int discover(Card nextCard, Pawn pawn){

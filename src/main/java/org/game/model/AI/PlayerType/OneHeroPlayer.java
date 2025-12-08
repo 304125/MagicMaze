@@ -305,7 +305,7 @@ public class OneHeroPlayer extends AIPlayer {
         if(Config.PRINT_EVERYTHING){
 
         }
-        System.out.println(getName() + " is attempting to perform action: " + bestAction + " with pawn " + currentlyPlannedPawn.getColor());
+        System.out.println(getName() + " is attempting to perform action: " + bestAction + "("+bestAction.getVortexCoordinate()+ ") with pawn " + currentlyPlannedPawn.getColor());
 
         switch (bestAction){
             case MOVE_EAST, MOVE_NORTH, MOVE_SOUTH, MOVE_WEST, ESCALATOR -> {
@@ -335,11 +335,11 @@ public class OneHeroPlayer extends AIPlayer {
         Pawn blockingPawn = getActionDelegator().getBlockingPawn(currentlyPlannedPawn, bestAction, bestAction.getVortexCoordinate());
         if(blockingPawn == null){
             if(Config.PRINT_EVERYTHING){
-                System.out.println("Hmmmm something weird happened");
+
             }
-            // the blocking pawn has since moved or it is not blocking what i think it is, just wait it out and try again
+            System.out.println("Hmmmm something weird happened");
+            // the blocking pawn has since moved or the tree was outdated (best action was not valid)
             buildActionTree();
-            return;
         }
         else{
             if(Config.PRINT_EVERYTHING){
@@ -403,7 +403,7 @@ public class OneHeroPlayer extends AIPlayer {
                 }
             }
             case GOAL_EXIT: {
-                if(getActionDelegator().isFirstPhase() && !pawnCoordinate.equals(goal)){
+                if(getActionDelegator().isFirstPhase()){
                     return -1;
                 }
                 else{
@@ -440,12 +440,13 @@ public class OneHeroPlayer extends AIPlayer {
         thinking = true;
         System.out.println("I am going to do something");
 
-
-
         // look if I can do anything according to my plan
+        buildActionTree();
         Action bestAction = actionTree.bestAction();
+        System.out.println("My best action according to the first plan is "+bestAction+" for pawn "+currentlyPlannedPawn.getColor());
         // while nothing is worth doing, re-build
         while(bestAction == null){
+            System.out.println("No action is worth taking ("+currentlyPlannedPawn.getColor()+"). Rebuilding action tree...");
             buildActionTree(); // Rebuild the tree if no action is available (automatically switches color)
             bestAction = actionTree.bestAction();
         }
@@ -466,7 +467,7 @@ public class OneHeroPlayer extends AIPlayer {
         super.decreaseMemoryCapacity();
 
 
-        while(index<allColors.size()){
+        while(index <= allColors.size()){
             System.out.println("My best action is "+bestAction+" for pawn "+currentlyPlannedPawn.getColor());
             System.out.println("Is it performable (not occupied)? "+getActionDelegator().isPerformable(bestAction, currentlyPlannedPawn.getColor()));
             if(Config.PRINT_EVERYTHING){
@@ -480,6 +481,10 @@ public class OneHeroPlayer extends AIPlayer {
                 }
                 else{
                     // someone wants me to do something, but I don't know what to do (not in my plan)
+                    if(index == allColors.size()){
+                        // found nothing useful
+                        break;
+                    }
                     currentlyPlannedPawn = getActionDelegator().getPawnByColor(allColors.get(index));
                     System.out.println("Now going to consider pawn of color "+currentlyPlannedPawn.getColor());
                     buildActionTree();
@@ -496,6 +501,10 @@ public class OneHeroPlayer extends AIPlayer {
                     return;
                 }
                 else{
+                    if(index == allColors.size()){
+                        // found nothing useful
+                        break;
+                    }
                     currentlyPlannedPawn = getActionDelegator().getPawnByColor(allColors.get(index));
                     buildActionTree();
                     bestAction = actionTree.bestAction();

@@ -30,4 +30,9 @@ public class StackOfCards {
         }
         return null;
     }
+
+    public void returnCard(Card card){
+        unplayedCards.add(card);
+        System.out.println("Returned card with ID " + card.getId() + " to unplayed cards. Total cards now: " + unplayedCards.size());
+    }
 }

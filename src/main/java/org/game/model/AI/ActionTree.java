@@ -35,7 +35,7 @@ public class ActionTree {
         for (Action action : actions) {
             ActionEdge edge = current.edges.get(action);
             // if the current node doesn't have this action edge, create it
-            if (edge == null) {
+            if (edge == null || !edge.action.getVortexCoordinate().equals(action.getVortexCoordinate())) {
                 Node child = new Node();
                 edge = new ActionEdge(action, child);
                 current.edges.put(action, edge);
@@ -110,7 +110,13 @@ public class ActionTree {
         System.out.println(prefix + label + priorityStr);
 
         for (ActionEdge edge : node.edges.values()) {
-            printTree(edge.childNode, prefix + "  ", edge.action.toString());
+            if(edge.action == Action.VORTEX){
+                printTree(edge.childNode, prefix + "  ", edge.action + "->"+ edge.action.getVortexCoordinate());
+            }
+            else{
+                printTree(edge.childNode, prefix + "  ", edge.action.toString());
+            }
+
         }
     }
 

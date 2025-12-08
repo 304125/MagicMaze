@@ -216,22 +216,27 @@ public class ActionDelegator {
         boolean done = false;
         for(Action action: actions){
             for(Color color: allColors){
+                System.out.println("Checking if action " + action + " is performable by pawn " + color);
                 if(isPerformable(action, color)){
                     switch (action){
                         case Action.DISCOVER: {
+                            System.out.println("Trying to discover with pawn " + color);
                             done = discoverRandomCard(color);
                             break;
                         }
                         case Action.MOVE_EAST, Action.MOVE_NORTH, Action.MOVE_WEST, Action.MOVE_SOUTH, Action.ESCALATOR: {
+                            System.out.println("Trying to move pawn " + color + " with action " + action);
                             done = movePawn(color, action);
                             break;
                         }
                         case Action.VORTEX: {
+                            System.out.println("Trying to vortex pawn " + color);
                             done = vortexToClosest(color);
                             break;
                         }
                     }
                     if(done){
+                        System.out.println("Action " + action + " performed by pawn " + color);
                         return;
                     }
                 }
