@@ -22,7 +22,7 @@ public class ChunkGenerator {
         return nodes / 5; // assuming each chunk has 5 nodes
     }
 
-    public static double estimateChunks(int totalActions){
-        return totalActions / 5.0; // assuming each chunk has 5 actions
+    public static float estimateChunks(int totalActions){
+        return (float) totalActions / 5; // assuming each chunk has 5 actions
     }
 }

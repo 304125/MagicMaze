@@ -103,7 +103,7 @@ public class OneHeroPlayer extends AIPlayer {
                     System.out.println("Reached maximum chunk size limit while building action tree. Stopping further path additions.");
                 }
             }
-            Double priority = calculatePriority(goal);
+            float priority = calculatePriority(goal);
             actionTree.addRoute(path.getActions(), priority);
             if(Config.PRINT_EVERYTHING){
                 System.out.println("Added path to goal " + goal + " with estimated distance " + distanceMap.get(goal) + " to action tree.");
@@ -374,7 +374,7 @@ public class OneHeroPlayer extends AIPlayer {
         buildActionTree();
     }
 
-    public Double calculatePriority(Coordinate goal){
+    public float calculatePriority(Coordinate goal){
         Coordinate pawnCoordinate = currentlyPlannedPawn.getCoordinate();
         Tile goalTile = getBoard().getTileAt(goal);
         switch (goalTile.getType()) {
@@ -384,42 +384,42 @@ public class OneHeroPlayer extends AIPlayer {
 
                     }
                     System.out.println("All discovery goals have been discovered. No priority for discovery goals.");
-                    return (double) 0;
+                    return 0;
                 }
                 // higher priority for closer discovery goals, give one penalty for each chunk (5 nodes)
                 int distance = pathFinder.findDistance(pawnCoordinate, goal);
-                double chunkPenalty = ChunkGenerator.estimateChunks(distance);
+                float chunkPenalty = ChunkGenerator.estimateChunks(distance);
 
 
                 return 5-chunkPenalty;
             }
             case GOAL_ITEM: {
                 if(getActionDelegator().isFirstPhase() && !pawnCoordinate.equals(goal)){
-                    return (double)1;
+                    return 1;
                 }
                 else{
                     // negative priority = will not be ever followed
-                    return (double)-1;
+                    return -1;
                 }
             }
             case GOAL_EXIT: {
                 if(getActionDelegator().isFirstPhase() && !pawnCoordinate.equals(goal)){
-                    return (double)-1;
+                    return -1;
                 }
                 else{
-                    return (double)1;
+                    return 1;
                 }
             }
             case TIMER: {
                 // following the logarithmic function
                 int timerPriority = getActionDelegator().getTimerPayoff();
                 int distance = pathFinder.findDistance(pawnCoordinate, goal);
-                double chunkPenalty = ChunkGenerator.estimateChunks(distance);
+                float chunkPenalty = ChunkGenerator.estimateChunks(distance);
 
                 return timerPriority-chunkPenalty;
             }
         };
-        return (double)0;
+        return 0;
     }
 
     public void endGame(){
@@ -483,6 +483,7 @@ public class OneHeroPlayer extends AIPlayer {
                     currentlyPlannedPawn = getActionDelegator().getPawnByColor(allColors.get(index));
                     System.out.println("Now going to consider pawn of color "+currentlyPlannedPawn.getColor());
                     buildActionTree();
+                    bestAction = actionTree.bestAction();
                     index++;
                 }
             }
@@ -497,6 +498,7 @@ public class OneHeroPlayer extends AIPlayer {
                 else{
                     currentlyPlannedPawn = getActionDelegator().getPawnByColor(allColors.get(index));
                     buildActionTree();
+                    bestAction = actionTree.bestAction();
                     index++;
                 }
             }
