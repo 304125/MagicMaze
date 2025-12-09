@@ -82,20 +82,17 @@ public class ActionWriter {
         String color = getColor(pawnColor);
         String record = color + "v" + vortexNumber;
         gameRecord.addMove(Instant.now(), record);
-        writeGameRecordToFile();
     }
 
     public void recordDiscover(Color pawnColor, int cardId){
         String color = getColor(pawnColor);
         String record = color + "d" + cardId;
         gameRecord.addMove(Instant.now(), record);
-        writeGameRecordToFile();
     }
 
     public void recordDoSomething(List<Action> actions){
         String actionString = actions.toString();
         gameRecord.addDoSomething(Instant.now(), actionString);
-        writeGameRecordToFile();
     }
 
     private String getColor(Color color){
