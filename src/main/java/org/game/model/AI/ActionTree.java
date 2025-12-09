@@ -1,9 +1,13 @@
 package org.game.model.AI;
 
 import org.game.model.Action;
+import org.game.model.ActionType;
+import org.game.model.Coordinate;
 import org.game.utils.Config;
 
 import java.util.*;
+
+import static org.game.model.ActionType.*;
 
 public class ActionTree {
     private Node root;
@@ -34,14 +38,34 @@ public class ActionTree {
         Node current = root;
         for (Action action : actions) {
             ActionEdge edge = current.edges.get(action);
+            ActionEdge newEdge = null;
             // if the current node doesn't have this action edge, create it
-            if (edge == null || !edge.action.getVortexCoordinate().equals(action.getVortexCoordinate())) {
+            if (edge == null) {
                 Node child = new Node();
                 edge = new ActionEdge(action, child);
+                if(action.getType() == VORTEX){
+                    System.out.println("Adding VORTEX action to tree at coordinate: " + action.getVortexCoordinate());
+                }
                 current.edges.put(action, edge);
             }
+            else if(edge.action.getType().equals(VORTEX) && action.getType().equals(VORTEX)){
+                // both are Vortex, check if they go to the same vortex
+                Coordinate vortex1 = edge.action.getVortexCoordinate();
+                Coordinate vortex2 = action.getVortexCoordinate();
+                if(!vortex1.equals(vortex2)){
+                    // if both are vortexes but not the same coordinate, create a new edge
+                    Node child = new Node();
+                    newEdge = new ActionEdge(action, child);
+                    current.edges.put(action, newEdge);
+                }
+            }
             // if the edge exists, move down to the child node
-            current = edge.childNode;
+            if(newEdge == null){
+                current = edge.childNode;
+            }
+            else{
+                current = newEdge.childNode;
+            }
         }
         // assign priority to the leaf node
         current.priority = priority;
@@ -99,7 +123,7 @@ public class ActionTree {
     }
 
     /** Print the tree */
-    public void printTree(String playerName, List<Action> actions) {
+    public void printTree(String playerName, List<ActionType> actions) {
         System.out.println("Action Tree for " + playerName + "("+actions+") :");
         printTree(root, "", "");
     }
@@ -110,12 +134,7 @@ public class ActionTree {
         System.out.println(prefix + label + priorityStr);
 
         for (ActionEdge edge : node.edges.values()) {
-            if(edge.action == Action.VORTEX){
-                printTree(edge.childNode, prefix + "  ", edge.action + "->"+ edge.action.getVortexCoordinate());
-            }
-            else{
-                printTree(edge.childNode, prefix + "  ", edge.action.toString());
-            }
+            printTree(edge.childNode, prefix + "  ", edge.action.toString());
 
         }
     }

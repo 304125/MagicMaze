@@ -79,7 +79,7 @@ public class Game {
     private void printPlayers(){
         for(int i = 0; i < players.size(); i++){
             System.out.println("Player " + (i+1) + ":");
-            for(Action action : players.get(i).getActions()){
+            for(ActionType action : players.get(i).getActions()){
                 System.out.println(" - " + action);
             }
         }
@@ -211,7 +211,7 @@ public class Game {
         board.setGameWonCallback(callback);
     }
 
-    public void placeDoSomething(Action action){
+    public void placeDoSomething(ActionType action){
         Player chosenPlayer = null;
         for(Player player : players){
             if(player.canPerformAction(action)){
@@ -232,7 +232,7 @@ public class Game {
         }
     }
 
-    public List<Action> getAllActionsForPlayer(Action action){
+    public List<ActionType> getAllActionsForPlayer(ActionType action){
         Player chosenPlayer = null;
         for(Player player : players){
             if(player.canPerformAction(action)){

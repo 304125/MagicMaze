@@ -1,6 +1,7 @@
 package org.game.model.AI;
 
 import org.game.model.Action;
+import org.game.model.ActionType;
 import org.game.model.board.Board;
 import org.game.model.Player;
 import org.game.utils.ActionDelegator;
@@ -16,7 +17,7 @@ public abstract class AIPlayer extends Player  implements StateChangeListener, A
     private int patience;
     private boolean shouldDecreaseMemoryCapacity = false;
 
-    public AIPlayer(List<Action> actions, String name, Board board) {
+    public AIPlayer(List<ActionType> actions, String name, Board board) {
         super(actions, name);
         this.board = board;
         currentMemoryCapacity = ChunkGenerator.generateChunkSize();

@@ -1,6 +1,7 @@
 package org.game.ui;
 
 import org.game.model.Action;
+import org.game.model.ActionType;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -16,7 +17,7 @@ public class ActionUIUpdater {
         this.boardUI = boardUI;
     }
 
-    public void updateUI(List<Action> actions) {
+    public void updateUI(List<ActionType> actions) {
 
         JPanel actionIndicatorPanel = boardUI.getTilePanelAt(0, 2); // Tile to turn red
         JPanel actionIconPanel1 = boardUI.getTilePanelAt(0, 3); // Tile to display action text

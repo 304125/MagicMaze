@@ -1,6 +1,7 @@
 package org.game.utils;
 
 import org.game.model.Action;
+import org.game.model.ActionType;
 import org.game.model.Color;
 import org.game.model.Coordinate;
 import org.game.utils.output.GameRecord;
@@ -43,7 +44,7 @@ public class ReplayManager {
             while(running && (next != null || doSomethingNext != null)){
                 if(doSomethingNext != null && (next == null || doSomethingFirst.getKey().isBefore(first.getKey()))){
                     // Time to render a "do something" action
-                    List<Action> actionList = inputStringRenderer.renderActions(doSomethingFirst.getValue());
+                    List<ActionType> actionList = inputStringRenderer.renderActions(doSomethingFirst.getValue());
                     actionDelegator.placeDoSomethingUI(actionList);
                     long doSomethingDelay = doSomethingNext.getKey().toEpochMilli() - doSomethingFirst.getKey().toEpochMilli();
                     assert next != null;

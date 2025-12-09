@@ -107,7 +107,7 @@ public class PawnManager {
         Tile currentTile = board.getTileAt(pawn.getCoordinate());
         boolean moved = false;
 
-        switch (action) {
+        switch (action.getType()) {
             case MOVE_NORTH:
                 if (!currentTile.hasWallUp() && board.getTileAt(pawn.getCoordinate().move(-1, 0)) != null && !board.getTileAt(pawn.getCoordinate().move(-1, 0)).isOccupied()) {
                     pawn.moveNorth();
@@ -153,7 +153,7 @@ public class PawnManager {
         //update occupied
         if(moved){
             // set the previous tile to not occupied
-            switch (action) {
+            switch (action.getType()) {
                 case MOVE_NORTH:
                     board.getTileAt(pawn.getCoordinate().move(1, 0)).setOccupied(false);
                     break;

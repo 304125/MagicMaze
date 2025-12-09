@@ -1,6 +1,7 @@
 package org.game.utils.output;
 
 import org.game.model.Action;
+import org.game.model.ActionType;
 import org.game.model.Color;
 import org.game.model.Pawn;
 import org.game.utils.input.GameParams;
@@ -62,7 +63,7 @@ public class ActionWriter {
 
     public void recordMove(Color pawnColor, Action action){
         String color = getColor(pawnColor);
-        String actionString = switch (action) {
+        String actionString = switch (action.getType()) {
             case MOVE_NORTH -> "n";
             case MOVE_SOUTH -> "s";
             case MOVE_WEST -> "w";
@@ -90,7 +91,7 @@ public class ActionWriter {
         gameRecord.addMove(Instant.now(), record);
     }
 
-    public void recordDoSomething(List<Action> actions){
+    public void recordDoSomething(List<ActionType> actions){
         String actionString = actions.toString();
         gameRecord.addDoSomething(Instant.now(), actionString);
     }

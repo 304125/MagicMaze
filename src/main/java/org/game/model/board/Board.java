@@ -341,6 +341,7 @@ public class Board {
     }
 
     public void checkGoalConditions(){
+        System.out.println("Checking goal conditions...");
         if(isFirstPhase){
             if(isAllGoalItemReached()){
                 System.out.println("All pawns have reached their goal items! Beginning second phase.");
@@ -386,7 +387,10 @@ public class Board {
     public boolean isAllGoalItemReached(){
         for (Pawn pawn : pawns) {
             Tile tile = getTileAt(pawn.getCoordinate());
-            if (tile.getType() != TileType.GOAL_ITEM || tile.getColor() != pawn.getColor()) {
+            if (tile.getType() == TileType.GOAL_ITEM && tile.getColor().equals(pawn.getColor())) {
+                System.out.println("Pawn " + pawn.getColor() + " has reached their goal item at " + pawn.getCoordinate());
+            }
+            else {
                 return false;
             }
         }

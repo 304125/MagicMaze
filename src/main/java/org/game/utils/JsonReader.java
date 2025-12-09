@@ -123,9 +123,9 @@ public class JsonReader {
                 // only continue if numberOfPlayers == numPlayers
                 if (numberOfPlayers == numPlayers) {
                     for (List<String> actionCardList : actionCards) {
-                        List<Action> actions = new ArrayList<>();
+                        List<ActionType> actions = new ArrayList<>();
                         for (String actionString : actionCardList) {
-                            actions.add(Action.valueOf(actionString));
+                            actions.add(ActionType.valueOf(actionString));
                         }
                         if(aiPlayersLeft > 0){
                             // add the next in the aiPlayerTypes list

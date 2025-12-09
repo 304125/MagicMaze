@@ -1,9 +1,12 @@
 package org.game.utils;
 
 import org.game.model.Action;
+import org.game.model.ActionType;
 import org.game.model.Color;
 
 import java.util.List;
+
+import static org.game.model.ActionType.*;
 
 public class InputStringRenderer {
     private final ActionDelegator actionDelegator;
@@ -39,24 +42,24 @@ public class InputStringRenderer {
             case "g" -> Color.GREEN;
             default -> null;
         };
-        Action action = switch (actionString) {
-            case "n" -> Action.MOVE_NORTH;
-            case "s" -> Action.MOVE_SOUTH;
-            case "w" -> Action.MOVE_WEST;
-            case "e" -> Action.MOVE_EAST;
-            case "d" -> Action.DISCOVER;
-            case "v" -> Action.VORTEX;
-            case "x" -> Action.ESCALATOR;
+        ActionType actionType = switch (actionString) {
+            case "n" -> MOVE_NORTH;
+            case "s" -> MOVE_SOUTH;
+            case "w" -> MOVE_WEST;
+            case "e" -> MOVE_EAST;
+            case "d" -> DISCOVER;
+            case "v" -> VORTEX;
+            case "x" -> ESCALATOR;
             default -> null;
         };
 
         //
-        if ((optionalNumber != 0 &&  action != Action.VORTEX && action != Action.DISCOVER) || (optionalNumber == 0 && action == Action.VORTEX)) {
-            System.out.println("Invalid input. Vortex action requires a number (e.g., 'yv1' for yellow vortex 1).");
+        if ((optionalNumber != 0 &&  actionType != VORTEX && actionType != DISCOVER) || (optionalNumber == 0 && actionType == VORTEX)) {
+            System.out.println("Invalid input. Vortex actionType requires a number (e.g., 'yv1' for yellow vortex 1).");
             return;
         }
 
-        if (action == Action.DISCOVER && pawnColor != null) {
+        if (actionType == DISCOVER && pawnColor != null) {
             if(optionalNumber != 0){
                 actionDelegator.discoverGivenCard(pawnColor, optionalNumber);
             }
@@ -66,11 +69,12 @@ public class InputStringRenderer {
         }
         else
 
-        if (action != null && pawnColor != null && optionalNumber == 0) {
+        if (actionType != null && pawnColor != null && optionalNumber == 0) {
+            Action action = new Action(actionType);
             actionDelegator.movePawn(pawnColor, action);
         }
         // optionalNumber != 0
-        else if (action == Action.VORTEX && pawnColor != null){
+        else if (actionType == VORTEX && pawnColor != null){
             actionDelegator.vortexPawn(pawnColor, optionalNumber);
         }
         else {
@@ -78,20 +82,20 @@ public class InputStringRenderer {
         }
     }
 
-    public List<Action> renderActions(String actionsList){
+    public List<ActionType> renderActions(String actionsList){
         // render the String including the List<Action> casted to String back to List<Action>
         actionsList = actionsList.replaceAll("[\\[\\]\\s]", ""); // remove brackets and spaces
         String[] actionStrings = actionsList.split(",");
-        List<Action> actions = new java.util.ArrayList<>();
+        List<ActionType> actions = new java.util.ArrayList<>();
         for (String actionString : actionStrings) {
-            Action action = switch (actionString) {
-                case "MOVE_NORTH" -> Action.MOVE_NORTH;
-                case "MOVE_SOUTH" -> Action.MOVE_SOUTH;
-                case "MOVE_WEST" -> Action.MOVE_WEST;
-                case "MOVE_EAST" -> Action.MOVE_EAST;
-                case "DISCOVER" -> Action.DISCOVER;
-                case "VORTEX" -> Action.VORTEX;
-                case "ESCALATOR" -> Action.ESCALATOR;
+            ActionType action = switch (actionString) {
+                case "MOVE_NORTH" -> MOVE_NORTH;
+                case "MOVE_SOUTH" -> MOVE_SOUTH;
+                case "MOVE_WEST" -> MOVE_WEST;
+                case "MOVE_EAST" -> MOVE_EAST;
+                case "DISCOVER" -> DISCOVER;
+                case "VORTEX" -> VORTEX;
+                case "ESCALATOR" -> ESCALATOR;
                 default -> null;
             };
             if (action != null) {

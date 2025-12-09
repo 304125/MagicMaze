@@ -8,6 +8,8 @@ import org.game.utils.Config;
 
 import java.util.*;
 
+import static org.game.model.ActionType.*;
+
 public class OneHeroPlayer extends AIPlayer {
     private Pawn currentlyPlannedPawn;
     private ActionTree actionTree;
@@ -24,7 +26,7 @@ public class OneHeroPlayer extends AIPlayer {
     private long lastDoSomethingPlacedTimestamp = 0;
     private boolean updatingOtherPawnMoves = false;
 
-    public OneHeroPlayer(List<Action> actions, String name, Board board) {
+    public OneHeroPlayer(List<ActionType> actions, String name, Board board) {
         super(actions, name, board);
         currentlyPlannedPawn = board.getRandomPawn();
         actionTree = new ActionTree();
@@ -137,7 +139,7 @@ public class OneHeroPlayer extends AIPlayer {
 
     @Override
     public void onPawnMoved(Pawn movedPawn, Action action) {
-        if(canPerformAction(action)){
+        if(canPerformAction(action.getType())){
             iWasLastToMove = true;
         }
         else{
@@ -192,7 +194,7 @@ public class OneHeroPlayer extends AIPlayer {
 
     @Override
     public void onDiscovered(Pawn pawn){
-        if(canPerformAction(Action.DISCOVER)){
+        if(canPerformAction(DISCOVER)){
             iWasLastToMove = true;
         }
         else{
@@ -200,7 +202,7 @@ public class OneHeroPlayer extends AIPlayer {
         }
 
         if(pawn.getColor() == currentlyPlannedPawn.getColor()) {
-            boolean moved = actionTree.takeAction(Action.DISCOVER);
+            boolean moved = actionTree.takeAction(new Action(DISCOVER));
             if(actionTree.isEmpty()){
                 // re-build tree, all actions used up
                 buildActionTree();
@@ -254,7 +256,7 @@ public class OneHeroPlayer extends AIPlayer {
                         }
                         bestAction = actionTree.bestAction();
                     }
-                    if(canPerformAction(bestAction)){
+                    if(canPerformAction(bestAction.getType())){
                         if (actionTree.isEmpty()) {
                             System.out.println("No valid action to take. Rebuilding action tree...");
                             buildActionTree(); // Rebuild the tree if no action is available
@@ -277,11 +279,11 @@ public class OneHeroPlayer extends AIPlayer {
                             if(ticksWaiting >= super.getPatience()){
                                 ticksWaiting = 0;
                                 if(getActionDelegator().isPerformable(bestAction, currentlyPlannedPawn.getColor())){
-                                    placeDoSomething(bestAction);
+                                    placeDoSomething(bestAction.getType());
                                 }
                                 else{
                                     // if the action is not performable, someone is blocking the pawn -> vortex
-                                    placeDoSomething(Action.VORTEX);
+                                    placeDoSomething(VORTEX);
                                 }
                             }
                         }
@@ -307,7 +309,7 @@ public class OneHeroPlayer extends AIPlayer {
         }
         System.out.println(getName() + " is attempting to perform action: " + bestAction + "("+bestAction.getVortexCoordinate()+ ") with pawn " + currentlyPlannedPawn.getColor());
 
-        switch (bestAction){
+        switch (bestAction.getType()){
             case MOVE_EAST, MOVE_NORTH, MOVE_SOUTH, MOVE_WEST, ESCALATOR -> {
                 moved = getActionDelegator().movePawn(currentlyPlannedPawn.getColor(), bestAction);
             }
@@ -344,12 +346,12 @@ public class OneHeroPlayer extends AIPlayer {
         else{
             if(Config.PRINT_EVERYTHING){
                 System.out.println("I "+ super.getName()+" can see that pawn "+blockingPawn.getColor()+" is blocking best action "+bestAction+" for pawn "+currentlyPlannedPawn.getColor());
-                System.out.println("Can I vortex? "+canPerformAction(Action.VORTEX));
+                System.out.println("Can I vortex? "+canPerformAction(VORTEX));
             }
             // schedule a plan for the blocking pawn to move away
             // just vortex that pawn to the closest vortex
             // own color's vortex is never blocking
-            if(canPerformAction(Action.VORTEX)){
+            if(canPerformAction(VORTEX)){
                 getActionDelegator().vortexToClosest(blockingPawn.getColor());
             }
             else{
@@ -358,7 +360,7 @@ public class OneHeroPlayer extends AIPlayer {
                     System.out.println("My patience: "+super.getPatience()+", ticks waiting: "+ticksWaiting);
                 }
                 if(ticksWaiting >= super.getPatience()){
-                    placeDoSomething(Action.VORTEX);
+                    placeDoSomething(VORTEX);
                     ticksWaiting = 0;
                 }
                 else{
@@ -474,7 +476,7 @@ public class OneHeroPlayer extends AIPlayer {
 
             }
             if(getActionDelegator().isPerformable(bestAction, currentlyPlannedPawn.getColor())){
-                if(canPerformAction(bestAction)){
+                if(canPerformAction(bestAction.getType())){
                     attemptBestAction(bestAction);
                     thinking = false;
                     return;
@@ -494,7 +496,7 @@ public class OneHeroPlayer extends AIPlayer {
             }
             else{
                 // my next best thing is not executable -> can I vortex?
-                if(super.getActions().contains(Action.VORTEX)){
+                if(super.getActions().contains(VORTEX)){
                     System.out.println("My best action "+bestAction+" is blocked, I will try to vortex the blocking pawn.");
                     tryToClearBlockingPawn(bestAction);
                     thinking = false;
@@ -513,7 +515,20 @@ public class OneHeroPlayer extends AIPlayer {
             }
         }
         System.out.println("I cannot do anything useful right now. I'll just do something random.");
-        getActionDelegator().performRandomAvailableActionFromActionSet(super.getActions());
+        boolean canDo = getActionDelegator().performRandomAvailableActionFromActionSet(super.getActions());
+        if(!canDo){
+            System.out.println("I will instead tell someone else to do something.");
+            while(index <= allColors.size()){
+                currentlyPlannedPawn = getActionDelegator().getPawnByColor(allColors.get(index-1));
+                buildActionTree();
+                bestAction = actionTree.bestAction();
+                if(bestAction != null){
+                    placeDoSomething(bestAction.getType());
+                    break;
+                }
+                index++;
+            }
+        }
         thinking = false;
     }
 
@@ -528,7 +543,7 @@ public class OneHeroPlayer extends AIPlayer {
 //        }
     }
 
-    private void placeDoSomething(Action action){
+    private void placeDoSomething(ActionType action){
         if(lastDoSomethingPlacedTimestamp + 4000 > System.currentTimeMillis()){
             // avoid spamming do something tokens
             return;

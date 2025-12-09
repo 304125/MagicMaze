@@ -3,15 +3,15 @@ package org.game.model;
 import java.util.List;
 
 public class Player {
-    private final List<Action> actions;
+    private final List<ActionType> actions;
     private final String name;
 
-    public Player(List<Action> actions, String name) {
+    public Player(List<ActionType> actions, String name) {
         this.actions = actions;
         this.name = name;
     }
 
-    public List<Action> getActions() {
+    public List<ActionType> getActions() {
         return actions;
     }
 
@@ -19,7 +19,7 @@ public class Player {
         return name;
     }
 
-    public boolean canPerformAction(Action action) {
+    public boolean canPerformAction(ActionType action) {
         return actions.contains(action);
     }
 
