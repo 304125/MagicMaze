@@ -44,6 +44,8 @@ public class ActionDelegator {
                 return false;
             }
             else{
+                // check for goal conditions
+                board.checkGoalConditions();
                 if(actionWriter != null) actionWriter.recordMove(pawnColor, action);
 
                 if(board.isPawnAtTimerTile(updatedPawn)){
@@ -69,8 +71,6 @@ public class ActionDelegator {
 
         board.updateLastMovedPawn(updatedPawn, action);
 
-        // check for goal conditions
-        board.checkGoalConditions();
         return true;
     }
 
@@ -234,8 +234,10 @@ public class ActionDelegator {
                             break;
                         }
                         case VORTEX: {
-                            System.out.println("Trying to vortex pawn " + color);
-                            done = vortexToClosest(color);
+                            if(!isFirstPhase()){
+                                System.out.println("Trying to vortex pawn " + color);
+                                done = vortexToClosest(color);
+                            }
                             break;
                         }
                     }

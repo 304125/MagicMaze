@@ -282,8 +282,12 @@ public class OneHeroPlayer extends AIPlayer {
                                     placeDoSomething(bestAction.getType());
                                 }
                                 else{
-                                    // if the action is not performable, someone is blocking the pawn -> vortex
-                                    placeDoSomething(VORTEX);
+                                    // only place vortex if first phase
+                                    if(getActionDelegator().isFirstPhase()){
+                                        // if the action is not performable, someone is blocking the pawn -> vortex
+                                        placeDoSomething(VORTEX);
+                                    }
+
                                 }
                             }
                         }
@@ -307,7 +311,7 @@ public class OneHeroPlayer extends AIPlayer {
         if(Config.PRINT_EVERYTHING){
 
         }
-        System.out.println(getName() + " is attempting to perform action: " + bestAction + "("+bestAction.getVortexCoordinate()+ ") with pawn " + currentlyPlannedPawn.getColor());
+        System.out.println(getName() + " is attempting to perform action: " + bestAction + " with pawn " + currentlyPlannedPawn.getColor());
 
         switch (bestAction.getType()){
             case MOVE_EAST, MOVE_NORTH, MOVE_SOUTH, MOVE_WEST, ESCALATOR -> {
@@ -329,7 +333,9 @@ public class OneHeroPlayer extends AIPlayer {
             if(Config.PRINT_EVERYTHING){
                 System.out.println("It has not moved, so something is blocking the action.");
             }
-            tryToClearBlockingPawn(bestAction);
+            if(getActionDelegator().isFirstPhase()){
+                tryToClearBlockingPawn(bestAction);
+            }
         }
     }
 
@@ -342,6 +348,7 @@ public class OneHeroPlayer extends AIPlayer {
             System.out.println("Hmmmm something weird happened");
             // the blocking pawn has since moved or the tree was outdated (best action was not valid)
             buildActionTree();
+            ticksWaiting++;
         }
         else{
             if(Config.PRINT_EVERYTHING){
@@ -351,7 +358,7 @@ public class OneHeroPlayer extends AIPlayer {
             // schedule a plan for the blocking pawn to move away
             // just vortex that pawn to the closest vortex
             // own color's vortex is never blocking
-            if(canPerformAction(VORTEX)){
+            if(canPerformAction(VORTEX) && getActionDelegator().isFirstPhase()){
                 getActionDelegator().vortexToClosest(blockingPawn.getColor());
             }
             else{
@@ -359,7 +366,7 @@ public class OneHeroPlayer extends AIPlayer {
                 if(Config.PRINT_EVERYTHING){
                     System.out.println("My patience: "+super.getPatience()+", ticks waiting: "+ticksWaiting);
                 }
-                if(ticksWaiting >= super.getPatience()){
+                if(ticksWaiting >= super.getPatience() && getActionDelegator().isFirstPhase()){
                     placeDoSomething(VORTEX);
                     ticksWaiting = 0;
                 }
@@ -405,7 +412,7 @@ public class OneHeroPlayer extends AIPlayer {
                 }
             }
             case GOAL_EXIT: {
-                if(getActionDelegator().isFirstPhase()){
+                if(getActionDelegator().isFirstPhase() || pawnCoordinate.equals(goal)){
                     return -1;
                 }
                 else{
@@ -496,7 +503,7 @@ public class OneHeroPlayer extends AIPlayer {
             }
             else{
                 // my next best thing is not executable -> can I vortex?
-                if(super.getActions().contains(VORTEX)){
+                if(super.getActions().contains(VORTEX) && getActionDelegator().isFirstPhase()){
                     System.out.println("My best action "+bestAction+" is blocked, I will try to vortex the blocking pawn.");
                     tryToClearBlockingPawn(bestAction);
                     thinking = false;
