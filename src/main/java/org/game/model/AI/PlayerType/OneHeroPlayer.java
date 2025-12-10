@@ -46,6 +46,9 @@ public class OneHeroPlayer extends AIPlayer {
 
     // builds action tree from scratch
     private void buildActionTree() {
+        if(!running){
+            return;
+        }
         buildingTree = true;
         ticksWaiting = 0;
         if(!isThreadSleeping && running){
@@ -153,7 +156,7 @@ public class OneHeroPlayer extends AIPlayer {
                 isThreadSleeping = false;
             } catch (InterruptedException e) {
                 System.out.println("On pawn moved sleep interrupted.");
-                Thread.currentThread().interrupt();
+                actionExecutionThread.interrupt();
             }
         }
 
@@ -551,7 +554,7 @@ public class OneHeroPlayer extends AIPlayer {
     }
 
     private void placeDoSomething(ActionType action){
-        if(lastDoSomethingPlacedTimestamp + 4000 > System.currentTimeMillis()){
+        if(lastDoSomethingPlacedTimestamp + 7000 > System.currentTimeMillis()){
             // avoid spamming do something tokens
             return;
         }

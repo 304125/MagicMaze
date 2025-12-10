@@ -234,7 +234,7 @@ public class ActionDelegator {
                             break;
                         }
                         case VORTEX: {
-                            if(!isFirstPhase()){
+                            if(isFirstPhase()){
                                 System.out.println("Trying to vortex pawn " + color);
                                 done = vortexToClosest(color);
                             }

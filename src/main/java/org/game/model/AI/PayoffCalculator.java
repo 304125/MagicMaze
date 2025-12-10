@@ -15,11 +15,11 @@ public class PayoffCalculator {
     public int calculateLogarithmicTimePayoff(){
         int timeLeftInTimer = timer.getTimeLeftInTimer();
         // Payoff is 0 if time remaining is over half full - not worth it
-        if (timeLeftInTimer > maxTime / 2.0) {
+        if (timeLeftInTimer > maxTime / 3.0) {
             return 0;
         }
 
-        double threshold = maxTime / 2.0;
+        double threshold = maxTime / 3.0;
         int payoff = 0;
 
         // Loop checks if timeRemaining is less than the current interval threshold
