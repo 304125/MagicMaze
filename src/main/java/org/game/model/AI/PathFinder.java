@@ -19,7 +19,7 @@ public class PathFinder {
         this.board = board;
     }
 
-    public SearchPath findShortestPath(Coordinate coordinateStart, Coordinate coordinateEnd, Color pawnColor) {
+    public SearchPath findShortestPath(Coordinate coordinateStart, Coordinate coordinateEnd, Color pawnColor, int heuristicType) {
         int rows = grid.length;
         int cols = grid[0].length;
 
@@ -29,7 +29,7 @@ public class PathFinder {
         SearchPath searchPath = new SearchPath();
 
         // Start node
-        Node startNode = new Node(coordinateStart, 0, findDistance(coordinateStart, coordinateEnd), null, null);
+        Node startNode = new Node(coordinateStart, 0, findDistance(coordinateStart, coordinateEnd, heuristicType), null, null);
         openSet.add(startNode);
 
         // only search for vortexes in the first phase (second phase vortexes are not usable)
@@ -43,8 +43,8 @@ public class PathFinder {
             // for each vortexCoordinates, if using the vortex would shorten the distance, add it to the openSet
             for (Coordinate vortexCoordinate : vortexCoordinates) {
                 int distanceToVortex = 1;
-                int distanceFromVortexToEnd = findDistance(vortexCoordinate, coordinateEnd);
-                int directDistance = findDistance(coordinateStart, coordinateEnd);
+                int distanceFromVortexToEnd = findDistance(vortexCoordinate, coordinateEnd, heuristicType);
+                int directDistance = findDistance(coordinateStart, coordinateEnd, heuristicType);
                 if (distanceToVortex + distanceFromVortexToEnd < directDistance) {
                     // add vortexCoordinate to openSet
                     int newG = distanceToVortex;
@@ -84,7 +84,7 @@ public class PathFinder {
                 if (isValid(coordinateOtherSideOfEscalator, rows, cols, grid) &&
                         !closedSet.contains(coordinateOtherSideOfEscalator.x() + "," + coordinateOtherSideOfEscalator.y())) {
                     int newG = current.g + 1; // Cost to move to the escalator destination
-                    int newH = heuristicManhattan(coordinateOtherSideOfEscalator, coordinateEnd);
+                    int newH = findDistance(coordinateOtherSideOfEscalator, coordinateEnd, heuristicType);
                     int dx = coordinateOtherSideOfEscalator.x() - current.getX();
                     int dy = coordinateOtherSideOfEscalator.y() - current.getY();
                     Action escalatorAction = Action.ESCALATOR;
@@ -102,7 +102,7 @@ public class PathFinder {
                         !closedSet.contains(coordinateNew.x() + "," + coordinateNew.y()) &&
                         hasNoWall(grid[current.getX()][current.getY()], grid[coordinateNew.x()][coordinateNew.y()], action)) {
                     int newG = current.g + 1; // Cost to move to the neighbor
-                    int newH = findDistance(coordinateNew, coordinateEnd);
+                    int newH = findDistance(coordinateNew, coordinateEnd, heuristicType);
                     Node neighbor = new Node(coordinateNew, newG, newH, current, action);
 
                     openSet.add(neighbor);
@@ -128,12 +128,23 @@ public class PathFinder {
         };
     }
 
-    public int findDistance(Coordinate coordinateA, Coordinate coordinateB) {
-        return heuristicManhattan(coordinateA, coordinateB);
+    public int findDistance(Coordinate coordinateA, Coordinate coordinateB, int heuristicType) {
+        switch (heuristicType) {
+            case 0:
+                return heuristicEuclidian(coordinateA, coordinateB);
+            case 1:
+                return heuristicManhattan(coordinateA, coordinateB);
+            default:
+                return heuristicManhattan(coordinateA, coordinateB);
+        }
     }
 
     private int heuristicManhattan(Coordinate coordinateA, Coordinate coordinateB) {
         return Math.abs(coordinateA.x() - coordinateB.x()) + Math.abs(coordinateA.y() - coordinateB.y());
+    }
+
+    private int heuristicEuclidian(Coordinate coordinateA, Coordinate coordinateB) {
+        return (int) Math.sqrt(Math.pow(coordinateA.x() - coordinateB.x(), 2) + Math.pow(coordinateA.y() - coordinateB.y(), 2));
     }
 
     private void reconstructPath(SearchPath searchTree, Node goalNode) {

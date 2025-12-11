@@ -5,7 +5,7 @@
   "games": [
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["ONE_HERO", "ONE_HERO", "ONE_HERO", "ONE_HERO"]
+      "aiPlayers": ["BASIC", "BASIC", "BASIC", "BASIC"]
     }
   ]
 }

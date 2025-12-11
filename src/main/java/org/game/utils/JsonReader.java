@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.game.model.*;
-import org.game.model.AI.AIPlayerType;
+import org.game.model.AI.PlayerType.AIPlayerType;
 import org.game.model.AI.PlayerType.OneHeroPlayer;
 import org.game.model.board.Board;
 import org.game.utils.output.GameRecord;
@@ -131,9 +131,14 @@ public class JsonReader {
                             // add the next in the aiPlayerTypes list
                             AIPlayerType playerType =  aiPlayerTypes.get(aiPlayerTypes.size() - aiPlayersLeft);
                             switch (playerType) {
-                                case ONE_HERO -> {
-                                    players.add(new OneHeroPlayer(actions, "AI player: One Hero " + aiPlayersLeft, board));
-                                    // add more AI player types here as needed
+                                case REACTIVE -> {
+                                    players.add(new OneHeroPlayer(actions, "AI player: " +playerType + "(" + aiPlayersLeft + ")", board, AIPlayerType.REACTIVE));
+                                }
+                                case SHORT_FUSE -> {
+                                    players.add(new OneHeroPlayer(actions, "AI player: " +playerType + "(" + aiPlayersLeft + ")", board, AIPlayerType.SHORT_FUSE));
+                                }
+                                case BASIC -> {
+                                    players.add(new OneHeroPlayer(actions, "AI player: " + playerType + "(" + aiPlayersLeft + ")", board, AIPlayerType.BASIC));
                                 }
                             }
                             aiPlayersLeft--;

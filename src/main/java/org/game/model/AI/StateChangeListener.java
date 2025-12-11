@@ -8,4 +8,5 @@ public interface StateChangeListener {
     void onPawnMoved(Pawn movedPawn, Action action);
     void onDiscovered(Pawn pawn);
     void onFirstPhaseCompleted();
+    void onTimerFlipped(int timeLeft);
 }

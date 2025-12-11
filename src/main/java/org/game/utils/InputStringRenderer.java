@@ -75,7 +75,8 @@ public class InputStringRenderer {
         }
         // optionalNumber != 0
         else if (actionType == VORTEX && pawnColor != null){
-            actionDelegator.vortexPawn(pawnColor, optionalNumber);
+            // use manhattan (1) as default heuristic
+            actionDelegator.vortexPawn(pawnColor, optionalNumber, 1);
         }
         else {
             System.out.println("Invalid input. Please provide both color and direction in correct format.");

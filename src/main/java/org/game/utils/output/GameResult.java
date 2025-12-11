@@ -1,6 +1,6 @@
 package org.game.utils.output;
 
-import org.game.model.AI.AIPlayerType;
+import org.game.model.AI.PlayerType.AIPlayerType;
 import org.game.utils.input.GameParams;
 
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package org.game.utils.input;
 
-import org.game.model.AI.AIPlayerType;
+import org.game.model.AI.PlayerType.AIPlayerType;
 
 import java.util.List;
 

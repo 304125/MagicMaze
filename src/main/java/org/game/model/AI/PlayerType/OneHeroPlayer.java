@@ -11,6 +11,7 @@ import java.util.*;
 import static org.game.model.ActionType.*;
 
 public class OneHeroPlayer extends AIPlayer {
+    private AIPlayerType playerType;
     private Pawn currentlyPlannedPawn;
     private ActionTree actionTree;
     private final GeneralGoalManager generalGoalManager;
@@ -25,16 +26,16 @@ public class OneHeroPlayer extends AIPlayer {
     private boolean iWasLastToMove = false;
     private long lastDoSomethingPlacedTimestamp = 0;
     private boolean updatingOtherPawnMoves = false;
+    private int currentMemoryCapacity;
 
-    public OneHeroPlayer(List<ActionType> actions, String name, Board board) {
+    public OneHeroPlayer(List<ActionType> actions, String name, Board board, AIPlayerType playerType) {
         super(actions, name, board);
         currentlyPlannedPawn = board.getRandomPawn();
         actionTree = new ActionTree();
-        if(Config.PRINT_EVERYTHING){
-            System.out.println("OneHeroPlayer initialized with memory capacity: " + super.getCurrentMemoryCapacity());
-        }
         this.generalGoalManager = GeneralGoalManager.getInstance();
         this.pathFinder = new PathFinder(board.getTiles(), board);
+        this.playerType = playerType;
+        currentMemoryCapacity = playerType.getParameters().getStartingCapacity();
     }
 
     @Override
@@ -54,7 +55,8 @@ public class OneHeroPlayer extends AIPlayer {
         if(!isThreadSleeping && running){
             try{
                 isThreadSleeping = true;
-                Thread.sleep(1000); // wait a bit to process
+                int sleepTime = (int) (1000/playerType.getParameters().getProcessingRatio());
+                Thread.sleep(sleepTime); // wait a bit to process
                 isThreadSleeping = false;
             } catch (InterruptedException e) {
                 System.out.println("Build action tree sleep interrupted.");
@@ -89,7 +91,7 @@ public class OneHeroPlayer extends AIPlayer {
         // order goalCoordinates by distance to lastMovedPawn
         Map<Coordinate, Integer> distanceMap = new HashMap<>();
         for (Coordinate goal : goalCoordinates) {
-            int estimatedDistance = pathFinder.findDistance(currentlyPlannedPawn.getCoordinate(), goal);
+            int estimatedDistance = pathFinder.findDistance(currentlyPlannedPawn.getCoordinate(), goal, playerType.getParameters().getHeuristicType());
             distanceMap.put(goal, estimatedDistance);
         }
         if(Config.PRINT_EVERYTHING){
@@ -101,9 +103,9 @@ public class OneHeroPlayer extends AIPlayer {
 
         // starting from the closest goal, find the shortest path
         for (Coordinate goal : goalCoordinates) {
-            SearchPath path = pathFinder.findShortestPath(currentlyPlannedPawn.getCoordinate(), goal, currentlyPlannedPawn.getColor());
+            SearchPath path = pathFinder.findShortestPath(currentlyPlannedPawn.getCoordinate(), goal, currentlyPlannedPawn.getColor(), playerType.getParameters().getHeuristicType());
             currentChunkSize += ChunkGenerator.countChunks(path);
-            if(currentChunkSize > super.getCurrentMemoryCapacity()){
+            if(currentChunkSize > currentMemoryCapacity){
                 if(Config.PRINT_EVERYTHING){
                     System.out.println("Reached maximum chunk size limit while building action tree. Stopping further path additions.");
                 }
@@ -142,6 +144,11 @@ public class OneHeroPlayer extends AIPlayer {
 
     @Override
     public void onPawnMoved(Pawn movedPawn, Action action) {
+        if(playerType.getParameters().isStressedByPlacingDoSomething()){
+            // re-set capacity when someone else moved
+            currentMemoryCapacity = playerType.getParameters().getStartingCapacity();
+        }
+        ticksWaiting = 0;
         if(canPerformAction(action.getType())){
             iWasLastToMove = true;
         }
@@ -152,7 +159,8 @@ public class OneHeroPlayer extends AIPlayer {
         if(!isThreadSleeping && running){
             try{
                 isThreadSleeping = true;
-                Thread.sleep(500); // wait a bit to process
+                int sleepTime = (int) (500/playerType.getParameters().getProcessingRatio());
+                Thread.sleep(sleepTime); // wait a bit to process
                 isThreadSleeping = false;
             } catch (InterruptedException e) {
                 System.out.println("On pawn moved sleep interrupted.");
@@ -161,7 +169,6 @@ public class OneHeroPlayer extends AIPlayer {
         }
 
         if(movedPawn.getColor().equals(currentlyPlannedPawn.getColor())) {
-            ticksWaiting = 0;
             boolean moved = actionTree.takeAction(action);
             if(Config.PRINT_EVERYTHING){
                 actionTree.printTree(getName(), super.getActions());
@@ -187,7 +194,7 @@ public class OneHeroPlayer extends AIPlayer {
             }
             otherPawnMoves.add(movedPawn.getColor());
             // if that pawn has been moved more times than my blindness (and is not the pawn i have tree for), re-build
-            if(otherPawnMoves.stream().filter(color -> color.equals(movedPawn.getColor())).count() >= super.getBlindness()){
+            if(otherPawnMoves.stream().filter(color -> color.equals(movedPawn.getColor())).count() >= playerType.getParameters().getBlindness()){
                 currentlyPlannedPawn = movedPawn;
                 // re-build tree, another pawn was moved
                 buildActionTree();
@@ -236,7 +243,8 @@ public class OneHeroPlayer extends AIPlayer {
                     if(!iWasLastToMove){
                         if(!isThreadSleeping && running){
                             isThreadSleeping = true;
-                            Thread.sleep(1000); // Wait for 1 second
+                            int sleepTime = (int) (1000/playerType.getParameters().getProcessingRatio());
+                            Thread.sleep(sleepTime); // Wait for 1 second
                             isThreadSleeping = false;
                         }
                     }
@@ -254,7 +262,8 @@ public class OneHeroPlayer extends AIPlayer {
                         buildActionTree(); // Rebuild the tree if no action is available
                         if(!isThreadSleeping && running){
                             isThreadSleeping = true;
-                            Thread.sleep(3000); // Wait for 3 seconds
+                            int sleepTime = (int) (3000/playerType.getParameters().getProcessingRatio());
+                            Thread.sleep(sleepTime); // Wait for 3 seconds
                             isThreadSleeping = false;
                         }
                         bestAction = actionTree.bestAction();
@@ -265,7 +274,8 @@ public class OneHeroPlayer extends AIPlayer {
                             buildActionTree(); // Rebuild the tree if no action is available
                             if(!isThreadSleeping && running){
                                 isThreadSleeping = true;
-                                Thread.sleep(3000); // Wait for 3 seconds
+                                int sleepTime = (int) (3000/playerType.getParameters().getProcessingRatio());
+                                Thread.sleep(sleepTime); // Wait for 3 seconds
                                 isThreadSleeping = false;
                             }
                         }
@@ -279,9 +289,9 @@ public class OneHeroPlayer extends AIPlayer {
                         }
                         else{
                             ticksWaiting++;
-                            if(ticksWaiting >= super.getPatience()){
+                            if(ticksWaiting >= playerType.getParameters().getPatience()){
                                 ticksWaiting = 0;
-                                if(getActionDelegator().isPerformable(bestAction, currentlyPlannedPawn.getColor())){
+                                if(getActionDelegator().isPerformable(bestAction, currentlyPlannedPawn.getColor(), playerType.getParameters().getHeuristicType())){
                                     placeDoSomething(bestAction.getType());
                                 }
                                 else{
@@ -324,7 +334,7 @@ public class OneHeroPlayer extends AIPlayer {
                 getActionDelegator().discoverRandomCard(currentlyPlannedPawn.getColor());
             }
             case VORTEX -> {
-                moved = getActionDelegator().vortexPawn(currentlyPlannedPawn.getColor(), bestAction.getVortexCoordinate());
+                moved = getActionDelegator().vortexPawn(currentlyPlannedPawn.getColor(), bestAction.getVortexCoordinate(), playerType.getParameters().getHeuristicType());
             }
         }
         if(moved){
@@ -362,14 +372,14 @@ public class OneHeroPlayer extends AIPlayer {
             // just vortex that pawn to the closest vortex
             // own color's vortex is never blocking
             if(canPerformAction(VORTEX) && getActionDelegator().isFirstPhase()){
-                getActionDelegator().vortexToClosest(blockingPawn.getColor());
+                getActionDelegator().vortexToClosest(blockingPawn.getColor(), playerType.getParameters().getHeuristicType());
             }
             else{
                 // Place a "do something" token in front of person who can do that action
                 if(Config.PRINT_EVERYTHING){
-                    System.out.println("My patience: "+super.getPatience()+", ticks waiting: "+ticksWaiting);
+                    System.out.println("My patience: " + playerType.getParameters().getPatience() + ", ticks waiting: "+ticksWaiting);
                 }
-                if(ticksWaiting >= super.getPatience() && getActionDelegator().isFirstPhase()){
+                if(ticksWaiting >= playerType.getParameters().getPatience() && getActionDelegator().isFirstPhase()){
                     placeDoSomething(VORTEX);
                     ticksWaiting = 0;
                 }
@@ -399,7 +409,7 @@ public class OneHeroPlayer extends AIPlayer {
                     return 0;
                 }
                 // higher priority for closer discovery goals, give one penalty for each chunk (5 nodes)
-                int distance = pathFinder.findDistance(pawnCoordinate, goal);
+                int distance = pathFinder.findDistance(pawnCoordinate, goal, playerType.getParameters().getHeuristicType());
                 float chunkPenalty = ChunkGenerator.estimateChunks(distance);
 
 
@@ -424,9 +434,15 @@ public class OneHeroPlayer extends AIPlayer {
             }
             case TIMER: {
                 // following the logarithmic function
-                int timerPriority = getActionDelegator().getTimerPayoff();
-                int distance = pathFinder.findDistance(pawnCoordinate, goal);
+                int timerPriority = getActionDelegator().getTimerPayoff(playerType.getParameters().getTimerLogBase());
+                int distance = pathFinder.findDistance(pawnCoordinate, goal, playerType.getParameters().getHeuristicType());
                 float chunkPenalty = ChunkGenerator.estimateChunks(distance);
+
+                // if i am looking at the timer option, I should get stressed if it affects me
+                if(playerType.getParameters().isStressByLowTime()){
+                    // stress by reducing memory capacity
+                    currentMemoryCapacity = currentMemoryCapacity - timerPriority;
+                }
 
                 return timerPriority-chunkPenalty;
             }
@@ -450,7 +466,10 @@ public class OneHeroPlayer extends AIPlayer {
             return;
         }
         thinking = true;
-        System.out.println("I am going to do something");
+
+        if(playerType.getParameters().isStressedByDoSomething()){
+            currentMemoryCapacity--;
+        }
 
         // look if I can do anything according to my plan
         buildActionTree();
@@ -476,25 +495,28 @@ public class OneHeroPlayer extends AIPlayer {
 
         int index = 0;
 
-        super.decreaseMemoryCapacity();
-
-
         while(index <= allColors.size()){
             System.out.println("My best action is "+bestAction+" for pawn "+currentlyPlannedPawn.getColor());
-            System.out.println("Is it performable (not occupied)? "+getActionDelegator().isPerformable(bestAction, currentlyPlannedPawn.getColor()));
+            System.out.println("Is it performable (not occupied)? "+getActionDelegator().isPerformable(bestAction, currentlyPlannedPawn.getColor(), playerType.getParameters().getHeuristicType()));
             if(Config.PRINT_EVERYTHING){
 
             }
-            if(getActionDelegator().isPerformable(bestAction, currentlyPlannedPawn.getColor())){
+            if(getActionDelegator().isPerformable(bestAction, currentlyPlannedPawn.getColor(), playerType.getParameters().getHeuristicType())){
                 if(canPerformAction(bestAction.getType())){
                     attemptBestAction(bestAction);
                     thinking = false;
+                    if(playerType.getParameters().isStressedByDoSomething()){
+                        currentMemoryCapacity++;
+                    }
                     return;
                 }
                 else{
                     // someone wants me to do something, but I don't know what to do (not in my plan)
                     if(index == allColors.size()){
                         // found nothing useful
+                        if(playerType.getParameters().isStressedByDoSomething()){
+                            currentMemoryCapacity++;
+                        }
                         break;
                     }
                     currentlyPlannedPawn = getActionDelegator().getPawnByColor(allColors.get(index));
@@ -510,11 +532,17 @@ public class OneHeroPlayer extends AIPlayer {
                     System.out.println("My best action "+bestAction+" is blocked, I will try to vortex the blocking pawn.");
                     tryToClearBlockingPawn(bestAction);
                     thinking = false;
+                    if(playerType.getParameters().isStressedByDoSomething()){
+                        currentMemoryCapacity++;
+                    }
                     return;
                 }
                 else{
                     if(index == allColors.size()){
                         // found nothing useful
+                        if(playerType.getParameters().isStressedByDoSomething()){
+                            currentMemoryCapacity++;
+                        }
                         break;
                     }
                     currentlyPlannedPawn = getActionDelegator().getPawnByColor(allColors.get(index));
@@ -525,7 +553,7 @@ public class OneHeroPlayer extends AIPlayer {
             }
         }
         System.out.println("I cannot do anything useful right now. I'll just do something random.");
-        boolean canDo = getActionDelegator().performRandomAvailableActionFromActionSet(super.getActions());
+        boolean canDo = getActionDelegator().performRandomAvailableActionFromActionSet(super.getActions(), playerType.getParameters().getHeuristicType());
         if(!canDo){
             System.out.println("I will instead tell someone else to do something.");
             while(index <= allColors.size()){
@@ -554,11 +582,15 @@ public class OneHeroPlayer extends AIPlayer {
     }
 
     private void placeDoSomething(ActionType action){
-        if(lastDoSomethingPlacedTimestamp + 7000 > System.currentTimeMillis()){
-            // avoid spamming do something tokens
-            return;
+        if(playerType.getParameters().isStressedByPlacingDoSomething()){
+            currentMemoryCapacity--;
         }
         System.out.println(getName() + " is placing a Do Something token for action: " + action);
         getActionDelegator().placeDoSomething(action);
+    }
+
+    public void onTimerFlipped(int timeLeft){
+        // re-set capacity (nobody should be stressed after timer flip)
+        currentMemoryCapacity = playerType.getParameters().getStartingCapacity();
     }
 }

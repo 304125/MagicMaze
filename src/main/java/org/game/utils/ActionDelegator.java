@@ -1,7 +1,9 @@
 package org.game.utils;
 
 import org.game.model.*;
+import org.game.model.AI.AIPlayer;
 import org.game.model.AI.PayoffCalculator;
+import org.game.model.AI.StateChangeListener;
 import org.game.model.Action;
 import org.game.model.board.Board;
 import org.game.model.board.PawnManager;
@@ -23,6 +25,7 @@ public class ActionDelegator {
     private final ActionWriter actionWriter;
     private PayoffCalculator payoffCalculator;
     private final ActionUIUpdater actionUIUpdater;
+    private final List<StateChangeListener> listeners = new ArrayList<>();
 
     public ActionDelegator(Game game, BoardUI boardUI, ActionWriter actionWriter) {
         this.game = game;
@@ -31,6 +34,15 @@ public class ActionDelegator {
         this.actionWriter = actionWriter;
         this.payoffCalculator = new PayoffCalculator(board.getTimer());
         this.actionUIUpdater = new ActionUIUpdater(boardUI);
+        for(Player player : game.getPlayers()){
+            if(player instanceof AIPlayer aiPlayer){
+                addStateChangeListener(aiPlayer);
+            }
+        }
+    }
+
+    private void addStateChangeListener(StateChangeListener listener) {
+        listeners.add(listener);
     }
 
     // return false if the action was not performed
@@ -49,6 +61,7 @@ public class ActionDelegator {
                 if(actionWriter != null) actionWriter.recordMove(pawnColor, action);
 
                 if(board.isPawnAtTimerTile(updatedPawn)){
+                    onTimerFlipped(board.getTimer().getTimeLeftInTimer());
                     boardUI.changeTimerColorToDark(updatedPawn.getCoordinate());
                 }
             }
@@ -111,7 +124,7 @@ public class ActionDelegator {
             return false;
         }
     }
-    public boolean vortexPawn(Color pawnColor, int vortexNumber) {
+    public boolean vortexPawn(Color pawnColor, int vortexNumber, int heuristicType) {
         if(!board.isFirstPhase()){
             System.out.println("Cannot use vortex outside of first phase");
             return false;
@@ -130,7 +143,7 @@ public class ActionDelegator {
             }
             else{
                 Pawn blockingPawn = board.getPawnAt(vortexCoordinate);
-                return vortexToClosest(blockingPawn.getColor());
+                return vortexToClosest(blockingPawn.getColor(), heuristicType);
             }
         }
         if(actionWriter != null) actionWriter.recordVortex(pawnColor, vortexNumber);
@@ -142,10 +155,10 @@ public class ActionDelegator {
         return true;
     }
 
-    public boolean vortexPawn(Color color, Coordinate vortexCoordinate){
+    public boolean vortexPawn(Color color, Coordinate vortexCoordinate, int heuristicType) {
         int vortexNumber = board.getCardIdOfVortex(vortexCoordinate, color);
         System.out.println("Vortexing pawn " + color + " to vortex number " + vortexNumber + " at coordinate " + vortexCoordinate);
-        return vortexPawn(color, vortexNumber);
+        return vortexPawn(color, vortexNumber, heuristicType);
     }
 
     private void handlePawnsUI(Pawn previousPawn, Pawn updatedPawn) {
@@ -175,19 +188,19 @@ public class ActionDelegator {
         return null;
     }
 
-    public boolean vortexToClosest(Color pawnColor){
+    public boolean vortexToClosest(Color pawnColor, int heuristicType){
         System.out.println("Vortexing pawn " + pawnColor + " to closest vortex");
         Pawn pawn = board.getPawnByColor(pawnColor);
-        Coordinate closestVortex = board.getClosestVortex(pawn.getCoordinate(), pawn.getColor());
+        Coordinate closestVortex = board.getClosestVortex(pawn.getCoordinate(), pawn.getColor(), heuristicType);
 
-        boolean worked = vortexPawn(pawn.getColor(), closestVortex);
+        boolean worked = vortexPawn(pawn.getColor(), closestVortex, heuristicType);
 
         if(!worked){
             Pawn blockingPawn = board.getPawnAt(closestVortex);
             if(blockingPawn.getColor() != pawnColor){
                 // try to vortex the blocking pawn away if it is a different color
                 // otherwise if it is the same color, it would loop forever (move itself to where it already is standing)
-                return vortexToClosest(blockingPawn.getColor());
+                return vortexToClosest(blockingPawn.getColor(), heuristicType);
             }
         }
         return true;
@@ -204,7 +217,7 @@ public class ActionDelegator {
         actionUIUpdater.updateUI(actions);
     }
 
-    public boolean performRandomAvailableActionFromActionSet(List<ActionType> actions){
+    public boolean performRandomAvailableActionFromActionSet(List<ActionType> actions, int heuristicType){
         System.out.println("Panic!");
         // randomly ordered list of all colors and actions
         List<Pawn> allPawns = board.getPawns();
@@ -221,7 +234,7 @@ public class ActionDelegator {
             for(Color color: allColors){
                 System.out.println("Checking if actionType " + actionType + " is performable by pawn " + color);
                 Action action = new Action(actionType);
-                if(isPerformable(action, color)){
+                if(isPerformable(action, color, heuristicType)){
                     switch (actionType){
                         case DISCOVER: {
                             System.out.println("Trying to discover with pawn " + color);
@@ -236,7 +249,7 @@ public class ActionDelegator {
                         case VORTEX: {
                             if(isFirstPhase()){
                                 System.out.println("Trying to vortex pawn " + color);
-                                done = vortexToClosest(color);
+                                done = vortexToClosest(color, heuristicType);
                             }
                             break;
                         }
@@ -252,7 +265,7 @@ public class ActionDelegator {
         return false;
     }
 
-    public boolean isPerformable(Action action, Color pawnColor){
+    public boolean isPerformable(Action action, Color pawnColor, int heuristicType){
         if(action == null){
             return false;
         }
@@ -274,7 +287,7 @@ public class ActionDelegator {
             case VORTEX: {
                 if(action.getVortexCoordinate() == null){
                     // vortex to the closest one (triggered by random action)
-                    Coordinate closestVortex = board.getClosestVortex(pawnCoordinate, pawnColor);
+                    Coordinate closestVortex = board.getClosestVortex(pawnCoordinate, pawnColor, heuristicType);
                     return !board.getTileAt(closestVortex).isOccupied();
                 }
                 else{
@@ -321,7 +334,13 @@ public class ActionDelegator {
         return board.areAllGoalsDiscovered();
     }
 
-    public int getTimerPayoff(){
-        return payoffCalculator.calculateLogarithmicTimePayoff();
+    public int getTimerPayoff(float logBase){
+        return payoffCalculator.calculateLogarithmicTimePayoff(logBase);
+    }
+
+    public void onTimerFlipped(int timeLeft){
+        for (StateChangeListener listener : listeners) {
+            listener.onTimerFlipped(timeLeft);
+        }
     }
 }

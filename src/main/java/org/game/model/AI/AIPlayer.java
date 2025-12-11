@@ -12,21 +12,10 @@ import java.util.Random;
 public abstract class AIPlayer extends Player  implements StateChangeListener, AIPlayerBehavior{
     private final Board board;
     private ActionDelegator actionDelegator;
-    private int currentMemoryCapacity;
-    private int blindness;
-    private int patience;
-    private boolean shouldDecreaseMemoryCapacity = false;
 
     public AIPlayer(List<ActionType> actions, String name, Board board) {
         super(actions, name);
         this.board = board;
-        currentMemoryCapacity = ChunkGenerator.generateChunkSize();
-        Random random = new Random();
-        // 0, 1, 2, 3
-//        blindness = random.nextInt(1);
-        blindness = 0;
-//        patience = random.nextInt(5,10);
-        patience = 5;
     }
 
     public Board getBoard() {
@@ -39,23 +28,5 @@ public abstract class AIPlayer extends Player  implements StateChangeListener, A
 
     public ActionDelegator getActionDelegator(){
         return actionDelegator;
-    }
-
-    public int getCurrentMemoryCapacity(){
-        return currentMemoryCapacity;
-    }
-
-    public void decreaseMemoryCapacity(){
-        if(shouldDecreaseMemoryCapacity){
-            currentMemoryCapacity--;
-        }
-    }
-
-    public int getBlindness(){
-        return blindness;
-    }
-
-    public int getPatience(){
-        return patience;
     }
 }

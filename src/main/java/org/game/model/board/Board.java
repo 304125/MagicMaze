@@ -407,12 +407,12 @@ public class Board {
         return true;
     }
 
-    public Coordinate getClosestVortex(Coordinate coordinate, Color color){
+    public Coordinate getClosestVortex(Coordinate coordinate, Color color, int heuristicType){
         List<BoardVortex> vortexList = getVortexListByColor(color);
         double smallestDistance = Double.POSITIVE_INFINITY;
         Coordinate closestCoordinate = null;
         for(BoardVortex vortex : vortexList){
-            int distance = pathFinder.findDistance(coordinate, vortex.coordinate());
+            int distance = pathFinder.findDistance(coordinate, vortex.coordinate(), heuristicType);
             if(distance < smallestDistance){
                 smallestDistance = distance;
                 closestCoordinate = vortex.coordinate();
