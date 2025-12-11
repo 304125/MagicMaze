@@ -1,7 +1,7 @@
 package org.game.model;
 
-import org.game.model.AI.AIPlayer;
 import org.game.model.AI.PlayerType.AIPlayerType;
+import org.game.model.AI.PlayerType.AIPlayer;
 import org.game.model.AI.StateChangeListener;
 import org.game.model.board.Board;
 import org.game.model.board.GeneralGoalManager;

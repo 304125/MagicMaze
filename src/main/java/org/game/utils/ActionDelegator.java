@@ -1,8 +1,8 @@
 package org.game.utils;
 
 import org.game.model.*;
-import org.game.model.AI.AIPlayer;
 import org.game.model.AI.PayoffCalculator;
+import org.game.model.AI.PlayerType.AIPlayer;
 import org.game.model.AI.StateChangeListener;
 import org.game.model.Action;
 import org.game.model.board.Board;
@@ -13,7 +13,6 @@ import org.game.utils.output.ActionWriter;
 import static org.game.model.ActionType.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 

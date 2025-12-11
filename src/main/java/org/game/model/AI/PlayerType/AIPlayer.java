@@ -4,13 +4,14 @@ import org.game.model.*;
 import org.game.model.AI.*;
 import org.game.model.board.Board;
 import org.game.model.board.GeneralGoalManager;
+import org.game.utils.ActionDelegator;
 import org.game.utils.Config;
 
 import java.util.*;
 
 import static org.game.model.ActionType.*;
 
-public class OneHeroPlayer extends AIPlayer {
+public class AIPlayer extends Player  implements StateChangeListener, AIPlayerBehavior {
     private AIPlayerType playerType;
     private Pawn currentlyPlannedPawn;
     private ActionTree actionTree;
@@ -27,9 +28,12 @@ public class OneHeroPlayer extends AIPlayer {
     private long lastDoSomethingPlacedTimestamp = 0;
     private boolean updatingOtherPawnMoves = false;
     private int currentMemoryCapacity;
+    private final Board board;
+    private ActionDelegator actionDelegator;
 
-    public OneHeroPlayer(List<ActionType> actions, String name, Board board, AIPlayerType playerType) {
-        super(actions, name, board);
+    public AIPlayer(List<ActionType> actions, String name, Board board, AIPlayerType playerType) {
+        super(actions, name);
+        this.board = board;
         currentlyPlannedPawn = board.getRandomPawn();
         actionTree = new ActionTree();
         this.generalGoalManager = GeneralGoalManager.getInstance();
@@ -43,6 +47,14 @@ public class OneHeroPlayer extends AIPlayer {
         running = true;
         buildActionTree();
         startActionExecution();
+    }
+
+    public void setActionDelegator(ActionDelegator actionDelegator){
+        this.actionDelegator = actionDelegator;
+    }
+
+    public ActionDelegator getActionDelegator(){
+        return actionDelegator;
     }
 
     // builds action tree from scratch
@@ -398,7 +410,7 @@ public class OneHeroPlayer extends AIPlayer {
 
     public float calculatePriority(Coordinate goal){
         Coordinate pawnCoordinate = currentlyPlannedPawn.getCoordinate();
-        Tile goalTile = getBoard().getTileAt(goal);
+        Tile goalTile = board.getTileAt(goal);
         switch (goalTile.getType()) {
             case DISCOVERY: {
                 if(getActionDelegator().areAllGoalsDiscovered()){
