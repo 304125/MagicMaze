@@ -552,8 +552,16 @@ public class OneHeroPlayer extends AIPlayer {
                 }
             }
         }
-        System.out.println("I cannot do anything useful right now. I'll just do something random.");
-        boolean canDo = getActionDelegator().performRandomAvailableActionFromActionSet(super.getActions(), playerType.getParameters().getHeuristicType());
+
+        boolean canDo = false;
+        if(playerType.getParameters().isStubborn()){
+            System.out.println("I am stubborn and prefer my own strategy.");
+        }
+        else{
+            System.out.println("I cannot do anything useful right now. I'll just do something random.");
+            canDo = getActionDelegator().performRandomAvailableActionFromActionSet(super.getActions(), playerType.getParameters().getHeuristicType());
+        }
+
         if(!canDo){
             System.out.println("I will instead tell someone else to do something.");
             while(index <= allColors.size()){
@@ -582,6 +590,15 @@ public class OneHeroPlayer extends AIPlayer {
     }
 
     private void placeDoSomething(ActionType action){
+        if(!playerType.getParameters().isAlwaysPlaceDoSomething()){
+            // flip a coin whether to place or not
+            Random rand = new Random();
+            boolean place = rand.nextBoolean();
+            if(!place){
+                System.out.println(getName() + " decided not to place a Do Something token.");
+                return;
+            }
+        }
         if(playerType.getParameters().isStressedByPlacingDoSomething()){
             currentMemoryCapacity--;
         }
@@ -592,5 +609,16 @@ public class OneHeroPlayer extends AIPlayer {
     public void onTimerFlipped(int timeLeft){
         // re-set capacity (nobody should be stressed after timer flip)
         currentMemoryCapacity = playerType.getParameters().getStartingCapacity();
+        // delay for 3 seconds
+        try{
+            if(!isThreadSleeping && running){
+                isThreadSleeping = true;
+                Thread.sleep(3000);
+                isThreadSleeping = false;
+            }
+        } catch (InterruptedException e) {
+            System.out.println("On timer flipped sleep interrupted.");
+            Thread.currentThread().interrupt();
+        }
     }
 }
