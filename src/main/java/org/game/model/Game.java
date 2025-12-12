@@ -19,7 +19,7 @@ public class Game {
     private StackOfCards unplayedCards;
     private final JsonReader jsonReader = new JsonReader();
     private Card startingCard;
-    private final int boardMaxSize = 35;
+    private final int boardMaxSize = 45;
     private List<Player> players;
     private final List<StateChangeListener> listeners = new ArrayList<>();
 
@@ -165,17 +165,9 @@ public class Game {
         }
         boolean success = board.addCardToBoard(nextCard, pawn.getCoordinate());
         if(success){
-            updateStateOfGame(pawn);
             return nextCard.getId();
         }
         return 0;
-    }
-
-    private void updateStateOfGame(Pawn pawn){
-        // Notify all listeners about the pawn move
-        for (StateChangeListener listener : listeners) {
-            listener.onDiscovered(pawn);
-        }
     }
 
     public void giveActionDelegatorToAIPlayers(ActionDelegator actionDelegator){

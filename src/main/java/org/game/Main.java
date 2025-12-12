@@ -136,7 +136,7 @@ public class Main {
             Map<Color, Coordinate> initialPawnPositions = replayManager.getInitialPawnPositions();
             Game game = new Game(initialPawnPositions);
             BoardUI boardUI = new BoardUI(game.getBoard());
-            ActionDelegator actionDelegator = new ActionDelegator(game, boardUI, null);
+            ActionDelegator actionDelegator = new ActionDelegator(game, boardUI);
             replayManager.setActionDelegator(actionDelegator);
             replayManager.startReplay();
 

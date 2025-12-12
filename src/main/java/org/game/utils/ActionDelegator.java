@@ -40,6 +40,15 @@ public class ActionDelegator {
         }
     }
 
+    public ActionDelegator(Game game, BoardUI boardUI) {
+        this.game = game;
+        board = game.getBoard();
+        this.boardUI = boardUI;
+        actionWriter = null;
+        this.payoffCalculator = new PayoffCalculator(board.getTimer());
+        this.actionUIUpdater = new ActionUIUpdater(boardUI);
+    }
+
     private void addStateChangeListener(StateChangeListener listener) {
         listeners.add(listener);
     }
@@ -91,6 +100,10 @@ public class ActionDelegator {
     }
 
     public boolean discoverRandomCard(Color pawnColor) {
+        // if all cards discovered, return false
+        if(game.areAllTilesDiscovered()){
+            return false;
+        }
         Pawn pawn = new Pawn(board.getPawnByColor(pawnColor));
         // check if the pawn is standing on discovery tile
         Tile currentTile = board.getTileAt(pawn.getCoordinate());
@@ -101,6 +114,9 @@ public class ActionDelegator {
             if(discoveredCardId != 0){
                 boardUI.renderDiscoveredTiles(corner);
                 if(actionWriter != null) actionWriter.recordDiscover(pawnColor, discoveredCardId);
+                for (StateChangeListener listener : listeners) {
+                    listener.onDiscovered(pawn);
+                }
             }
             return true;
         }
