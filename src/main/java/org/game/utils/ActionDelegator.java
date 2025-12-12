@@ -274,15 +274,6 @@ public class ActionDelegator {
             case DISCOVER: {
                 return (currentTile.getType() == TileType.DISCOVERY && pawnColor == currentTile.getColor());
             }
-            case ESCALATOR: {
-                boolean isCurrentEscalator = currentTile.hasEscalator();
-                if(!isCurrentEscalator){
-                    return false;
-                }
-                Coordinate otherSide = PawnManager.getOtherSideOfEscalator(pawnCoordinate);
-                boolean isOtherSideOccupied = board.getTileAt(otherSide).isOccupied();
-                return !isOtherSideOccupied;
-            }
             case VORTEX: {
                 if(action.getVortexCoordinate() == null){
                     // vortex to the closest one (triggered by random action)
@@ -294,6 +285,27 @@ public class ActionDelegator {
                     return !board.getTileAt(action.getVortexCoordinate()).isOccupied();
                 }
             }
+            case ESCALATOR, MOVE_EAST, MOVE_NORTH, MOVE_SOUTH, MOVE_WEST: {
+                return isMovePerformable(action.getType(), pawnColor);
+            }
+        }
+        return false;
+    }
+
+    private boolean isMovePerformable(ActionType action, Color pawnColor){
+        Coordinate pawnCoordinate = board.getPawnByColor(pawnColor).getCoordinate();
+        Tile currentTile = board.getTileAt(pawnCoordinate);
+        switch (action){
+            case ESCALATOR: {
+                boolean isCurrentEscalator = currentTile.hasEscalator();
+                if(!isCurrentEscalator){
+                    return false;
+                }
+                Coordinate otherSide = PawnManager.getOtherSideOfEscalator(pawnCoordinate);
+                boolean isOtherSideOccupied = board.getTileAt(otherSide).isOccupied();
+                return !isOtherSideOccupied;
+            }
+
             case MOVE_EAST: {
                 if(board.getTileAt(pawnCoordinate.move(0, 1)) == null) return false;
                 return !board.getTileAt(pawnCoordinate.move(0, 1)).isOccupied();
@@ -341,5 +353,19 @@ public class ActionDelegator {
         for (StateChangeListener listener : listeners) {
             listener.onTimerFlipped(timeLeft);
         }
+    }
+
+    public List<ActionType> getApplicableActionsForPawn(Color pawnColor){
+        List<ActionType> applicableActions = new ArrayList<>();
+        // find all actions that are performable for this pawn = not blocked
+        // only to be used in the second phase -> do not consider vortex
+        List<ActionType> allActions = new ArrayList<>(List.of(MOVE_EAST, MOVE_NORTH, MOVE_WEST, MOVE_SOUTH, ESCALATOR));
+        for(ActionType actionType : allActions){
+            if(isMovePerformable(actionType, pawnColor)){
+                applicableActions.add(actionType);
+            }
+        }
+
+        return applicableActions;
     }
 }

@@ -25,7 +25,6 @@ public class AIPlayer extends Player  implements StateChangeListener, AIPlayerBe
     private boolean thinking = false;
     private boolean buildingTree = false;
     private boolean iWasLastToMove = false;
-    private long lastDoSomethingPlacedTimestamp = 0;
     private boolean updatingOtherPawnMoves = false;
     private int currentMemoryCapacity;
     private final Board board;
@@ -216,6 +215,18 @@ public class AIPlayer extends Player  implements StateChangeListener, AIPlayerBe
 
     @Override
     public void onDiscovered(Pawn pawn){
+        // sleep for 7 seconds to process
+        if(!isThreadSleeping && running){
+            try{
+                isThreadSleeping = true;
+                int sleepTime = (int) (7000/playerType.getParameters().getProcessingRatio());
+                Thread.sleep(sleepTime); // wait a bit to process
+                isThreadSleeping = false;
+            } catch (InterruptedException e) {
+                System.out.println("On discovered sleep interrupted.");
+                Thread.currentThread().interrupt();
+            }
+        }
         if(canPerformAction(DISCOVER)){
             iWasLastToMove = true;
         }
@@ -358,13 +369,12 @@ public class AIPlayer extends Player  implements StateChangeListener, AIPlayerBe
             if(Config.PRINT_EVERYTHING){
                 System.out.println("It has not moved, so something is blocking the action.");
             }
-            if(getActionDelegator().isFirstPhase()){
-                tryToClearBlockingPawn(bestAction);
-            }
+            tryToClearBlockingPawn(bestAction);
         }
     }
 
     private void tryToClearBlockingPawn(Action bestAction){
+        Pawn initialPawn = currentlyPlannedPawn;
         Pawn blockingPawn = getActionDelegator().getBlockingPawn(currentlyPlannedPawn, bestAction, bestAction.getVortexCoordinate());
         if(blockingPawn == null){
             if(Config.PRINT_EVERYTHING){
@@ -374,25 +384,57 @@ public class AIPlayer extends Player  implements StateChangeListener, AIPlayerBe
             // the blocking pawn has since moved or the tree was outdated (best action was not valid)
             buildActionTree();
             ticksWaiting++;
+            return;
         }
         else{
             if(Config.PRINT_EVERYTHING){
                 System.out.println("I "+ super.getName()+" can see that pawn "+blockingPawn.getColor()+" is blocking best action "+bestAction+" for pawn "+currentlyPlannedPawn.getColor());
-                System.out.println("Can I vortex? "+canPerformAction(VORTEX));
             }
-            // schedule a plan for the blocking pawn to move away
-            // just vortex that pawn to the closest vortex
-            // own color's vortex is never blocking
-            if(canPerformAction(VORTEX) && getActionDelegator().isFirstPhase()){
-                getActionDelegator().vortexToClosest(blockingPawn.getColor(), playerType.getParameters().getHeuristicType());
-            }
-            else{
-                // Place a "do something" token in front of person who can do that action
-                if(Config.PRINT_EVERYTHING){
-                    System.out.println("My patience: " + playerType.getParameters().getPatience() + ", ticks waiting: "+ticksWaiting);
+            if(getActionDelegator().isFirstPhase()){
+                // schedule a plan for the blocking pawn to move away
+                // just vortex that pawn to the closest vortex
+                // own color's vortex is never blocking
+                if(canPerformAction(VORTEX)){
+                    // plan for the blocking pawn to be vortexed to the closest goal that makes sense
+                    currentlyPlannedPawn = blockingPawn;
+                    buildActionTree();
+                    Action blockingBestAction = actionTree.bestAction();
+                    if(blockingBestAction.getType() == VORTEX){
+                        // can vortex the blocking pawn away
+                        System.out.println(getName() + " is vortexing blocking pawn " + blockingPawn.getColor() + " away to clear the path for pawn " + initialPawn.getColor());
+                        getActionDelegator().vortexPawn(blockingPawn.getColor(), blockingBestAction.getVortexCoordinate(), playerType.getParameters().getHeuristicType());
+                    }
+                    else{
+                        // if the best action does not result in vortex, just vortex to closest (to put it away)
+                        getActionDelegator().vortexToClosest(blockingPawn.getColor(), playerType.getParameters().getHeuristicType());
+                    }
+                    // after vortex, come back to initial pawn and continue
+                    currentlyPlannedPawn = initialPawn;
+                    attemptBestAction(bestAction);
+                    return;
                 }
-                if(ticksWaiting >= playerType.getParameters().getPatience() && getActionDelegator().isFirstPhase()){
-                    placeDoSomething(VORTEX);
+            }
+            // either not first phase or cannot vortex -> try to perform any action for the blocking pawn to move it away
+            List<ActionType> applicableActions = getActionDelegator().getApplicableActionsForPawn(blockingPawn.getColor());
+            // try to perform any of the actions in the set
+            boolean canDoAnything = false;
+            for(ActionType actionICanPerform : super.getActions()){
+                if(applicableActions.contains(actionICanPerform)){
+                    Action action = new Action(actionICanPerform);
+                    boolean moved = getActionDelegator().movePawn(blockingPawn.getColor(), action);
+                    if(moved){
+                        // come back to the initial pawn
+                        currentlyPlannedPawn = initialPawn;
+                        attemptBestAction(bestAction);
+                    }
+                    canDoAnything = true;
+                    break;
+                }
+            }
+            if(!canDoAnything){
+                // put do something on that action
+                if(ticksWaiting >= playerType.getParameters().getPatience()){
+                    placeDoSomething(applicableActions.getFirst());
                     ticksWaiting = 0;
                 }
                 else{
@@ -592,13 +634,8 @@ public class AIPlayer extends Player  implements StateChangeListener, AIPlayerBe
 
     @Override
     public void doSomethingPlaced(Player player){
-        lastDoSomethingPlacedTimestamp = System.currentTimeMillis();
         thinking = false;
         ticksWaiting = 0;
-//        if(player.getActions().contains(actionTree.bestAction()) || !getActionDelegator().isPerformable(actionTree.bestAction(), currentlyPlannedPawn.getColor())){
-//            // someone already notified the player about the same thing i am waiting for - no need to do it twice
-//            ticksWaiting = 0;
-//        }
     }
 
     private void placeDoSomething(ActionType action){
