@@ -1,6 +1,5 @@
 package org.game.utils;
 
-import org.game.model.Action;
 import org.game.model.ActionType;
 import org.game.model.Color;
 import org.game.model.Coordinate;
@@ -14,7 +13,6 @@ public class ReplayManager {
     private final GameRecord gameRecord;
     private InputStringRenderer inputStringRenderer;
     private Runnable onGameFinishedCallback;
-    private Thread replayThread;
     private volatile boolean running;
     private ActionDelegator actionDelegator;
 
@@ -34,15 +32,17 @@ public class ReplayManager {
 
     public void startReplay(){
         running = true;
-        replayThread = new Thread(() -> {
+        // Time to render a "do something" action
+        // Time to render a normal game move
+        Thread replayThread = new Thread(() -> {
             Map.Entry<Instant, String> first = gameRecord.next();
             Map.Entry<Instant, String> next = gameRecord.next();
 
             Map.Entry<Instant, String> doSomethingFirst = gameRecord.nextDoSomething();
             Map.Entry<Instant, String> doSomethingNext = gameRecord.nextDoSomething();
 
-            while(running && (next != null || doSomethingNext != null)){
-                if(doSomethingNext != null && (next == null || doSomethingFirst.getKey().isBefore(first.getKey()))){
+            while (running && (next != null || doSomethingNext != null)) {
+                if (doSomethingNext != null && (next == null || doSomethingFirst.getKey().isBefore(first.getKey()))) {
                     // Time to render a "do something" action
                     List<ActionType> actionList = inputStringRenderer.renderActions(doSomethingFirst.getValue());
                     actionDelegator.placeDoSomethingUI(actionList);
@@ -53,13 +53,11 @@ public class ReplayManager {
                     try {
                         Thread.sleep(delay);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        System.out.println("Replay thread interrupted during do something delay. Stopping replay...");
                     }
                     doSomethingFirst = doSomethingNext;
                     doSomethingNext = gameRecord.nextDoSomething();
-                    continue;
-                }
-                else{
+                } else {
                     // Time to render a normal game move
                     inputStringRenderer.renderInputString(first.getValue());
                     long actionDelay = next.getKey().toEpochMilli() - first.getKey().toEpochMilli();
@@ -69,7 +67,7 @@ public class ReplayManager {
                     try {
                         Thread.sleep(delay);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        System.out.println("Replay thread interrupted during action delay. Stopping replay...");
                     }
                     first = next;
                     next = gameRecord.next();
@@ -77,7 +75,7 @@ public class ReplayManager {
 
             }
             inputStringRenderer.renderInputString(first.getValue());
-            if(onGameFinishedCallback != null){
+            if (onGameFinishedCallback != null) {
                 onGameFinishedCallback.run();
             }
 

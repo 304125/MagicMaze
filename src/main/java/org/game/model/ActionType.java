@@ -7,5 +7,5 @@ public enum ActionType {
     MOVE_WEST,
     DISCOVER,
     VORTEX,
-    ESCALATOR;
+    ESCALATOR
 }

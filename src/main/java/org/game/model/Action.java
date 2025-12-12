@@ -20,10 +20,6 @@ public class Action {
         return this.type;
     }
 
-    public void setVortexCoordinate(Coordinate coordinate){
-        this.vortexCoordinate = coordinate;
-    }
-
     public Coordinate getVortexCoordinate(){
         return this.vortexCoordinate;
     }

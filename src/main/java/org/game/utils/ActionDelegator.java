@@ -22,7 +22,7 @@ public class ActionDelegator {
     private final Board board;
     private final BoardUI boardUI;
     private final ActionWriter actionWriter;
-    private PayoffCalculator payoffCalculator;
+    private final PayoffCalculator payoffCalculator;
     private final ActionUIUpdater actionUIUpdater;
     private final List<StateChangeListener> listeners = new ArrayList<>();
 
@@ -68,7 +68,9 @@ public class ActionDelegator {
         else if(action.getType() == ESCALATOR){
             updatedPawn = board.useEscalator(pawnColor);
             if(updatedPawn.getCoordinate().equals(previousPawn.getCoordinate())){
-                System.out.println("No escalator to use for pawn " + pawnColor);
+                if(Config.PRINT_EVERYTHING) {
+                    System.out.println("No escalator to use for pawn " + pawnColor);
+                }
                 return false;
             }
             else{
@@ -76,7 +78,9 @@ public class ActionDelegator {
             }
         }
         else{
-            System.out.println("Unknown action");
+            if(Config.PRINT_EVERYTHING) {
+                System.out.println("Unknown action");
+            }
             return false;
         }
         handlePawnsUI(previousPawn, updatedPawn);
@@ -125,7 +129,9 @@ public class ActionDelegator {
     }
     public boolean vortexPawn(Color pawnColor, int vortexNumber, int heuristicType) {
         if(!board.isFirstPhase()){
-            System.out.println("Cannot use vortex outside of first phase");
+            if(Config.PRINT_EVERYTHING) {
+                System.out.println("Cannot use vortex outside of first phase");
+            }
             return false;
         }
         Coordinate vortexCoordinate = board.getVortexCoordinateById(vortexNumber, pawnColor);
@@ -133,11 +139,15 @@ public class ActionDelegator {
         Pawn previousPawn = new Pawn(board.getPawnByColor(pawnColor));
         Pawn updatedPawn = board.useVortex(pawnColor, vortexNumber);
         if(updatedPawn.getCoordinate().equals(previousPawn.getCoordinate())){
-            System.out.println("No vortex to use for pawn " + pawnColor + " with number " + vortexNumber);
+            if(Config.PRINT_EVERYTHING) {
+                System.out.println("No vortex to use for pawn " + pawnColor + " with number " + vortexNumber);
+            }
             // attempt to vortex the pawn standing on the destination away
             // only if it is a different color
             if(board.getPawnByColor(pawnColor).getCoordinate().equals(vortexCoordinate)){
-                System.out.println("Vortex destination is occupied by the same color pawn. Cannot vortex.");
+                if(Config.PRINT_EVERYTHING) {
+                    System.out.println("Vortex destination is occupied by the same color pawn. Cannot vortex.");
+                }
                 return false;
             }
             else{
@@ -156,7 +166,9 @@ public class ActionDelegator {
 
     public boolean vortexPawn(Color color, Coordinate vortexCoordinate, int heuristicType) {
         int vortexNumber = board.getCardIdOfVortex(vortexCoordinate, color);
-        System.out.println("Vortexing pawn " + color + " to vortex number " + vortexNumber + " at coordinate " + vortexCoordinate);
+        if(Config.PRINT_EVERYTHING) {
+            System.out.println("Vortexing pawn " + color + " to vortex number " + vortexNumber + " at coordinate " + vortexCoordinate);
+        }
         return vortexPawn(color, vortexNumber, heuristicType);
     }
 
@@ -169,26 +181,21 @@ public class ActionDelegator {
     }
 
     public Pawn getBlockingPawn(Pawn pawn, Action action, Coordinate vortexCoordinate){
-        switch (action.getType()){
-            case MOVE_EAST :
-                return board.getPawnAt(pawn.getCoordinate().move(0, 1));
-            case MOVE_WEST:
-                return board.getPawnAt(pawn.getCoordinate().move(0, -1));
-            case MOVE_NORTH:
-                return board.getPawnAt(pawn.getCoordinate().move(-1, 0));
-            case MOVE_SOUTH:
-                return board.getPawnAt(pawn.getCoordinate().move(1, 0));
-            case ESCALATOR:
-                return board.getPawnAt(PawnManager.getOtherSideOfEscalator(pawn.getCoordinate()));
-            case VORTEX:
-                return board.getPawnAt(vortexCoordinate);
-        }
-
-        return null;
+        return switch (action.getType()) {
+            case MOVE_EAST -> board.getPawnAt(pawn.getCoordinate().move(0, 1));
+            case MOVE_WEST -> board.getPawnAt(pawn.getCoordinate().move(0, -1));
+            case MOVE_NORTH -> board.getPawnAt(pawn.getCoordinate().move(-1, 0));
+            case MOVE_SOUTH -> board.getPawnAt(pawn.getCoordinate().move(1, 0));
+            case ESCALATOR -> board.getPawnAt(PawnManager.getOtherSideOfEscalator(pawn.getCoordinate()));
+            case VORTEX -> board.getPawnAt(vortexCoordinate);
+            default -> null;
+        };
     }
 
     public boolean vortexToClosest(Color pawnColor, int heuristicType){
-        System.out.println("Vortexing pawn " + pawnColor + " to closest vortex");
+        if(Config.PRINT_EVERYTHING) {
+            System.out.println("Vortexing pawn " + pawnColor + " to closest vortex");
+        }
         Pawn pawn = board.getPawnByColor(pawnColor);
         Coordinate closestVortex = board.getClosestVortex(pawn.getCoordinate(), pawn.getColor(), heuristicType);
 
@@ -217,7 +224,9 @@ public class ActionDelegator {
     }
 
     public boolean performRandomAvailableActionFromActionSet(List<ActionType> actions, int heuristicType){
-        System.out.println("Panic!");
+        if(Config.PRINT_EVERYTHING) {
+            System.out.println("Panic!");
+        }
         // randomly ordered list of all colors and actions
         List<Pawn> allPawns = board.getPawns();
         List<Color> allColors = new ArrayList<>();
@@ -231,36 +240,48 @@ public class ActionDelegator {
         boolean done = false;
         for(ActionType actionType: actions){
             for(Color color: allColors){
-                System.out.println("Checking if actionType " + actionType + " is performable by pawn " + color);
+                if(Config.PRINT_EVERYTHING) {
+                    System.out.println("Checking if actionType " + actionType + " is performable by pawn " + color);
+                }
                 Action action = new Action(actionType);
                 if(isPerformable(action, color, heuristicType)){
                     switch (actionType){
                         case DISCOVER: {
-                            System.out.println("Trying to discover with pawn " + color);
+                            if(Config.PRINT_EVERYTHING) {
+                                System.out.println("Trying to discover with pawn " + color);
+                            }
                             done = discoverRandomCard(color);
                             break;
                         }
                         case MOVE_EAST, MOVE_NORTH, MOVE_WEST, MOVE_SOUTH, ESCALATOR: {
-                            System.out.println("Trying to move pawn " + color + " with actionType " + actionType);
+                            if(Config.PRINT_EVERYTHING) {
+                                System.out.println("Trying to move pawn " + color + " with actionType " + actionType);
+                            }
                             done = movePawn(color, action);
                             break;
                         }
                         case VORTEX: {
                             if(isFirstPhase()){
-                                System.out.println("Trying to vortex pawn " + color);
+                                if(Config.PRINT_EVERYTHING) {
+                                    System.out.println("Trying to vortex pawn " + color);
+                                }
                                 done = vortexToClosest(color, heuristicType);
                             }
                             break;
                         }
                     }
                     if(done){
-                        System.out.println("Action " + actionType + " performed by pawn " + color);
+                        if(Config.PRINT_EVERYTHING) {
+                            System.out.println("Action " + actionType + " performed by pawn " + color);
+                        }
                         return true;
                     }
                 }
             }
         }
-        System.out.println("There is nothing this agent can do");
+        if(Config.PRINT_EVERYTHING) {
+            System.out.println("There is nothing this agent can do");
+        }
         return false;
     }
 

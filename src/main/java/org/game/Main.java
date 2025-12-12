@@ -12,7 +12,6 @@ import org.game.utils.output.ActionWriter;
 import org.game.utils.output.RunOverviewWriter;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;

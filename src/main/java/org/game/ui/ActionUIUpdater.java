@@ -1,6 +1,5 @@
 package org.game.ui;
 
-import org.game.model.Action;
 import org.game.model.ActionType;
 
 import javax.imageio.ImageIO;
@@ -31,7 +30,7 @@ public class ActionUIUpdater {
         actionIndicatorPanel.repaint();
 
         // Use a timer to reset the color after 0.45 seconds
-        Timer resetTimer = new Timer(300, e -> {
+        Timer resetTimer = new Timer(300, _ -> {
             actionIndicatorPanel.setBackground(Color.LIGHT_GRAY);
             actionIndicatorPanel.revalidate();
             actionIndicatorPanel.repaint();

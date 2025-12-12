@@ -22,7 +22,7 @@ public class Board {
     private final GeneralGoalManager generalGoalManager;
     private boolean isFirstPhase = true;
     private Runnable onGameWonCallback;
-    private PathFinder pathFinder;
+    private final PathFinder pathFinder;
 
 
     public Board(int maxSize) {
@@ -162,7 +162,9 @@ public class Board {
             rotatedCard = newCard.rotate180();
         }
         else{
-            System.out.println("Error: Cannot place card at the given coordinate, there are tiles in all 4 directions.");
+            if(Config.PRINT_EVERYTHING) {
+                System.out.println("Error: Cannot place card at the given coordinate, there are tiles in all 4 directions.");
+            }
             return false;
         }
 
@@ -320,7 +322,9 @@ public class Board {
             }
         }
 
-        System.out.println("Error: Vortex not found at coordinate " + coordinate + " for color " + color);
+        if(Config.PRINT_EVERYTHING) {
+            System.out.println("Error: Vortex not found at coordinate " + coordinate + " for color " + color);
+        }
         return -1; // not found
     }
 
@@ -341,16 +345,22 @@ public class Board {
     }
 
     public void checkGoalConditions(){
-        System.out.println("Checking goal conditions...");
+        if(Config.PRINT_EVERYTHING) {
+            System.out.println("Checking goal conditions...");
+        }
         if(isFirstPhase){
             if(isAllGoalItemReached()){
-                System.out.println("All pawns have reached their goal items! Beginning second phase.");
+                if(Config.PRINT_EVERYTHING) {
+                    System.out.println("All pawns have reached their goal items! Beginning second phase.");
+                }
                 beginSecondPhase();
             }
         }
         else {
             if(isAllGoalExitReached()){
-                System.out.println("All pawns have reached their goal exits! Game over.");
+                if(Config.PRINT_EVERYTHING) {
+                    System.out.println("All pawns have reached their goal exits! Game over.");
+                }
                 // stop the timer
                 timer.stopTimer();
                 onGameWonCallback.run();
@@ -388,7 +398,9 @@ public class Board {
         for (Pawn pawn : pawns) {
             Tile tile = getTileAt(pawn.getCoordinate());
             if (tile.getType() == TileType.GOAL_ITEM && tile.getColor().equals(pawn.getColor())) {
-                System.out.println("Pawn " + pawn.getColor() + " has reached their goal item at " + pawn.getCoordinate());
+                if(Config.PRINT_EVERYTHING) {
+                    System.out.println("Pawn " + pawn.getColor() + " has reached their goal item at " + pawn.getCoordinate());
+                }
             }
             else {
                 return false;
@@ -441,5 +453,4 @@ public class Board {
 
         return generalGoalManager.areAllItemGoalsDiscovered() && generalGoalManager.areAllExitGoalsDiscovered();
     }
-
 }

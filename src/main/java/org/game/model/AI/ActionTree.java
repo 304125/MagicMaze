@@ -44,7 +44,9 @@ public class ActionTree {
                 Node child = new Node();
                 edge = new ActionEdge(action, child);
                 if(action.getType() == VORTEX){
-                    System.out.println("Adding VORTEX action to tree at coordinate: " + action.getVortexCoordinate());
+                    if(Config.PRINT_EVERYTHING) {
+                        System.out.println("Adding VORTEX action to tree at coordinate: " + action.getVortexCoordinate());
+                    }
                 }
                 current.edges.put(action, edge);
             }
@@ -69,17 +71,6 @@ public class ActionTree {
         }
         // assign priority to the leaf node
         current.priority = priority;
-    }
-
-    /** Find a node by a sequence of actions from root */
-    private Node findNode(List<Action> actions) {
-        Node current = root;
-        for (Action action : actions) {
-            ActionEdge edge = current.edges.get(action);
-            if (edge == null) return null;
-            current = edge.childNode;
-        }
-        return current;
     }
 
     /** Take an action: move root down if action exists */
@@ -115,7 +106,7 @@ public class ActionTree {
 
     /** Recursively find maximum priority (the higher, the better) in subtree */
     private Double maxPriority(Node node) {
-        Double max = (node.priority != null) ? node.priority : -Double.MAX_VALUE;
+        double max = (node.priority != null) ? node.priority : -Double.MAX_VALUE;
         for (ActionEdge edge : node.edges.values()) {
             max = Math.max(max, maxPriority(edge.childNode));
         }

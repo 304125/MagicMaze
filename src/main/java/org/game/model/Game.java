@@ -219,7 +219,7 @@ public class Game {
             }
         }
         if(chosenPlayer == null){
-            // should not get here, somone has to have that action
+            // should not get here, someone has to have that action
             return;
         }
         else{
@@ -240,7 +240,7 @@ public class Game {
             }
         }
         if(chosenPlayer == null){
-            // should not get here, somone has to have that action
+            // should not get here, someone has to have that action
             return new ArrayList<>();
         }
         else{

@@ -1,15 +1,15 @@
 package org.game.model;
 
+import org.game.utils.Config;
+
 public class Timer {
     private final int maxTime = 180;
-    private int totalTime;
     private int timeLeftInTimer;
     private Runnable onTimerFinishCallback;
     private Thread timerThread;
     private volatile boolean running;
 
     public Timer(){
-        totalTime = 0;
         timeLeftInTimer = maxTime;
         startTimer();
     }
@@ -22,10 +22,11 @@ public class Timer {
     public void secondPassed(){
         if(timeLeftInTimer > 0){
             timeLeftInTimer--;
-            totalTime++;
         }
         else{
-            System.out.println("Timer finished!");
+            if(Config.PRINT_EVERYTHING) {
+                System.out.println("Timer finished!");
+            }
             // exit the game
             if (onTimerFinishCallback != null) {
                 onTimerFinishCallback.run();

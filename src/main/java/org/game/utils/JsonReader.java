@@ -131,15 +131,9 @@ public class JsonReader {
                             // add the next in the aiPlayerTypes list
                             AIPlayerType playerType =  aiPlayerTypes.get(aiPlayerTypes.size() - aiPlayersLeft);
                             switch (playerType) {
-                                case REACTIVE -> {
-                                    players.add(new AIPlayer(actions, "AI player: " +playerType + "(" + aiPlayersLeft + ")", board, AIPlayerType.REACTIVE));
-                                }
-                                case SHORT_FUSE -> {
-                                    players.add(new AIPlayer(actions, "AI player: " +playerType + "(" + aiPlayersLeft + ")", board, AIPlayerType.SHORT_FUSE));
-                                }
-                                case BASIC -> {
-                                    players.add(new AIPlayer(actions, "AI player: " + playerType + "(" + aiPlayersLeft + ")", board, AIPlayerType.BASIC));
-                                }
+                                case REACTIVE -> players.add(new AIPlayer(actions, "AI player: " +playerType + "(" + aiPlayersLeft + ")", board, AIPlayerType.REACTIVE));
+                                case SHORT_FUSE -> players.add(new AIPlayer(actions, "AI player: " +playerType + "(" + aiPlayersLeft + ")", board, AIPlayerType.SHORT_FUSE));
+                                case BASIC -> players.add(new AIPlayer(actions, "AI player: " + playerType + "(" + aiPlayersLeft + ")", board, AIPlayerType.BASIC));
                             }
                             aiPlayersLeft--;
                         }

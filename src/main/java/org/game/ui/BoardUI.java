@@ -1,7 +1,6 @@
 package org.game.ui;
 
 import org.game.model.*;
-import org.game.model.Action;
 import org.game.model.Color;
 import org.game.model.board.Board;
 import org.game.model.board.BoardEscalator;

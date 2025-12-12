@@ -18,7 +18,9 @@ public class InputStringRenderer {
     public void renderInputString(String input){
         // split input into color and direction
         if (input.length() != 2 && input.length() != 3 && input.length() != 4) {
-            System.out.println("Invalid input. Please provide both color and direction.");
+            if(Config.PRINT_EVERYTHING) {
+                System.out.println("Invalid input. Please provide both color and direction.");
+            }
             return;
         }
         String colorString = String.valueOf(input.charAt(0));
@@ -55,7 +57,9 @@ public class InputStringRenderer {
 
         //
         if ((optionalNumber != 0 &&  actionType != VORTEX && actionType != DISCOVER) || (optionalNumber == 0 && actionType == VORTEX)) {
-            System.out.println("Invalid input. Vortex actionType requires a number (e.g., 'yv1' for yellow vortex 1).");
+            if(Config.PRINT_EVERYTHING) {
+                System.out.println("Invalid input. Vortex actionType requires a number (e.g., 'yv1' for yellow vortex 1).");
+            }
             return;
         }
 
@@ -79,12 +83,14 @@ public class InputStringRenderer {
             actionDelegator.vortexPawn(pawnColor, optionalNumber, 1);
         }
         else {
-            System.out.println("Invalid input. Please provide both color and direction in correct format.");
+            if(Config.PRINT_EVERYTHING) {
+                System.out.println("Invalid input. Please provide both color and direction in correct format.");
+            }
         }
     }
 
     public List<ActionType> renderActions(String actionsList){
-        // render the String including the List<Action> casted to String back to List<Action>
+        // render the String including the List<Action> cast to String back to List<Action>
         actionsList = actionsList.replaceAll("[\\[\\]\\s]", ""); // remove brackets and spaces
         String[] actionStrings = actionsList.split(",");
         List<ActionType> actions = new java.util.ArrayList<>();

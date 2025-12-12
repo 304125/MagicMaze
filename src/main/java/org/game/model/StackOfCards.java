@@ -1,12 +1,16 @@
 package org.game.model;
 
+import org.game.utils.Config;
+
 import java.util.List;
 
 public class StackOfCards {
     List<Card> unplayedCards;
 
     public StackOfCards(List<Card> unplayedCards) {
-        System.out.println("StackOfCards initialized with " + unplayedCards.size() + " cards.");
+        if(Config.PRINT_EVERYTHING) {
+            System.out.println("StackOfCards initialized with " + unplayedCards.size() + " cards.");
+        }
         this.unplayedCards = unplayedCards;
     }
 
@@ -15,7 +19,9 @@ public class StackOfCards {
     }
 
     public Card drawCard() {
-        System.out.println("Drawing a card. Cards left before draw: " + unplayedCards.size());
+        if(Config.PRINT_EVERYTHING) {
+            System.out.println("Drawing a card. Cards left before draw: " + unplayedCards.size());
+        }
         if (isEmpty()) {
             throw new IllegalStateException("No more cards to draw");
         }
@@ -33,6 +39,8 @@ public class StackOfCards {
 
     public void returnCard(Card card){
         unplayedCards.add(card);
-        System.out.println("Returned card with ID " + card.getId() + " to unplayed cards. Total cards now: " + unplayedCards.size());
+        if(Config.PRINT_EVERYTHING) {
+            System.out.println("Returned card with ID " + card.getId() + " to unplayed cards. Total cards now: " + unplayedCards.size());
+        }
     }
 }

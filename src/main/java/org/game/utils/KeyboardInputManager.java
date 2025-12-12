@@ -16,13 +16,15 @@ public class KeyboardInputManager {
         Thread executionThread = new Thread(() -> {
             try (Scanner scanner = new Scanner(System.in)) {
                 while (true) {
-                    System.out.print("Enter color of pawn (y: yellow, o: orange, p: purple, g: green) and direction (n: north, s: south, w: west, e: east) or action (d: discover, v: vortex, x: escalator):");
+                    if(Config.PRINT_EVERYTHING) {
+                        System.out.print("Enter color of pawn (y: yellow, o: orange, p: purple, g: green) and direction (n: north, s: south, w: west, e: east) or action (d: discover, v: vortex, x: escalator):");
+                    }
                     String input = scanner.nextLine().trim().toLowerCase();
 
                     inputStringRenderer.renderInputString(input);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println("Error reading keyboard input: " + e.getMessage());
             }
         });
 

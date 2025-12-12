@@ -1,7 +1,6 @@
 package org.game.model.AI;
 
 import org.game.model.Action;
-import org.game.model.ActionType;
 import org.game.model.Pawn;
 
 public interface StateChangeListener {

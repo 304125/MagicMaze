@@ -51,24 +51,12 @@ public class PawnGoalManager {
         }
     }
 
-    public List<Coordinate> getTimers() {
-        return timers;
-    }
-
-    public List<Coordinate> getDiscoveries() {
-        return discoveries;
-    }
-
     public Coordinate getExit() {
         return exit;
     }
 
     public Coordinate getItem() {
         return item;
-    }
-
-    public Color getPawnColor() {
-        return pawnColor;
     }
 
     public void removeTimer(Coordinate timer) {

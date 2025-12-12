@@ -30,13 +30,14 @@ public class PawnManager {
                 // check if the destination is occupied
                 Tile destinationTile = board.getTileAt(destination);
                 if(destinationTile.isOccupied()){
-                    System.out.println("Error: Vortex destination is occupied");
+                    if(Config.PRINT_EVERYTHING) {
+                        System.out.println("Error: Vortex destination is occupied");
+                    }
                     return pawn;
                 }
-                if(Config.PRINT_EVERYTHING){
-
+                if(Config.PRINT_EVERYTHING) {
+                    System.out.println("Pawn " + pawnColor + " used vortex " + vortexNumber + " to (" + destination.x() + "," + destination.y() + ")");
                 }
-                System.out.println("Pawn " + pawnColor + " used vortex " + vortexNumber + " to (" + destination.x() + "," + destination.y() + ")");
 
                 // set previous tile not occupied, move pawn to destination, set new tile to occupied
                 board.getTileAt(pawn.getCoordinate()).setOccupied(false);
@@ -54,11 +55,15 @@ public class PawnManager {
 
         Coordinate destination = getOtherSideOfEscalator(pawn.getCoordinate());
         if(destination == null){
-            System.out.println("Error: No escalator found at current coordinate");
+            if(Config.PRINT_EVERYTHING) {
+                System.out.println("Error: No escalator found at current coordinate");
+            }
             return pawn;
         }
         if(board.getTileAt(destination).isOccupied()){
-            System.out.println("Error: Escalator destination is occupied");
+            if(Config.PRINT_EVERYTHING) {
+                System.out.println("Error: Escalator destination is occupied");
+            }
             return pawn;
         }
         else{
@@ -93,7 +98,9 @@ public class PawnManager {
                     return escalator.getStart();
                 }
                 else{
-                    System.out.println("Error: Coordinate is not an escalator tile");
+                    if(Config.PRINT_EVERYTHING) {
+                        System.out.println("Error: Coordinate is not an escalator tile");
+                    }
                     return null;
                 }
             }
@@ -111,87 +118,83 @@ public class PawnManager {
             case MOVE_NORTH:
                 if (!currentTile.hasWallUp() && board.getTileAt(pawn.getCoordinate().move(-1, 0)) != null && !board.getTileAt(pawn.getCoordinate().move(-1, 0)).isOccupied()) {
                     pawn.moveNorth();
-                    if(Config.PRINT_EVERYTHING){
-
+                    if(Config.PRINT_EVERYTHING) {
+                        System.out.println("Moved " + pawnColor + " north");
                     }
-                    System.out.println("Moved "+ pawnColor +" north");
                     moved = true;
                 }
                 else{
-                    if(currentTile.hasWallUp()){
-                        System.out.println("Cannot move north: Wall is blocking the way.");
-                    }
-                    else if(board.getTileAt(pawn.getCoordinate().move(-1, 0)) == null){
-                        System.out.println("Cannot move north: No tile in that direction.");
-                    }
-                    else if(board.getTileAt(pawn.getCoordinate().move(-1, 0)).isOccupied()){
-                        System.out.println("Cannot move north: Tile is occupied by another pawn.");
+                    if(Config.PRINT_EVERYTHING) {
+                        if (currentTile.hasWallUp()) {
+                            System.out.println("Cannot move north: Wall is blocking the way.");
+                        } else if (board.getTileAt(pawn.getCoordinate().move(-1, 0)) == null) {
+                            System.out.println("Cannot move north: No tile in that direction.");
+                        } else if (board.getTileAt(pawn.getCoordinate().move(-1, 0)).isOccupied()) {
+                            System.out.println("Cannot move north: Tile is occupied by another pawn.");
+                        }
                     }
                 }
                 break;
             case MOVE_SOUTH:
                 if( !currentTile.hasWallDown() && board.getTileAt(pawn.getCoordinate().move(1, 0)) != null && !board.getTileAt(pawn.getCoordinate().move(1, 0)).isOccupied()) {
                     pawn.moveSouth();
-                    if(Config.PRINT_EVERYTHING){
-
+                    if(Config.PRINT_EVERYTHING) {
+                        System.out.println("Moved " + pawnColor + " south");
                     }
-                    System.out.println("Moved "+ pawnColor +" south");
                     moved = true;
                 }
                 else{
-                    if(currentTile.hasWallDown()){
-                        System.out.println("Cannot move south: Wall is blocking the way.");
-                    }
-                    else if(board.getTileAt(pawn.getCoordinate().move(1, 0)) == null){
-                        System.out.println("Cannot move south: No tile in that direction.");
-                    }
-                    else if(board.getTileAt(pawn.getCoordinate().move(1, 0)).isOccupied()){
-                        System.out.println("Cannot move south: Tile is occupied by another pawn.");
+                    if(Config.PRINT_EVERYTHING) {
+                        if (currentTile.hasWallDown()) {
+                            System.out.println("Cannot move south: Wall is blocking the way.");
+                        } else if (board.getTileAt(pawn.getCoordinate().move(1, 0)) == null) {
+                            System.out.println("Cannot move south: No tile in that direction.");
+                        } else if (board.getTileAt(pawn.getCoordinate().move(1, 0)).isOccupied()) {
+                            System.out.println("Cannot move south: Tile is occupied by another pawn.");
+                        }
                     }
                 }
                 break;
             case MOVE_WEST:
                 if (!currentTile.hasWallLeft() && board.getTileAt(pawn.getCoordinate().move(0, -1)) != null && !board.getTileAt(pawn.getCoordinate().move(0, -1)).isOccupied()) {
                     pawn.moveWest();
-                    if(Config.PRINT_EVERYTHING){
-
+                    if(Config.PRINT_EVERYTHING) {
+                        System.out.println("Moved " + pawnColor + " west");
                     }
-                    System.out.println("Moved "+ pawnColor +" west");
                     moved = true;
                 }
                 else{
-                    if(currentTile.hasWallLeft()){
-                        System.out.println("Cannot move west: Wall is blocking the way.");
-                    }
-                    else if(board.getTileAt(pawn.getCoordinate().move(0, -1)) == null){
-                        System.out.println("Cannot move west: No tile in that direction.");
-                    }
-                    else if(board.getTileAt(pawn.getCoordinate().move(0, -1)).isOccupied()){
-                        System.out.println("Cannot move west: Tile is occupied by another pawn.");
+                    if(Config.PRINT_EVERYTHING) {
+                        if (currentTile.hasWallLeft()) {
+                            System.out.println("Cannot move west: Wall is blocking the way.");
+                        } else if (board.getTileAt(pawn.getCoordinate().move(0, -1)) == null) {
+                            System.out.println("Cannot move west: No tile in that direction.");
+                        } else if (board.getTileAt(pawn.getCoordinate().move(0, -1)).isOccupied()) {
+                            System.out.println("Cannot move west: Tile is occupied by another pawn.");
+                        }
                     }
                 }
                 break;
             case MOVE_EAST:
                 if( !currentTile.hasWallRight() && board.getTileAt(pawn.getCoordinate().move(0, 1)) != null && !board.getTileAt(pawn.getCoordinate().move(0, 1)).isOccupied()) {
                     pawn.moveEast();
-                    if(Config.PRINT_EVERYTHING){
-
+                    if(Config.PRINT_EVERYTHING) {
+                        System.out.println("Moved " + pawnColor + " east");
                     }
-                    System.out.println("Moved "+ pawnColor +" east");
                     moved = true;
                 }
                 else{
-                    if(currentTile.hasWallRight()){
-                        System.out.println("Cannot move east: Wall is blocking the way.");
-                    }
-                    else if(board.getTileAt(pawn.getCoordinate().move(0, 1)) == null){
-                        System.out.println("Cannot move east: No tile in that direction.");
-                    }
-                    else if(board.getTileAt(pawn.getCoordinate().move(0, 1)).isOccupied()){
-                        System.out.println("Cannot move east: Tile is occupied by another pawn.");
+                    if(Config.PRINT_EVERYTHING) {
+                        if (currentTile.hasWallRight()) {
+                            System.out.println("Cannot move east: Wall is blocking the way.");
+                        } else if (board.getTileAt(pawn.getCoordinate().move(0, 1)) == null) {
+                            System.out.println("Cannot move east: No tile in that direction.");
+                        } else if (board.getTileAt(pawn.getCoordinate().move(0, 1)).isOccupied()) {
+                            System.out.println("Cannot move east: Tile is occupied by another pawn.");
+                        }
                     }
                 }
-                break;
+            break;
         }
 
         //update occupied
@@ -211,7 +214,6 @@ public class PawnManager {
                     board.getTileAt(pawn.getCoordinate().move(0, -1)).setOccupied(false);
                     break;
             }
-
             board.getTileAt(pawn.getCoordinate()).setOccupied(true);
         }
 

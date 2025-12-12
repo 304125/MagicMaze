@@ -7,6 +7,7 @@ import org.game.model.board.Board;
 import org.game.model.board.BoardVortex;
 import org.game.model.board.PawnManager;
 import org.game.model.Tile;
+import org.game.utils.Config;
 
 import java.util.*;
 
@@ -110,7 +111,9 @@ public class PathFinder {
             }
         }
 
-        System.out.println("No path found from " + coordinateStart + " to " + coordinateEnd);
+        if(Config.PRINT_EVERYTHING) {
+            System.out.println("No path found from " + coordinateStart + " to " + coordinateEnd);
+        }
         return null; // No path is found
     }
 
@@ -129,14 +132,11 @@ public class PathFinder {
     }
 
     public int findDistance(Coordinate coordinateA, Coordinate coordinateB, int heuristicType) {
-        switch (heuristicType) {
-            case 0:
-                return heuristicEuclidian(coordinateA, coordinateB);
-            case 1:
-                return heuristicManhattan(coordinateA, coordinateB);
-            default:
-                return heuristicManhattan(coordinateA, coordinateB);
-        }
+        return switch (heuristicType) {
+            case 0 -> heuristicEuclidian(coordinateA, coordinateB);
+            case 1 -> heuristicManhattan(coordinateA, coordinateB);
+            default -> heuristicManhattan(coordinateA, coordinateB);
+        };
     }
 
     private int heuristicManhattan(Coordinate coordinateA, Coordinate coordinateB) {

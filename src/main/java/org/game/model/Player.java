@@ -1,5 +1,7 @@
 package org.game.model;
 
+import org.game.utils.Config;
+
 import java.util.List;
 
 public class Player {
@@ -24,10 +26,14 @@ public class Player {
     }
 
     public void doSomething(){
-        System.out.println("Do something!");
+        if(Config.PRINT_EVERYTHING) {
+            System.out.println("Do something!");
+        }
     }
 
     public void doSomethingPlaced(Player player){
-        System.out.println("Do something was placed in front of player "+player.getName());
+        if(Config.PRINT_EVERYTHING) {
+            System.out.println("Do something was placed in front of player " + player.getName());
+        }
     }
 }
