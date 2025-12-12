@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -119,6 +120,8 @@ public class JsonReader {
             for (Map<String, Object> playerData : playersData) {
                 int numberOfPlayers = (Integer) playerData.get("players");
                 List<List<String>> actionCards = (List<List<String>>) playerData.get("cards");
+                // shuffle actionCards
+                Collections.shuffle(actionCards);
 
                 // only continue if numberOfPlayers == numPlayers
                 if (numberOfPlayers == numPlayers) {
