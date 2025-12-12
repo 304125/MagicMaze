@@ -257,13 +257,11 @@ public class AIPlayer extends Player  implements StateChangeListener, AIPlayerBe
                 try {
                     // only wait if someone else was moving
                     // if I was moving last, continue moving (go 3 left in once ex.)
-                    if(!iWasLastToMove){
-                        if(!isThreadSleeping && running){
-                            isThreadSleeping = true;
-                            int sleepTime = (int) (1000/playerType.getParameters().processingRatio());
-                            Thread.sleep(sleepTime); // Wait for 1 second
-                            isThreadSleeping = false;
-                        }
+                    if(!isThreadSleeping && running){
+                        isThreadSleeping = true;
+                        int sleepTime = (int) (700/playerType.getParameters().processingRatio());
+                        Thread.sleep(sleepTime); // Wait for 1 second
+                        isThreadSleeping = false;
                     }
 
                     if(buildingTree){
@@ -388,7 +386,7 @@ public class AIPlayer extends Player  implements StateChangeListener, AIPlayerBe
                     currentlyPlannedPawn = blockingPawn;
                     buildActionTree();
                     Action blockingBestAction = actionTree.bestAction();
-                    if(blockingBestAction.getType() == VORTEX){
+                    if(blockingBestAction != null && blockingBestAction.getType() == VORTEX){
                         // can vortex the blocking pawn away
                         if(Config.PRINT_EVERYTHING) {
                             System.out.println(getName() + " is vortexing blocking pawn " + blockingPawn.getColor() + " away to clear the path for pawn " + initialPawn.getColor());
@@ -446,11 +444,22 @@ public class AIPlayer extends Player  implements StateChangeListener, AIPlayerBe
         Tile goalTile = board.getTileAt(goal);
         switch (goalTile.getType()) {
             case DISCOVERY: {
-                if(getActionDelegator().areAllGoalsDiscovered()){
-                    if(Config.PRINT_EVERYTHING){
-                        System.out.println("All discovery goals have been discovered. No priority for discovery goals.");
+                if(playerType.getParameters().discoverUntilGoals()){
+                    if(getActionDelegator().areAllGoalsDiscovered()){
+                        if(Config.PRINT_EVERYTHING){
+                            System.out.println("All discovery goals have been discovered. No priority for discovery goals.");
+                        }
+                        return 0;
                     }
-                    return 0;
+                }
+                else{
+                    // discover until all tiles are discovered
+                    if(getActionDelegator().areAllTilesDiscovered()){
+                        if(Config.PRINT_EVERYTHING){
+                            System.out.println("All tiles have been discovered. No priority for discovery goals.");
+                        }
+                        return 0;
+                    }
                 }
                 // higher priority for closer discovery goals, give one penalty for each chunk (5 nodes)
                 int distance = pathFinder.findDistance(pawnCoordinate, goal, playerType.getParameters().heuristicType());

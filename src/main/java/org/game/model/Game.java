@@ -251,4 +251,8 @@ public class Game {
     public List<Player> getPlayers(){
         return players;
     }
+
+    public boolean areAllTilesDiscovered(){
+        return unplayedCards.areAllCardsDrawn();
+    }
 }

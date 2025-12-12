@@ -14,5 +14,5 @@ package org.game.model.AI.PlayerType;
 public record PlayerTypeParameters(int startingCapacity, float processingRatio, int blindness, int patience,
                                    int heuristicType, float timerLogBase, boolean stressedByDoSomething,
                                    boolean stressByLowTime, boolean stressedByPlacingDoSomething, boolean stubborn,
-                                   boolean alwaysPlaceDoSomething) {
+                                   boolean alwaysPlaceDoSomething, boolean discoverUntilGoals) {
 }

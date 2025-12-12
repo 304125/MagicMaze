@@ -389,4 +389,8 @@ public class ActionDelegator {
 
         return applicableActions;
     }
+
+    public boolean areAllTilesDiscovered(){
+        return game.areAllTilesDiscovered();
+    }
 }

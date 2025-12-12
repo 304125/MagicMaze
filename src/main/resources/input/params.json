@@ -1,8 +1,44 @@
 {
   "mode": "new",
-  "gameName": "test",
+  "gameName": "Four of the Same Type (BASIC)",
   "replayRun": 1,
   "games": [
+    {
+      "numberOfPlayers": 4,
+      "aiPlayers": ["BASIC", "BASIC", "BASIC", "BASIC"]
+    },
+    {
+      "numberOfPlayers": 4,
+      "aiPlayers": ["BASIC", "BASIC", "BASIC", "BASIC"]
+    },
+    {
+      "numberOfPlayers": 4,
+      "aiPlayers": ["BASIC", "BASIC", "BASIC", "BASIC"]
+    },
+    {
+      "numberOfPlayers": 4,
+      "aiPlayers": ["BASIC", "BASIC", "BASIC", "BASIC"]
+    },
+    {
+      "numberOfPlayers": 4,
+      "aiPlayers": ["BASIC", "BASIC", "BASIC", "BASIC"]
+    },
+    {
+      "numberOfPlayers": 4,
+      "aiPlayers": ["BASIC", "BASIC", "BASIC", "BASIC"]
+    },
+    {
+      "numberOfPlayers": 4,
+      "aiPlayers": ["BASIC", "BASIC", "BASIC", "BASIC"]
+    },
+    {
+      "numberOfPlayers": 4,
+      "aiPlayers": ["BASIC", "BASIC", "BASIC", "BASIC"]
+    },
+    {
+      "numberOfPlayers": 4,
+      "aiPlayers": ["BASIC", "BASIC", "BASIC", "BASIC"]
+    },
     {
       "numberOfPlayers": 4,
       "aiPlayers": ["BASIC", "BASIC", "BASIC", "BASIC"]

@@ -350,17 +350,13 @@ public class Board {
         }
         if(isFirstPhase){
             if(isAllGoalItemReached()){
-                if(Config.PRINT_EVERYTHING) {
-                    System.out.println("All pawns have reached their goal items! Beginning second phase.");
-                }
+                System.out.println("All pawns have reached their goal items! Beginning second phase.");
                 beginSecondPhase();
             }
         }
         else {
             if(isAllGoalExitReached()){
-                if(Config.PRINT_EVERYTHING) {
-                    System.out.println("All pawns have reached their goal exits! Game over.");
-                }
+                System.out.println("All pawns have reached their goal exits! Game over.");
                 // stop the timer
                 timer.stopTimer();
                 onGameWonCallback.run();

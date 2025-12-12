@@ -1,0 +1,4 @@
+Changes for the future one:
+- Config: printing false
+- AIPlayer.java: startActionExecution initial delay 1000 -> 700
+- AIPlayer Discovery payoff: introduced variable for discovery until all goals / tiles found
