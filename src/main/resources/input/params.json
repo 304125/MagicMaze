@@ -1,47 +1,47 @@
 {
   "mode": "new",
-  "gameName": "Three and One (3 BASIC, 1 SHORT_FUSE)",
+  "gameName": "Three and One (3 REACTIVE, 1 BASIC)",
   "replayRun": 1,
   "games": [
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["BASIC", "BASIC", "BASIC", "SHORT_FUSE"]
+      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "BASIC"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["BASIC", "BASIC", "BASIC", "SHORT_FUSE"]
+      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "BASIC"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["BASIC", "BASIC", "BASIC", "SHORT_FUSE"]
+      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "BASIC"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["BASIC", "BASIC", "BASIC", "SHORT_FUSE"]
+      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "BASIC"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["BASIC", "BASIC", "BASIC", "SHORT_FUSE"]
+      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "BASIC"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["BASIC", "BASIC", "BASIC", "SHORT_FUSE"]
+      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "BASIC"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["BASIC", "BASIC", "BASIC", "SHORT_FUSE"]
+      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "BASIC"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["BASIC", "BASIC", "BASIC", "SHORT_FUSE"]
+      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "BASIC"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers":["BASIC", "BASIC", "BASIC", "SHORT_FUSE"]
+      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "BASIC"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["BASIC", "BASIC", "BASIC", "SHORT_FUSE"]
+      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "BASIC"]
     }
   ]
 }
