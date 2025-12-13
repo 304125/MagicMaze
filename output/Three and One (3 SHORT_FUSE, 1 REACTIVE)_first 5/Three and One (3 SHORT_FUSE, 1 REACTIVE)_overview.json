@@ -1,0 +1,23 @@
+{
+  "gameResults" : [ {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE" ],
+    "gameWon" : true
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE" ],
+    "gameWon" : true
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE" ],
+    "gameWon" : true
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE" ],
+    "gameWon" : false
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE" ],
+    "gameWon" : true
+  } ]
+}
