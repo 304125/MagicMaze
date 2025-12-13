@@ -1,0 +1,26 @@
+{
+  "gameParams" : {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "BASIC", "BASIC", "REACTIVE", "REACTIVE" ]
+  },
+  "gameMoves" : { },
+  "initialPawnPositions" : {
+    "PURPLE" : {
+      "x" : 24,
+      "y" : 23
+    },
+    "YELLOW" : {
+      "x" : 24,
+      "y" : 24
+    },
+    "GREEN" : {
+      "x" : 23,
+      "y" : 24
+    },
+    "ORANGE" : {
+      "x" : 23,
+      "y" : 23
+    }
+  },
+  "doSomethingTimestamps" : { }
+}

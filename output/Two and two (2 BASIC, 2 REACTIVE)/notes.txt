@@ -1,0 +1,1 @@
+game 10 crashed upon writing in record (nothing saved)
