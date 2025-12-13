@@ -1,47 +1,47 @@
 {
   "mode": "new",
-  "gameName": "Three and One (3 REACTIVE, 1 SHORT_FUSE)",
+  "gameName": "Three and One (3 SHORT_FUSE, 1 BASIC)",
   "replayRun": 1,
   "games": [
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "SHORT_FUSE"]
+      "aiPlayers": ["SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "SHORT_FUSE"]
+      "aiPlayers": ["SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "SHORT_FUSE"]
+      "aiPlayers": ["SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "SHORT_FUSE"]
+      "aiPlayers": ["SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "SHORT_FUSE"]
+      "aiPlayers": ["SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "SHORT_FUSE"]
+      "aiPlayers": ["SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "SHORT_FUSE"]
+      "aiPlayers": ["SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "SHORT_FUSE"]
+      "aiPlayers": ["SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "SHORT_FUSE"]
+      "aiPlayers": ["SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC"]
     },
     {
       "numberOfPlayers": 4,
-      "aiPlayers": ["REACTIVE", "REACTIVE", "REACTIVE", "SHORT_FUSE"]
+      "aiPlayers": ["SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC"]
     }
   ]
 }
