@@ -296,20 +296,20 @@
   },
   "initialPawnPositions" : {
     "ORANGE" : {
-      "x" : 18,
-      "y" : 18
+      "x" : 23,
+      "y" : 23
     },
     "GREEN" : {
-      "x" : 19,
-      "y" : 18
+      "x" : 24,
+      "y" : 23
     },
     "PURPLE" : {
-      "x" : 18,
-      "y" : 19
+      "x" : 23,
+      "y" : 24
     },
     "YELLOW" : {
-      "x" : 19,
-      "y" : 19
+      "x" : 24,
+      "y" : 24
     }
   },
   "doSomethingTimestamps" : {
