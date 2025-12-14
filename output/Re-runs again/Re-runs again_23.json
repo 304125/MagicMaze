@@ -1,0 +1,26 @@
+{
+  "gameParams" : {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC" ]
+  },
+  "gameMoves" : { },
+  "initialPawnPositions" : {
+    "PURPLE" : {
+      "x" : 23,
+      "y" : 24
+    },
+    "YELLOW" : {
+      "x" : 24,
+      "y" : 23
+    },
+    "GREEN" : {
+      "x" : 24,
+      "y" : 24
+    },
+    "ORANGE" : {
+      "x" : 23,
+      "y" : 23
+    }
+  },
+  "doSomethingTimestamps" : { }
+}

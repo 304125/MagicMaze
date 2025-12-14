@@ -1,0 +1,42 @@
+{
+  "gameParams" : {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "REACTIVE", "REACTIVE", "REACTIVE", "REACTIVE" ]
+  },
+  "gameMoves" : {
+    "2025-12-13T16:55:20.927179600Z" : "on",
+    "2025-12-13T16:55:40.144057800Z" : "pw",
+    "2025-12-13T16:55:41.895353Z" : "pd2",
+    "2025-12-13T16:55:55.781122500Z" : "od12",
+    "2025-12-13T16:56:08.227224300Z" : "os",
+    "2025-12-13T16:56:09.703159400Z" : "ow"
+  },
+  "initialPawnPositions" : {
+    "PURPLE" : {
+      "x" : 23,
+      "y" : 23
+    },
+    "YELLOW" : {
+      "x" : 24,
+      "y" : 24
+    },
+    "GREEN" : {
+      "x" : 24,
+      "y" : 23
+    },
+    "ORANGE" : {
+      "x" : 23,
+      "y" : 24
+    }
+  },
+  "doSomethingTimestamps" : {
+    "2025-12-13T16:55:40.143029900Z" : "[MOVE_WEST, VORTEX]",
+    "2025-12-13T16:56:31.929386300Z" : "[MOVE_WEST, VORTEX]",
+    "2025-12-13T16:56:53.855119600Z" : "[MOVE_WEST, VORTEX]",
+    "2025-12-13T16:57:15.809070300Z" : "[MOVE_WEST, VORTEX]",
+    "2025-12-13T16:57:16.101585600Z" : "[MOVE_WEST, VORTEX]",
+    "2025-12-13T16:57:37.945886400Z" : "[MOVE_WEST, VORTEX]",
+    "2025-12-13T16:57:57.286674300Z" : "[MOVE_WEST, VORTEX]",
+    "2025-12-13T16:58:16.425979400Z" : "[MOVE_WEST, VORTEX]"
+  }
+}

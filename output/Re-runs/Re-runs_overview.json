@@ -1,0 +1,35 @@
+{
+  "gameResults" : [ {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "REACTIVE", "REACTIVE", "REACTIVE", "REACTIVE" ],
+    "gameWon" : false
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "REACTIVE", "REACTIVE", "REACTIVE", "REACTIVE" ],
+    "gameWon" : false
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "REACTIVE", "REACTIVE", "REACTIVE", "REACTIVE" ],
+    "gameWon" : false
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "REACTIVE", "REACTIVE", "REACTIVE", "REACTIVE" ],
+    "gameWon" : false
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "REACTIVE", "REACTIVE", "REACTIVE", "REACTIVE" ],
+    "gameWon" : false
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE" ],
+    "gameWon" : true
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE" ],
+    "gameWon" : false
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE" ],
+    "gameWon" : true
+  } ]
+}
