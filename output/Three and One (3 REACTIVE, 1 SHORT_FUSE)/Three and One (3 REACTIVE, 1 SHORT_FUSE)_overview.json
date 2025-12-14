@@ -22,7 +22,7 @@
   }, {
     "numberOfPlayers" : 4,
     "aiPlayers" : [ "REACTIVE", "REACTIVE", "REACTIVE", "SHORT_FUSE" ],
-    "gameWon" : false
+    "gameWon" : true
   }, {
     "numberOfPlayers" : 4,
     "aiPlayers" : [ "REACTIVE", "REACTIVE", "REACTIVE", "SHORT_FUSE" ],

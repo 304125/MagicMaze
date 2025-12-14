@@ -26,12 +26,12 @@
   }, {
     "numberOfPlayers" : 4,
     "aiPlayers" : [ "BASIC", "BASIC", "BASIC", "SHORT_FUSE" ],
-    "gameWon" : false
+    "gameWon" : true
   }, {
     "numberOfPlayers" : 4,
     "aiPlayers" : [ "BASIC", "BASIC", "BASIC", "SHORT_FUSE" ],
     "gameWon" : false
-  }, {
+  },{
     "numberOfPlayers" : 4,
     "aiPlayers" : [ "BASIC", "BASIC", "BASIC", "SHORT_FUSE" ],
     "gameWon" : false

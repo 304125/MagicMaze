@@ -35,5 +35,9 @@
     "numberOfPlayers" : 4,
     "aiPlayers" : [ "BASIC", "BASIC", "REACTIVE", "REACTIVE" ],
     "gameWon" : true
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "BASIC", "BASIC", "REACTIVE", "REACTIVE" ],
+    "gameWon" : true
   } ]
 }

@@ -1,15 +1,26 @@
 {
   "mode": "new",
-  "gameName": "Re-runs again again again",
+  "gameName": "re-runs",
   "replayRun": 1,
   "games": [
     {
       "numberOfPlayers": 4,
-      "aiPlayers": [ "SHORT_FUSE", "SHORT_FUSE", "BASIC", "REACTIVE" ]
-    },
-    {
+      "aiPlayers": [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE" ]
+    }, {
       "numberOfPlayers": 4,
-      "aiPlayers": [ "SHORT_FUSE", "SHORT_FUSE", "BASIC", "REACTIVE" ]
+      "aiPlayers": [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE" ]
+    }, {
+      "numberOfPlayers": 4,
+      "aiPlayers": [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE" ]
+    }, {
+      "numberOfPlayers": 4,
+      "aiPlayers": [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE" ]
+    }, {
+      "numberOfPlayers": 4,
+      "aiPlayers": [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE" ]
+    }, {
+      "numberOfPlayers": 4,
+      "aiPlayers": [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE" ]
     }
   ]
 }

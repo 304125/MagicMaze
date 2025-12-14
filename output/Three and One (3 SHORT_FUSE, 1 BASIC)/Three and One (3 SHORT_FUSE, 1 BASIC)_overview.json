@@ -6,7 +6,15 @@
   }, {
     "numberOfPlayers" : 4,
     "aiPlayers" : [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC" ],
-    "gameWon" : false
+    "gameWon" : true
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC" ],
+    "gameWon" : true
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC" ],
+    "gameWon" : true
   }, {
     "numberOfPlayers" : 4,
     "aiPlayers" : [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC" ],
@@ -23,14 +31,6 @@
     "numberOfPlayers" : 4,
     "aiPlayers" : [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC" ],
     "gameWon" : false
-  }, {
-    "numberOfPlayers" : 4,
-    "aiPlayers" : [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC" ],
-    "gameWon" : false
-  }, {
-    "numberOfPlayers" : 4,
-    "aiPlayers" : [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC" ],
-    "gameWon" : true
   }, {
     "numberOfPlayers" : 4,
     "aiPlayers" : [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC" ],

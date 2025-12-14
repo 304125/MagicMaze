@@ -1,2 +1,0 @@
-4 null pointer
-5, 6, 8, 10 stack overflow

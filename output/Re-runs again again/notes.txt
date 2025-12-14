@@ -1,3 +1,0 @@
-stack overflow: 2, 5, 9, 11, 20, 21, 26, 29, 33, 36, 37, 43
-null pointer 8
-45 could not write
