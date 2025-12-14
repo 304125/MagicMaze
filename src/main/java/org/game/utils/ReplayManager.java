@@ -42,13 +42,24 @@ public class ReplayManager {
             Map.Entry<Instant, String> doSomethingNext = gameRecord.nextDoSomething();
 
             while (running && (next != null || doSomethingNext != null)) {
-                if (doSomethingNext != null && (next == null || doSomethingFirst.getKey().isBefore(first.getKey()))) {
+                if (doSomethingFirst != null && (first == null || doSomethingFirst.getKey().isBefore(first.getKey()))) {
                     // Time to render a "do something" action
                     List<ActionType> actionList = inputStringRenderer.renderActions(doSomethingFirst.getValue());
                     actionDelegator.placeDoSomethingUI(actionList);
-                    long doSomethingDelay = doSomethingNext.getKey().toEpochMilli() - doSomethingFirst.getKey().toEpochMilli();
-                    assert next != null;
-                    long actionDelay = first.getKey().toEpochMilli() - doSomethingFirst.getKey().toEpochMilli();
+                    long doSomethingDelay;
+                    if(doSomethingNext == null){
+                        doSomethingDelay = 1000L;
+                    }
+                    else{
+                        doSomethingDelay = doSomethingNext.getKey().toEpochMilli() - doSomethingFirst.getKey().toEpochMilli();
+                    }
+                    long actionDelay;
+                    if(first == null){
+                        actionDelay = 1000L;
+                    }
+                    else{
+                        actionDelay = first.getKey().toEpochMilli() - doSomethingFirst.getKey().toEpochMilli();
+                    }
                     long delay = Math.min(doSomethingDelay, actionDelay);
                     try {
                         Thread.sleep(delay);
@@ -60,9 +71,20 @@ public class ReplayManager {
                 } else {
                     // Time to render a normal game move
                     inputStringRenderer.renderInputString(first.getValue());
-                    long actionDelay = next.getKey().toEpochMilli() - first.getKey().toEpochMilli();
-                    assert doSomethingNext != null;
-                    long doSomethingDelay = doSomethingFirst.getKey().toEpochMilli() - first.getKey().toEpochMilli();
+                    long actionDelay;
+                    if(next == null){
+                        actionDelay = 1000L;
+                    }
+                    else{
+                        actionDelay = next.getKey().toEpochMilli() - first.getKey().toEpochMilli();
+                    }
+                    long doSomethingDelay;
+                    if(doSomethingFirst == null){
+                        doSomethingDelay = 1000L;
+                    }
+                    else{
+                        doSomethingDelay = doSomethingFirst.getKey().toEpochMilli() - first.getKey().toEpochMilli();
+                    }
                     long delay = Math.min(actionDelay, doSomethingDelay);
                     try {
                         Thread.sleep(delay);
