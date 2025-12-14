@@ -1,22 +1,22 @@
 # Four of the Same Type (3 combinations)
-- ["BASIC", "BASIC", "BASIC", "BASIC"]					    done	5
-- ["REACTIVE", "REACTIVE", "REACTIVE", "REACTIVE"]			done	0
-- ["SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE"]	done 	7
+- ["BASIC", "BASIC", "BASIC", "BASIC"]					    done	5       lost: 5
+- ["REACTIVE", "REACTIVE", "REACTIVE", "REACTIVE"]			done	0       lost: 10
+- ["SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE"]	done 	7       lost: 3
 
 #Three of One Type, One of Another (6 combinations)
-- ["BASIC", "BASIC", "BASIC", "REACTIVE"]				    done	5
-- ["BASIC", "BASIC", "BASIC", "SHORT_FUSE"] 				done	3
-- ["REACTIVE", "REACTIVE", "REACTIVE", "BASIC"]				done	1
-- ["REACTIVE", "REACTIVE", "REACTIVE", "SHORT_FUSE"]		done	3
-- ["SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC"]		done	9
-- ["SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE"]	done 	8
+- ["BASIC", "BASIC", "BASIC", "REACTIVE"]				    done	5       lost: 5
+- ["BASIC", "BASIC", "BASIC", "SHORT_FUSE"] 				done	3       lost: 7
+- ["REACTIVE", "REACTIVE", "REACTIVE", "BASIC"]				done	1       lost: 9
+- ["REACTIVE", "REACTIVE", "REACTIVE", "SHORT_FUSE"]		done	3       lost: 7
+- ["SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "BASIC"]		done	9       lost: 1
+- ["SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE"]	done 	8       lost: 2
 
 # Two of One Type, Two of Another (3 combinations)
-- ["BASIC", "BASIC", "REACTIVE", "REACTIVE"]				done 	4
-- ["BASIC", "BASIC", "SHORT_FUSE", "SHORT_FUSE"]			done	6
-- ["REACTIVE", "REACTIVE", "SHORT_FUSE", "SHORT_FUSE"]		done	3
+- ["BASIC", "BASIC", "REACTIVE", "REACTIVE"]				done 	4       lost: 6
+- ["BASIC", "BASIC", "SHORT_FUSE", "SHORT_FUSE"]			done	6       lost: 4
+- ["REACTIVE", "REACTIVE", "SHORT_FUSE", "SHORT_FUSE"]		done	3       lost: 7
 
 # Two of One Type, One of Each of the Others (3 combinations)
-- ["BASIC", "BASIC", "REACTIVE", "SHORT_FUSE"]				done	4
-- ["REACTIVE", "REACTIVE", "BASIC", "SHORT_FUSE"]			done 	2
-- ["SHORT_FUSE", "SHORT_FUSE", "BASIC", "REACTIVE"]			done 	9
+- ["BASIC", "BASIC", "REACTIVE", "SHORT_FUSE"]				done	4       lost: 6
+- ["REACTIVE", "REACTIVE", "BASIC", "SHORT_FUSE"]			done 	2       lost: 8
+- ["SHORT_FUSE", "SHORT_FUSE", "BASIC", "REACTIVE"]			done 	9       lost: 1
