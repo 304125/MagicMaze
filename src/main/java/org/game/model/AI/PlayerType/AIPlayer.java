@@ -16,8 +16,8 @@ public class AIPlayer extends Player  implements StateChangeListener, AIPlayerBe
     private Pawn currentlyPlannedPawn;
     private ActionTree actionTree;
     private final GeneralGoalManager generalGoalManager;
-    PathFinder pathFinder;
-    Thread actionExecutionThread;
+    private final PathFinder pathFinder;
+    private Thread actionExecutionThread;
     private boolean isThreadSleeping = false;
     private final List<Color> otherPawnMoves = new ArrayList<>();
     private int ticksWaiting = 0;

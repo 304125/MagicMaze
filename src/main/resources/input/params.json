@@ -1,6 +1,38 @@
 {
-  "mode": "replay",
-  "gameName": "Two, one and one (2 SHORT_FUSE, 1 BASIC, 1 REACTIVE)",
+  "mode": "new",
+  "gameName": "Four of the Same Type (RANDOM)",
   "replayRun": 1,
-  "games": []
+  "games": [
+    {
+      "numberOfPlayers": 4,
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
+    }, {
+      "numberOfPlayers": 4,
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
+    }, {
+      "numberOfPlayers": 4,
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
+    }, {
+      "numberOfPlayers": 4,
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
+    }, {
+      "numberOfPlayers": 4,
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
+    }, {
+      "numberOfPlayers": 4,
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
+    }, {
+      "numberOfPlayers": 4,
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
+    }, {
+      "numberOfPlayers": 4,
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
+    }, {
+      "numberOfPlayers": 4,
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
+    }, {
+      "numberOfPlayers": 4,
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
+    }
+  ]
 }

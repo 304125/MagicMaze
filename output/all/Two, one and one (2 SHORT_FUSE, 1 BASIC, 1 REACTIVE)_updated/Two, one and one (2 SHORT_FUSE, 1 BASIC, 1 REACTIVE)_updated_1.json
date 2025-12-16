@@ -1,12 +1,7 @@
 {
-    "gameParams": {
-        "numberOfPlayers": 4,
-        "aiPlayers": [
-            "SHORT_FUSE",
-            "SHORT_FUSE",
-            "BASIC",
-            "REACTIVE"
-        ]
+    "gameParams" : {
+        "numberOfPlayers" : 4,
+        "aiPlayers" : [ "SHORT_FUSE", "SHORT_FUSE", "BASIC", "REACTIVE" ]
     },
     "gameMoves": {
         "2025-12-14T11:33:35.500000Z": "ov1",
