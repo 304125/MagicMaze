@@ -62,7 +62,7 @@ public class JsonReader {
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
 
-        String filePath = "output/" + folderName + "/" + fileName;
+        String filePath = "output/all/" + folderName + "/" + fileName;
         Path path = Path.of(filePath);
 
         try (InputStream inputStream = Files.newInputStream(path)) {
