@@ -2,6 +2,7 @@ package org.game.model;
 
 import org.game.model.AI.PlayerType.AIPlayerType;
 import org.game.model.AI.PlayerType.AIPlayer;
+import org.game.model.AI.PlayerType.RandomPlayer;
 import org.game.model.AI.StateChangeListener;
 import org.game.model.board.Board;
 import org.game.model.board.GeneralGoalManager;
@@ -60,8 +61,7 @@ public class Game {
     }
 
     private void initializePlayers(int numberOfPlayers, List<AIPlayerType> aiPlayerTypes){
-         this.
-        players = jsonReader.loadPlayersFromJson(numberOfPlayers, aiPlayerTypes, this.board);
+         this.players = jsonReader.loadPlayersFromJson(numberOfPlayers, aiPlayerTypes, this.board);
 
         // add every AI player to the board's pawn manager as pawn move listener
         for(Player player : players){
@@ -175,6 +175,9 @@ public class Game {
             if(player instanceof AIPlayer aiPlayer){
                 aiPlayer.setActionDelegator(actionDelegator);
             }
+            else if(player instanceof RandomPlayer randomPlayer){
+                randomPlayer.setActionDelegator(actionDelegator);
+            }
         }
     }
 
@@ -182,6 +185,9 @@ public class Game {
         for(Player player : players){
             if(player instanceof AIPlayer aiPlayer){
                 aiPlayer.startGame();
+            }
+            else if(player instanceof RandomPlayer randomPlayer){
+                randomPlayer.startGame();
             }
         }
     }
@@ -194,6 +200,9 @@ public class Game {
         for(Player player : players){
             if(player instanceof AIPlayer aiPlayer){
                 aiPlayer.endGame();
+            }
+            else if(player instanceof RandomPlayer randomPlayer){
+                randomPlayer.endGame();
             }
         }
         GeneralGoalManager.getInstance().reset();

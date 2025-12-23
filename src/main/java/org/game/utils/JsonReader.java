@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.game.model.*;
 import org.game.model.AI.PlayerType.AIPlayerType;
 import org.game.model.AI.PlayerType.AIPlayer;
+import org.game.model.AI.PlayerType.RandomPlayer;
 import org.game.model.board.Board;
 import org.game.utils.output.GameRecord;
 
@@ -62,7 +63,7 @@ public class JsonReader {
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
 
-        String filePath = "output/" + folderName + "/" + fileName;
+        String filePath = "output/all/" + folderName + "/" + fileName;
         Path path = Path.of(filePath);
 
         try (InputStream inputStream = Files.newInputStream(path)) {
@@ -137,6 +138,7 @@ public class JsonReader {
                                 case REACTIVE -> players.add(new AIPlayer(actions, "AI player: " +playerType + "(" + aiPlayersLeft + ")", board, AIPlayerType.REACTIVE));
                                 case SHORT_FUSE -> players.add(new AIPlayer(actions, "AI player: " +playerType + "(" + aiPlayersLeft + ")", board, AIPlayerType.SHORT_FUSE));
                                 case BASIC -> players.add(new AIPlayer(actions, "AI player: " + playerType + "(" + aiPlayersLeft + ")", board, AIPlayerType.BASIC));
+                                case RANDOM -> players.add(new RandomPlayer(actions, "AI player: " +playerType + "(" + aiPlayersLeft + ")", AIPlayerType.RANDOM));
                             }
                             aiPlayersLeft--;
                         }

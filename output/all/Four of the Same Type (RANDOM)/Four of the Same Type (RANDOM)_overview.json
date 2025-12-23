@@ -1,0 +1,43 @@
+{
+  "gameResults" : [ {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ],
+    "gameWon" : false
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ],
+    "gameWon" : false
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ],
+    "gameWon" : false
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ],
+    "gameWon" : false
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ],
+    "gameWon" : false
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ],
+    "gameWon" : false
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ],
+    "gameWon" : false
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ],
+    "gameWon" : false
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ],
+    "gameWon" : false
+  }, {
+    "numberOfPlayers" : 4,
+    "aiPlayers" : [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ],
+    "gameWon" : false
+  } ]
+}

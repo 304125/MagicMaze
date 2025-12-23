@@ -1,26 +1,38 @@
 {
   "mode": "new",
-  "gameName": "re-runs",
+  "gameName": "Four of the Same Type (RANDOM)",
   "replayRun": 1,
   "games": [
     {
       "numberOfPlayers": 4,
-      "aiPlayers": [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE" ]
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
     }, {
       "numberOfPlayers": 4,
-      "aiPlayers": [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE" ]
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
     }, {
       "numberOfPlayers": 4,
-      "aiPlayers": [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE" ]
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
     }, {
       "numberOfPlayers": 4,
-      "aiPlayers": [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE" ]
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
     }, {
       "numberOfPlayers": 4,
-      "aiPlayers": [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE" ]
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
     }, {
       "numberOfPlayers": 4,
-      "aiPlayers": [ "SHORT_FUSE", "SHORT_FUSE", "SHORT_FUSE", "REACTIVE" ]
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
+    }, {
+      "numberOfPlayers": 4,
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
+    }, {
+      "numberOfPlayers": 4,
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
+    }, {
+      "numberOfPlayers": 4,
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
+    }, {
+      "numberOfPlayers": 4,
+      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
     }
   ]
 }
