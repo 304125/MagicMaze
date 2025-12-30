@@ -1,38 +1,11 @@
 {
   "mode": "new",
-  "gameName": "Four of the Same Type (RANDOM)",
+  "gameName": "test",
   "replayRun": 1,
   "games": [
     {
       "numberOfPlayers": 4,
-      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
-    }, {
-      "numberOfPlayers": 4,
-      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
-    }, {
-      "numberOfPlayers": 4,
-      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
-    }, {
-      "numberOfPlayers": 4,
-      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
-    }, {
-      "numberOfPlayers": 4,
-      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
-    }, {
-      "numberOfPlayers": 4,
-      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
-    }, {
-      "numberOfPlayers": 4,
-      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
-    }, {
-      "numberOfPlayers": 4,
-      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
-    }, {
-      "numberOfPlayers": 4,
-      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
-    }, {
-      "numberOfPlayers": 4,
-      "aiPlayers": [ "RANDOM", "RANDOM", "RANDOM", "RANDOM" ]
+      "aiPlayers": [ "SHORT_FUSE", "SHORT_FUSE", "BASIC", "REACTIVE" ]
     }
   ]
 }
